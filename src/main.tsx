@@ -4,7 +4,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ReactQueryProvider } from "@/libs/react-query/react-query-provider";
 import { createRoutesFromFiles } from "@/libs/react-router/index.tsx";
 import { Auth0ProviderWrapper } from "@/app/_components/providers/auth0";
-import "antd/dist/reset.css";
 import "@/index.css";
 
 const pageFiles = import.meta.glob("@/app/**/*(page|layout).tsx");

@@ -1,12 +1,16 @@
-const AboutPage = () => {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to AboutPage</h1>
-        <p className="mb-8 text-gray-600">Your application is now running!</p>
-      </div>
-    </div>
-  )
-}
+import HeroSection from "./HeroSection";
+import { VisionMission } from "./VisionMission";
+import { PortfolioSection } from "./PortfolioSection";
+import { Footer } from "./FooterSection";
 
-export default AboutPage
+
+export default function AboutPage() {
+    return (
+        <>
+            <HeroSection />
+            <VisionMission />
+            <PortfolioSection />
+            <Footer />
+        </>
+    );
+}

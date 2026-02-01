@@ -1,4 +1,4 @@
-import { Twitter, Instagram, Facebook, Linkedin } from 'lucide-react';
+// import { Twitter, Instagram, Facebook, Linkedin } from 'lucide-react';
 import imgLogo from "@/assets/AboutPages/logo PT BAS.png";
 
 export function Footer() {
@@ -33,10 +33,10 @@ export function Footer() {
 
                         {/* Social Media */}
                         <div className="flex gap-8 pt-4">
-                            <SocialIcon Icon={Twitter} href="#" label="Twitter" />
+                            {/* <SocialIcon Icon={Twitter} href="#" label="Twitter" />
                             <SocialIcon Icon={Instagram} href="#" label="Instagram" />
                             <SocialIcon Icon={Linkedin} href="#" label="LinkedIn" />
-                            <SocialIcon Icon={Facebook} href="#" label="Facebook" />
+                            <SocialIcon Icon={Facebook} href="#" label="Facebook" /> */}
                         </div>
                     </div>
 

@@ -1,7 +1,7 @@
 import imgProject from "@/assets/AboutPages/Hero Pictures BAS about.png";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Search, ArrowLeft } from "lucide-react";
+// import { Search, ArrowLeft } from "lucide-react";
 import { yearsData } from "./Data/years";
 import { projectsData } from "./Data/projects";
 
@@ -63,7 +63,7 @@ export function ProjectYear() {
                             className="group flex items-center gap-3 px-4 py-2 -ml-4 rounded-lg transition-all duration-300 hover:bg-[#3a6d26]/10"
                         >
                             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#3a6d26] text-white group-hover:bg-[#2e581e] transition-colors duration-300 shadow-md">
-                                <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
+                                {/* <ArrowLeft className="w-5 h-5" strokeWidth={2.5} /> */}
                             </div>
                             <span className="font-['Poppins'] font-medium text-lg text-[#3a6d26] group-hover:text-[#2e581e] transition-colors duration-300">
                                 Kembali ke Portfolio
@@ -88,7 +88,7 @@ export function ProjectYear() {
                         <div className="max-w-[608px]">
                             <div className="relative">
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#adadad]">
-                                    <Search className="w-7 h-7" strokeWidth={1.5} />
+                                    {/* <Search className="w-7 h-7" strokeWidth={1.5} /> */}
                                 </div>
                                 <input
                                     type="text"

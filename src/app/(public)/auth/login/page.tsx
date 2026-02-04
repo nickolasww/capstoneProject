@@ -1,19 +1,41 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import imgLogo from '@/assets/LoginPage/logo PT BAS.png';
+import { useSession } from '@/app/_components/providers/session';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useSession();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/');
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const result = await login(formData.email, formData.password);
+      
+      if (result.success) {
+        // Redirect to the page they tried to visit or dashboard
+        const from = (location.state as any)?.from || '/dashboard';
+        navigate(from, { replace: true });
+      } else {
+        setError(result.error || 'Login gagal');
+      }
+    } catch (err) {
+      setError('Terjadi kesalahan saat login');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -86,6 +108,24 @@ export default function Login() {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="w-full max-w-[854px] flex flex-col gap-5 sm:gap-6">
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <p className="font-['Poppins'] text-sm">{error}</p>
+              </div>
+            )}
+
+            {/* Info Box for Demo Credentials */}
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg">
+              <p className="font-['Poppins'] text-sm font-semibold mb-2">Demo Credentials:</p>
+              <p className="font-['Poppins'] text-xs">
+                <strong>Admin:</strong> admin@bas.com / admin123
+              </p>
+              <p className="font-['Poppins'] text-xs">
+                <strong>Client:</strong> client@bas.com / client123
+              </p>
+            </div>
+
             {/* Username/Email Field */}
             <div className="flex flex-col gap-2 sm:gap-3">
               <label
@@ -140,9 +180,10 @@ export default function Login() {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full h-[56px] sm:h-[62px] bg-[#4d9232] rounded-[28px] font-['Poppins'] text-lg sm:text-[23px] text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md"
+              disabled={isLoading}
+              className="w-full h-[56px] sm:h-[62px] bg-[#4d9232] rounded-[28px] font-['Poppins'] text-lg sm:text-[23px] text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Log In
+              {isLoading ? 'Loading...' : 'Log In'}
             </button>
 
             {/* Back to Home Link */}

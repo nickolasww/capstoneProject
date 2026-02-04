@@ -1,5 +1,7 @@
 import { Outlet } from 'react-router-dom';
-import Guard from '../guard';
+import Guard from '@/app/_components/guard';
+import { useNavigate } from 'react-router-dom';
+import { useSession } from '@/app/_components/providers/session';
 
 export default function ProtectedLayout() {
   return (
@@ -49,6 +51,3 @@ function LogoutButton() {
     </div>
   );
 }
-
-import { useNavigate } from 'react-router-dom';
-import { useSession } from '../providers/session';

@@ -1,93 +1,60 @@
 import { useState } from 'react';
-
-interface JobPosting {
-  id: string;
-  title: string;
-  department: string;
-  location: string;
-  type: string;
-  salary: string;
-  postedDate: string;
-  deadline: string;
-  status: 'active' | 'closed';
-  applicants: number;
-}
-
-const mockJobPostings: JobPosting[] = [
-  {
-    id: '1',
-    title: 'Mekanik Alat Berat',
-    department: 'Operasional',
-    location: 'Yogyakarta',
-    type: 'Full Time',
-    salary: 'Rp 5.000.000 - Rp 7.000.000',
-    postedDate: '15/01/2026',
-    deadline: '15/02/2026',
-    status: 'active',
-    applicants: 12,
-  },
-  {
-    id: '2',
-    title: 'Civil Engineer',
-    department: 'Engineering',
-    location: 'Jakarta',
-    type: 'Full Time',
-    salary: 'Rp 8.000.000 - Rp 12.000.000',
-    postedDate: '10/01/2026',
-    deadline: '10/02/2026',
-    status: 'active',
-    applicants: 24,
-  },
-  {
-    id: '3',
-    title: 'Admin Proyek',
-    department: 'Administrasi',
-    location: 'Semarang',
-    type: 'Contract',
-    salary: 'Rp 4.500.000 - Rp 6.000.000',
-    postedDate: '05/01/2026',
-    deadline: '05/02/2026',
-    status: 'active',
-    applicants: 8,
-  },
-];
+import { Link, useNavigate } from 'react-router-dom';
+import { useJobPostings, type JobPosting } from './jobPostingsStore';
 
 export default function PostingPekerjaanPage() {
+  const navigate = useNavigate();
+  const { jobPostings, deleteJob } = useJobPostings();
   const [searchTerm, setSearchTerm] = useState('');
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState<{ show: boolean; job: JobPosting | null }>({
+    show: false,
+    job: null,
+  });
 
-  const filteredPostings = mockJobPostings.filter((job) =>
+  const filteredPostings = jobPostings.filter((job) =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.department.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleDeleteClick = (job: JobPosting) => {
+    setDeleteModal({ show: true, job });
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteModal.job) {
+      deleteJob(deleteModal.job.id);
+    }
+    setDeleteModal({ show: false, job: null });
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteModal({ show: false, job: null });
+  };
+
   return (
     <div className="p-6 lg:p-8">
-      {/* Breadcrumb */}
       <div className="mb-6">
         <p className="text-sm text-gray-600">
           Admin - Lamaran Kerja - <span className="text-red-400">Posting Pekerjaan</span>
         </p>
       </div>
 
-      {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Posting Pekerjaan</h1>
           <p className="text-gray-600">Kelola lowongan pekerjaan yang tersedia</p>
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
+        <Link
+          to="/lamaran-kerja/posting-pekerjaan/create"
           className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 font-medium"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Tambah Lowongan
-        </button>
+        </Link>
       </div>
 
-      {/* Search Bar */}
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div className="relative">
           <input
@@ -108,28 +75,24 @@ export default function PostingPekerjaanPage() {
         </div>
       </div>
 
-      {/* Job Postings Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredPostings.map((job) => (
           <div key={job.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-            {/* Header */}
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-gray-900 mb-1">{job.title}</h3>
                 <p className="text-sm text-gray-600">{job.department}</p>
               </div>
               <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  job.status === 'active'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-100 text-gray-700'
-                }`}
+                className={`px-3 py-1 rounded-full text-xs font-medium ${job.status === 'active'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-gray-100 text-gray-700'
+                  }`}
               >
                 {job.status === 'active' ? 'Aktif' : 'Ditutup'}
               </span>
             </div>
 
-            {/* Details */}
             <div className="space-y-3 mb-4">
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,7 +115,6 @@ export default function PostingPekerjaanPage() {
               </div>
             </div>
 
-            {/* Stats */}
             <div className="border-t border-gray-200 pt-4 mb-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Pelamar:</span>
@@ -164,12 +126,17 @@ export default function PostingPekerjaanPage() {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-2">
-              <button className="flex-1 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium">
+              <button
+                onClick={() => navigate(`/lamaran-kerja/posting-pekerjaan/edit/${job.id}`)}
+                className="flex-1 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors text-sm font-medium"
+              >
                 Edit
               </button>
-              <button className="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium">
+              <button
+                onClick={() => handleDeleteClick(job)}
+                className="flex-1 px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
+              >
                 Hapus
               </button>
             </div>
@@ -177,7 +144,6 @@ export default function PostingPekerjaanPage() {
         ))}
       </div>
 
-      {/* Empty State */}
       {filteredPostings.length === 0 && (
         <div className="bg-white rounded-lg shadow-sm p-12">
           <div className="text-center text-gray-500">
@@ -186,6 +152,38 @@ export default function PostingPekerjaanPage() {
             </svg>
             <p className="text-lg font-medium">Tidak ada lowongan ditemukan</p>
             <p className="text-sm mt-2">Coba gunakan kata kunci lain</p>
+          </div>
+        </div>
+      )}
+
+      {deleteModal.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Hapus Lowongan?</h3>
+              <p className="text-gray-600 mb-6">
+                Apakah Anda yakin ingin menghapus lowongan "{deleteModal.job?.title}"? Tindakan ini tidak dapat dibatalkan.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelDelete}
+                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

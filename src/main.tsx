@@ -5,6 +5,7 @@ import { ReactQueryProvider } from "@/libs/react-query/react-query-provider";
 import { createRoutesFromFiles } from "@/libs/react-router/index.tsx";
 import { Auth0ProviderWrapper } from "@/app/_components/providers/auth0";
 import { SessionProvider } from "@/app/_components/providers/session";
+import { JobPostingsProvider } from "@/app/(protected)/lamaran-kerja/posting-pekerjaan/jobPostingsStore";
 import "@/index.css";
 
 const pageFiles = import.meta.glob("@/app/**/*(page|layout).tsx");
@@ -20,9 +21,12 @@ createRoot(document.getElementById("root")!).render(
     <SessionProvider>
       <Auth0ProviderWrapper>
         <ReactQueryProvider>
-          <RouterProvider router={router} />
+          <JobPostingsProvider>
+            <RouterProvider router={router} />
+          </JobPostingsProvider>
         </ReactQueryProvider>
       </Auth0ProviderWrapper>
     </SessionProvider>
   </StrictMode>,
 );
+

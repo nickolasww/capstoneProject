@@ -65,7 +65,7 @@ export default function JobPostingDetailPage() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Persyaratan</h2>
             <ul className="list-disc list-inside space-y-2">
-              {job.requirements.map((req, index) => (
+              {job.requirements.map((req: any, index: any) => (
                 <li key={index} className="text-gray-700">{req}</li>
               ))}
             </ul>

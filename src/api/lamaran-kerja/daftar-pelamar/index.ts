@@ -4,12 +4,7 @@ import type {
   TApplicationDetailResponse, 
   TApplicationListResponse, 
   TApplicationRequest, 
-  TFilterApplication,
-  TJobPosting,
-  TJobPostingDetailResponse,
-  TJobPostingListResponse,
-  TJobPostingRequest,
-  TFilterJobPosting
+  TFilterApplication
 } from "./type";
 
 const listApplications: TApplication[] = [
@@ -20,7 +15,7 @@ const listApplications: TApplication[] = [
     address: 'Jl. Diponegoro No. 56, Yogyakarta',
     email: 'eko.prasetyo@email.com',
     position: 'Mekanik',
-    applyDate: '17/09/2025',
+    apply_date: '17/09/2025',
     status: 'pendaftar',
     cv_url: '/uploads/cv/eko-prasetyo.pdf',
     created_at: '2025-09-17T00:00:00.000Z',
@@ -29,77 +24,176 @@ const listApplications: TApplication[] = [
   },
   {
     id: '2',
-    name: 'Siti Nurhaliza',
-    phone: '081234567890',
+    name: 'Budi Santoso',
+    phone: '085612345678',
     address: 'Jl. Sudirman No. 12, Jakarta',
-    email: 'siti.nur@email.com',
-    position: 'Civil Engineer',
-    applyDate: '18/09/2025',
-    status: 'interview',
-    cv_url: '/uploads/cv/siti-nur.pdf',
-    created_at: '2025-09-18T00:00:00.000Z',
-    updated_at: '2025-09-18T00:00:00.000Z',
+    email: 'budi.santoso@email.com',
+    position: 'Driver',
+    apply_date: '16/09/2025',
+    status: 'pendaftar',
+    created_at: '2025-09-16T00:00:00.000Z',
+    updated_at: '2025-09-16T00:00:00.000Z',
     deleted_at: null,
   },
   {
     id: '3',
-    name: 'Ahmad Fauzi',
-    phone: '082345678901',
+    name: 'Siti Nurhaliza',
+    phone: '085698765432',
     address: 'Jl. Gatot Subroto No. 45, Bandung',
+    email: 'siti.nurhaliza@email.com',
+    position: 'Admin',
+    apply_date: '15/09/2025',
+    status: 'pendaftar',
+    created_at: '2025-09-15T00:00:00.000Z',
+    updated_at: '2025-09-15T00:00:00.000Z',
+    deleted_at: null,
+  },
+  {
+    id: '4',
+    name: 'Ahmad Fauzi',
+    phone: '085655556666',
+    address: 'Jl. Ahmad Yani No. 78, Surabaya',
     email: 'ahmad.fauzi@email.com',
-    position: 'Admin Proyek',
-    applyDate: '19/09/2025',
+    position: 'Teknisi',
+    apply_date: '14/09/2025',
     status: 'pembekasan',
-    cv_url: '/uploads/cv/ahmad-fauzi.pdf',
-    created_at: '2025-09-19T00:00:00.000Z',
-    updated_at: '2025-09-19T00:00:00.000Z',
+    created_at: '2025-09-14T00:00:00.000Z',
+    updated_at: '2025-09-14T00:00:00.000Z',
+    deleted_at: null,
+  },
+  {
+    id: '5',
+    name: 'Dewi Lestari',
+    phone: '085644443333',
+    address: 'Jl. Pemuda No. 23, Semarang',
+    email: 'dewi.lestari@email.com',
+    position: 'HRD',
+    apply_date: '13/09/2025',
+    status: 'pembekasan',
+    created_at: '2025-09-13T00:00:00.000Z',
+    updated_at: '2025-09-13T00:00:00.000Z',
+    deleted_at: null,
+  },
+  {
+    id: '6',
+    name: 'Rudi Hartono',
+    phone: '085633332222',
+    address: 'Jl. Pahlawan No. 56, Malang',
+    email: 'rudi.hartono@email.com',
+    position: 'Marketing',
+    apply_date: '12/09/2025',
+    status: 'interview',
+    interview_date: '28/09/2025',
+    interview_time: '14.00 WIB',
+    created_at: '2025-09-12T00:00:00.000Z',
+    updated_at: '2025-09-12T00:00:00.000Z',
+    deleted_at: null,
+  },
+  {
+    id: '7',
+    name: 'Maya Anggraini',
+    phone: '085622221111',
+    address: 'Jl. Veteran No. 34, Medan',
+    email: 'maya.anggraini@email.com',
+    position: 'Sales',
+    apply_date: '11/09/2025',
+    status: 'interview',
+    interview_date: '29/09/2025',
+    interview_time: '15.00 WIB',
+    created_at: '2025-09-11T00:00:00.000Z',
+    updated_at: '2025-09-11T00:00:00.000Z',
+    deleted_at: null,
+  },
+  {
+    id: '8',
+    name: 'Joko Widodo',
+    phone: '085611119999',
+    address: 'Jl. Merdeka No. 89, Solo',
+    email: 'joko.widodo@email.com',
+    position: 'Supervisor',
+    apply_date: '10/09/2025',
+    status: 'interview',
+    interview_date: '30/09/2025',
+    interview_time: '10.00 WIB',
+    created_at: '2025-09-10T00:00:00.000Z',
+    updated_at: '2025-09-10T00:00:00.000Z',
+    deleted_at: null,
+  },
+  {
+    id: '9',
+    name: 'Lisa Andriani',
+    phone: '085699998888',
+    address: 'Jl. Raya No. 67, Denpasar',
+    email: 'lisa.andriani@email.com',
+    position: 'Accounting',
+    apply_date: '09/09/2025',
+    status: 'diterima',
+    interview_date: '23/09/2025',
+    interview_time: '13.00 WIB',
+    created_at: '2025-09-09T00:00:00.000Z',
+    updated_at: '2025-09-09T00:00:00.000Z',
+    deleted_at: null,
+  },
+  {
+    id: '10',
+    name: 'Agus Salim',
+    phone: '085688887777',
+    address: 'Jl. Proklamasi No. 90, Makassar',
+    email: 'agus.salim@email.com',
+    position: 'IT Support',
+    apply_date: '08/09/2025',
+    status: 'diterima',
+    created_at: '2025-09-08T00:00:00.000Z',
+    updated_at: '2025-09-08T00:00:00.000Z',
+    deleted_at: null,
+  },
+  {
+    id: '11',
+    name: 'Rina Wati',
+    phone: '085677776666',
+    address: 'Jl. Kartini No. 45, Palembang',
+    email: 'rina.wati@email.com',
+    position: 'Receptionist',
+    apply_date: '07/09/2025',
+    status: 'ditolak',
+    created_at: '2025-09-07T00:00:00.000Z',
+    updated_at: '2025-09-07T00:00:00.000Z',
+    deleted_at: null,
+  },
+  {
+    id: '12',
+    name: 'Hendra Kusuma',
+    phone: '085666665555',
+    address: 'Jl. Diponegoro No. 23, Pontianak',
+    email: 'hendra.kusuma@email.com',
+    position: 'Security',
+    apply_date: '06/09/2025',
+    status: 'ditolak',
+    created_at: '2025-09-06T00:00:00.000Z',
+    updated_at: '2025-09-06T00:00:00.000Z',
     deleted_at: null,
   },
 ];
 
-const listJobPostings: TJobPosting[] = [
-  {
-    id: '1',
-    title: 'Mekanik Alat Berat',
-    department: 'Operasional',
-    location: 'Yogyakarta',
-    type: 'Full Time',
-    salary: 'Rp 5.000.000 - Rp 7.000.000',
-    description: 'Bertanggung jawab untuk maintenance dan repair alat berat',
-    requirements: ['Pengalaman minimal 2 tahun', 'Sertifikat K3', 'Bisa bekerja shift'],
-    postedDate: '15/01/2026',
-    deadline: '15/02/2026',
-    status: 'active',
-    applicants: 12,
-    created_at: '2026-01-15T00:00:00.000Z',
-    updated_at: '2026-01-15T00:00:00.000Z',
-    deleted_at: null,
-  },
-  {
-    id: '2',
-    title: 'Civil Engineer',
-    department: 'Engineering',
-    location: 'Jakarta',
-    type: 'Full Time',
-    salary: 'Rp 8.000.000 - Rp 12.000.000',
-    description: 'Merencanakan dan mengawasi proyek konstruksi',
-    requirements: ['S1 Teknik Sipil', 'Pengalaman 3 tahun', 'Menguasai AutoCAD'],
-    postedDate: '10/01/2026',
-    deadline: '10/02/2026',
-    status: 'active',
-    applicants: 24,
-    created_at: '2026-01-10T00:00:00.000Z',
-    updated_at: '2026-01-10T00:00:00.000Z',
-    deleted_at: null,
-  },
-];
-
-// Application APIs
 export const getApplications = (params: TFilterApplication): Promise<TApplicationListResponse> => {
   console.log(params);
-  const filteredData = params.position 
-    ? listApplications.filter(app => app.position.toLowerCase().includes(params.position!.toLowerCase()))
-    : listApplications;
+  let filteredData = [...listApplications];
+  
+  if (params.position) {
+    filteredData = filteredData.filter(app => 
+      app.position.toLowerCase().includes(params.position!.toLowerCase())
+    );
+  }
+  
+  if (params.status) {
+    filteredData = filteredData.filter(app => app.status === params.status);
+  }
+  
+  if (params.name) {
+    filteredData = filteredData.filter(app => 
+      app.name.toLowerCase().includes(params.name!.toLowerCase())
+    );
+  }
 
   return Promise.resolve({
     status_code: 200,
@@ -117,83 +211,37 @@ export const getApplications = (params: TFilterApplication): Promise<TApplicatio
 };
 
 export const getDetailApplication = (params: { id: string }): Promise<TApplicationDetailResponse> => {
-  const application = listApplications.find(app => app.id === params.id);
-  
-  if (!application) {
-    return Promise.reject({
-      status_code: 404,
-      message: "Application not found",
-      version: "1.0.0",
-    });
-  }
-
+  console.log(params);
   return Promise.resolve({
     status_code: 200,
-    data: application,
+    data: listApplications.find((app) => app.id === params.id)!,
     version: "1.0.0",
   });
 };
 
-export const createApplication = (data: TApplicationRequest): Promise<TApplicationDetailResponse> => {
-  const newApplication: TApplication = {
-    id: String(listApplications.length + 1),
-    ...data,
-    applyDate: new Date().toLocaleDateString('id-ID'),
-    status: data.status || 'pendaftar',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    deleted_at: null,
-  };
-
-  listApplications.push(newApplication);
-
+export const deleteApplication = (params: { id: string }): Promise<TResponseData<null>> => {
+  console.log(params);
   return Promise.resolve({
-    status_code: 201,
-    data: newApplication,
+    status_code: 200,
+    data: null,
+    version: "1.0.0",
+  });
+};
+
+export const createApplication = (req: TApplicationRequest): Promise<TResponseData<null>> => {
+  console.log(req);
+  return Promise.resolve({
+    status_code: 200,
+    data: null,
     version: "1.0.0",
   });
 };
 
 export const updateApplication = (
-  id: string,
-  data: Partial<TApplicationRequest>
-): Promise<TApplicationDetailResponse> => {
-  const index = listApplications.findIndex(app => app.id === id);
-  
-  if (index === -1) {
-    return Promise.reject({
-      status_code: 404,
-      message: "Application not found",
-      version: "1.0.0",
-    });
-  }
-
-  listApplications[index] = {
-    ...listApplications[index],
-    ...data,
-    updated_at: new Date().toISOString(),
-  };
-
-  return Promise.resolve({
-    status_code: 200,
-    data: listApplications[index],
-    version: "1.0.0",
-  });
-};
-
-export const deleteApplication = (id: string): Promise<TResponseData<null>> => {
-  const index = listApplications.findIndex(app => app.id === id);
-  
-  if (index === -1) {
-    return Promise.reject({
-      status_code: 404,
-      message: "Application not found",
-      version: "1.0.0",
-    });
-  }
-
-  listApplications.splice(index, 1);
-
+  params: { id: string },
+  req: Partial<TApplicationRequest>,
+): Promise<TResponseData<null>> => {
+  console.log(req, params);
   return Promise.resolve({
     status_code: 200,
     data: null,
@@ -201,110 +249,3 @@ export const deleteApplication = (id: string): Promise<TResponseData<null>> => {
   });
 };
 
-// Job Posting APIs
-export const getJobPostings = (params: TFilterJobPosting): Promise<TJobPostingListResponse> => {
-  console.log(params);
-  const filteredData = params.department 
-    ? listJobPostings.filter(job => job.department.toLowerCase().includes(params.department!.toLowerCase()))
-    : listJobPostings;
-
-  return Promise.resolve({
-    status_code: 200,
-    data: {
-      items: filteredData,
-      meta: {
-        total_page: 1,
-        total: filteredData.length,
-        page: 1,
-        per_page: 10,
-      },
-    },
-    version: "1.0.0",
-  });
-};
-
-export const getDetailJobPosting = (params: { id: string }): Promise<TJobPostingDetailResponse> => {
-  const jobPosting = listJobPostings.find(job => job.id === params.id);
-  
-  if (!jobPosting) {
-    return Promise.reject({
-      status_code: 404,
-      message: "Job posting not found",
-      version: "1.0.0",
-    });
-  }
-
-  return Promise.resolve({
-    status_code: 200,
-    data: jobPosting,
-    version: "1.0.0",
-  });
-};
-
-export const createJobPosting = (data: TJobPostingRequest): Promise<TJobPostingDetailResponse> => {
-  const newJobPosting: TJobPosting = {
-    id: String(listJobPostings.length + 1),
-    ...data,
-    postedDate: new Date().toLocaleDateString('id-ID'),
-    status: data.status || 'active',
-    applicants: 0,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    deleted_at: null,
-  };
-
-  listJobPostings.push(newJobPosting);
-
-  return Promise.resolve({
-    status_code: 201,
-    data: newJobPosting,
-    version: "1.0.0",
-  });
-};
-
-export const updateJobPosting = (
-  id: string,
-  data: Partial<TJobPostingRequest>
-): Promise<TJobPostingDetailResponse> => {
-  const index = listJobPostings.findIndex(job => job.id === id);
-  
-  if (index === -1) {
-    return Promise.reject({
-      status_code: 404,
-      message: "Job posting not found",
-      version: "1.0.0",
-    });
-  }
-
-  listJobPostings[index] = {
-    ...listJobPostings[index],
-    ...data,
-    updated_at: new Date().toISOString(),
-  };
-
-  return Promise.resolve({
-    status_code: 200,
-    data: listJobPostings[index],
-    version: "1.0.0",
-  });
-};
-
-export const deleteJobPosting = (id: string): Promise<TResponseData<null>> => {
-  const index = listJobPostings.findIndex(job => job.id === id);
-  
-  if (index === -1) {
-    return Promise.reject({
-      status_code: 404,
-      message: "Job posting not found",
-      version: "1.0.0",
-    });
-  }
-
-  listJobPostings.splice(index, 1);
-
-  return Promise.resolve({
-    status_code: 200,
-    data: null,
-    version: "1.0.0",
-  });
-};

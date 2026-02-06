@@ -1,120 +1,274 @@
-import { useParams } from 'react-router-dom';
-import { useApplicationDetail } from '../_hooks/use-application-query';
-import { APPLICATION_STATUS_LABELS, APPLICATION_STATUS_COLORS } from '../_utils/helpers';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button, Tag, Typography, Card, Row, Col } from 'antd';
+import { ArrowLeftOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
+import type { TApplication, TApplicationStatus } from '@/api/lamaran-kerja/daftar-pelamar/type';
+import { getDetailApplication, updateApplication } from '@/api/lamaran-kerja/daftar-pelamar';
+import EditProgressModal from '../_components/form/edit-modal';
+
+const { Text, Title } = Typography;
 
 export default function ApplicationDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, error } = useApplicationDetail(id!);
+  const navigate = useNavigate();
+  const [application, setApplication] = useState<TApplication | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (isLoading) {
+  useEffect(() => {
+    const fetchApplicationDetail = async () => {
+      if (!id) return;
+      
+      setLoading(true);
+      try {
+        const response = await getDetailApplication({ id });
+        setApplication(response.data);
+      } catch (error) {
+        console.error('Error fetching application detail:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApplicationDetail();
+  }, [id]);
+
+  if (loading) {
     return (
-      <div className="p-6 lg:p-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-        </div>
+      <div style={{ padding: '24px 32px', textAlign: 'center' }}>
+        <Text>Loading...</Text>
       </div>
     );
   }
 
-  if (error || !data?.data) {
+  if (!application) {
     return (
-      <div className="p-6 lg:p-8">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+      <div style={{ padding: '24px 32px' }}>
+        <div style={{ backgroundColor: '#fee', border: '1px solid #fcc', color: '#c33', padding: '16px', borderRadius: '8px' }}>
           Data pelamar tidak ditemukan
         </div>
       </div>
     );
   }
 
-  const application = data.data;
+  const getStatusConfig = (status: TApplicationStatus) => {
+    switch (status) {
+      case 'pembekasan':
+        return { color: '#3b82f6', text: 'Tahap Pemberkasan' };
+      case 'interview':
+        return { color: '#eab308', text: 'Tahap Interview' };
+      case 'diterima':
+        return { color: '#22c55e', text: 'Diterima' };
+      case 'ditolak':
+        return { color: '#ef4444', text: 'Ditolak' };
+      default:
+        return { color: '#9ca3af', text: 'Pendaftar' };
+    }
+  };
+
+  const handleEditClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleModalSubmit = async (values: {
+    status: TApplicationStatus;
+    interview_date?: string;
+    interview_time?: string;
+  }) => {
+    if (application) {
+      try {
+        await updateApplication({ id: application.id }, {
+          ...application,
+          status: values.status,
+          interview_date: values.interview_date,
+          interview_time: values.interview_time,
+        });
+        
+        // Refresh the detail data
+        const response = await getDetailApplication({ id: application.id });
+        setApplication(response.data);
+        setIsModalOpen(false);
+      } catch (error) {
+        console.error('Error updating application:', error);
+      }
+    }
+  };
+
+  const statusConfig = getStatusConfig(application.status);
 
   return (
-    <div className="p-6 lg:p-8">
+    <div style={{ padding: '24px 32px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+      {/* Header with Back Button */}
+      <Button
+        icon={<ArrowLeftOutlined />}
+        onClick={() => navigate(-1)}
+        style={{ marginBottom: 24 }}
+      >
+        Kembali
+      </Button>
+
       {/* Breadcrumb */}
-      <div className="mb-6">
-        <p className="text-sm text-gray-600">
-          Admin - Lamaran Kerja - Daftar Pelamar - <span className="text-red-400">Detail</span>
-        </p>
+      <div style={{ marginBottom: 16 }}>
+        <Text type="secondary">
+          Lamaran Kerja / Daftar Pelamar / Detail Pelamar: {application.name}
+        </Text>
       </div>
 
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Detail Pelamar</h1>
-        <p className="text-gray-600">Informasi lengkap pelamar</p>
+      {/* Title */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <Title level={3} style={{ margin: 0 }}>
+          Detail Pelamar: {application.name}
+        </Title>
+        <Button 
+          type="default" 
+          icon={<EditOutlined />}
+          onClick={handleEditClick}
+          style={{ 
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          Edit Progres
+        </Button>
       </div>
 
-      {/* Content */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div className="p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-20 h-20 rounded-full bg-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-              {application.name.charAt(0)}
+      {/* Issue Information Card */}
+      <Card
+        title={<Text strong style={{ fontSize: '16px' }}>Informasi Pelamar</Text>}
+        style={{ borderRadius: '8px', boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)' }}
+      >
+        <Row gutter={[16, 16]}>
+          {/* Row 1: Email & Posisi Lamaran */}
+          <Col xs={24} sm={12}>
+            <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
+              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                Email
+              </Text>
+              <Text strong style={{ fontSize: '15px' }}>
+                {application.email}
+              </Text>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">{application.name}</h2>
-              <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${APPLICATION_STATUS_COLORS[application.status]}`}>
-                {APPLICATION_STATUS_LABELS[application.status]}
-              </span>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
+              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                Posisi Lamaran
+              </Text>
+              <Text strong style={{ fontSize: '15px' }}>
+                {application.position}
+              </Text>
             </div>
-          </div>
+          </Col>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-1">Email</h3>
-              <p className="text-base text-gray-900">{application.email}</p>
+          {/* Row 2: Tanggal Daftar & PDF CV */}
+          <Col xs={24} sm={12}>
+            <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
+              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                Tanggal Daftar
+              </Text>
+              <Text strong style={{ fontSize: '15px' }}>
+                {application.apply_date}
+              </Text>
             </div>
+          </Col>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-1">No. Telepon</h3>
-              <p className="text-base text-gray-900">{application.phone}</p>
+          <Col xs={24} sm={12}>
+            <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
+              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                PDF CV
+              </Text>
+              <Button 
+                type="link" 
+                icon={<DownloadOutlined />}
+                style={{ color: '#16a34a', padding: 0, fontSize: '15px' }}
+              >
+                Lihat CV
+              </Button>
             </div>
+          </Col>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-1">Posisi yang Dilamar</h3>
-              <p className="text-base text-gray-900">{application.position}</p>
+          {/* Row 3: Status & Jadwal Interview */}
+          <Col xs={24} sm={12}>
+            <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
+              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                Status
+              </Text>
+              <Tag
+                color={statusConfig.color}
+                style={{
+                  padding: '4px 12px',
+                  borderRadius: '6px',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                  border: 0,
+                }}
+              >
+                {statusConfig.text}
+              </Tag>
             </div>
+          </Col>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-1">Tanggal Melamar</h3>
-              <p className="text-base text-gray-900">{application.applyDate}</p>
+          <Col xs={24} sm={12}>
+            <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
+              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                Jadwal Interview
+              </Text>
+              {application.interview_date ? (
+                <>
+                  <Text strong style={{ fontSize: '15px', display: 'block' }}>
+                    {application.interview_date}
+                  </Text>
+                  <Text type="secondary" style={{ fontSize: '13px' }}>
+                    {application.interview_time}
+                  </Text>
+                </>
+              ) : (
+                <Text type="secondary">—</Text>
+              )}
             </div>
+          </Col>
 
-            <div className="md:col-span-2">
-              <h3 className="text-sm font-medium text-gray-500 mb-1">Alamat</h3>
-              <p className="text-base text-gray-900">{application.address}</p>
+          {/* Row 4: Nama & Alamat */}
+          <Col xs={24} sm={12}>
+            <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
+              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                Nama
+              </Text>
+              <Text strong style={{ fontSize: '15px' }}>
+                {application.name}
+              </Text>
             </div>
+          </Col>
 
-            {application.cv_url && (
-              <div className="md:col-span-2">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">CV</h3>
-                <a
-                  href={application.cv_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Download CV
-                </a>
-              </div>
-            )}
-          </div>
-        </div>
+          <Col xs={24} sm={12}>
+            <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
+              <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
+                Alamat
+              </Text>
+              <Text strong style={{ fontSize: '15px' }}>
+                {application.address}
+              </Text>
+            </div>
+          </Col>
+        </Row>
+      </Card>
 
-        <div className="bg-gray-50 px-6 py-4 flex gap-3">
-          <button
-            onClick={() => window.history.back()}
-            className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            Kembali
-          </button>
-          <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-            Ubah Status
-          </button>
-        </div>
-      </div>
+      {/* Modal Edit Progres */}
+      <EditProgressModal
+        open={isModalOpen}
+        onCancel={handleModalCancel}
+        onSubmit={handleModalSubmit}
+        record={application}
+      />
     </div>
   );
 }

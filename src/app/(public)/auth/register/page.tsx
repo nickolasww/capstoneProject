@@ -7,7 +7,8 @@ import imgLogo from '@/assets/LoginPage/logo PT BAS.png';
 export default function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
+    Fullname: '',
     email: '',
     password: ''
   });
@@ -27,13 +28,13 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#56a439] to-[#213e16] flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-linear-to-b from-[#56a439] to-[#213e16] flex items-center justify-center px-4 py-8">
       {/* Main Card Container */}
       <div className="bg-white rounded-2xl w-full max-w-md px-8 py-10 shadow-2xl">
         <div className="flex flex-col items-center gap-6 w-full">
           {/* Logo Section */}
           <div className="flex flex-col items-center gap-3 mb-2">
-            <div className="h-[33px] w-[56px] relative overflow-hidden shrink-0">
+            <div className="h-8.25 w-14 relative overflow-hidden shrink-0">
               <img
                 src={imgLogo}
                 alt="PT Bukit Aurumn Sejahtera Logo"
@@ -63,6 +64,26 @@ export default function Register() {
 
           {/* Register Form */}
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+            
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="name"
+                className="font-['Poppins'] text-sm font-medium text-black leading-[1.4]"
+              >
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                required
+                className="w-full h-12 bg-white border border-gray-300 rounded-lg px-4 font-['Poppins'] text-sm text-black placeholder:text-gray-400 focus:outline-none focus:border-[#4d9232] focus:ring-2 focus:ring-[#4d9232]/20 transition-all"
+                placeholder="Enter your username"
+              />
+            </div>
+            
             {/* Name Field */}
             <div className="flex flex-col gap-2">
               <label
@@ -73,9 +94,9 @@ export default function Register() {
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="Fullname"
+                name="Fullname"
+                value={formData.Fullname}
                 onChange={handleInputChange}
                 required
                 className="w-full h-12 bg-white border border-gray-300 rounded-lg px-4 font-['Poppins'] text-sm text-black placeholder:text-gray-400 focus:outline-none focus:border-[#4d9232] focus:ring-2 focus:ring-[#4d9232]/20 transition-all"

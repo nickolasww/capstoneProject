@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Tabs, Input, Button,Typography, Tag } from 'antd';
+import { Table, Tabs, Input, Button, Typography, Tag } from 'antd';
 import { FilterOutlined, SearchOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
+import EditProgressModal from './_components/form/edit-modal';
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -166,13 +167,49 @@ export default function LamaranKerjaPage() {
   const [searchPosition, setSearchPosition] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<Application | null>(null);
+  const [applications, setApplications] = useState<Application[]>(mockApplications);
 
-  const filteredApplications = mockApplications.filter(
+  const filteredApplications = applications.filter(
     (app) =>
       app.status === activeTab &&
       app.name.toLowerCase().includes(searchName.toLowerCase()) &&
       app.position.toLowerCase().includes(searchPosition.toLowerCase())
   );
+
+  const handleEditClick = (record: Application) => {
+    setSelectedRecord(record);
+    setIsModalOpen(true);
+  };
+
+  const handleModalCancel = () => {
+    setIsModalOpen(false);
+    setSelectedRecord(null);
+  };
+
+  const handleModalSubmit = (values: {
+    status: TabType;
+    interviewDate?: string;
+    interviewTime?: string;
+  }) => {
+    if (selectedRecord) {
+      const updatedApplications = applications.map((app) => {
+        if (app.id === selectedRecord.id) {
+          return {
+            ...app,
+            status: values.status,
+            interviewDate: values.interviewDate,
+            interviewTime: values.interviewTime,
+          };
+        }
+        return app;
+      });
+      setApplications(updatedApplications);
+      setIsModalOpen(false);
+      setSelectedRecord(null);
+    }
+  };
 
   const getStatusConfig = (status: TabType) => {
     switch (status) {
@@ -271,10 +308,11 @@ export default function LamaranKerjaPage() {
     {
       title: 'ACTION',
       key: 'action',
-      render: () => (
+      render: (_, record) => (
         <Button 
           type="default"
           icon={<EditOutlined />}
+          onClick={() => handleEditClick(record)}
           style={{ 
             borderRadius: '6px',
             display: 'flex',
@@ -401,6 +439,14 @@ export default function LamaranKerjaPage() {
           borderRadius: 8,
           boxShadow: '0 1px 3px 0 rgb(0 0 0 / 0.1)',
         }}
+      />
+
+      {/* Modal Edit Progres */}
+      <EditProgressModal
+        open={isModalOpen}
+        onCancel={handleModalCancel}
+        onSubmit={handleModalSubmit}
+        record={selectedRecord}
       />
     </div>
   );

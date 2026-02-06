@@ -3,7 +3,7 @@ import { Modal, Form, Input, Radio, DatePicker, TimePicker, Button, Space, Typog
 import { CalendarOutlined } from '@ant-design/icons';
 import { z } from 'zod';
 import dayjs from 'dayjs';
-import { editProgressSchema, type Application, type TabType } from './schema';
+import { editProgressSchema, type Application, type TApplicationStatus } from './schema';
 
 const { Text } = Typography;
 
@@ -11,9 +11,9 @@ interface EditProgressModalProps {
   open: boolean;
   onCancel: () => void;
   onSubmit: (values: {
-    status: TabType;
-    interviewDate?: string;
-    interviewTime?: string;
+    status: TApplicationStatus;
+    interview_date?: string;
+    interview_time?: string;
   }) => void;
   record: Application | null;
 }
@@ -39,11 +39,11 @@ export default function EditProgressModal({
         
         onSubmit({
           status: values.status,
-          interviewDate: values.status === 'interview' && values.interviewDate 
-            ? values.interviewDate.format('DD/MM/YYYY') 
+          interview_date: values.status === 'interview' && values.interview_date 
+            ? values.interview_date.format('DD/MM/YYYY') 
             : undefined,
-          interviewTime: values.status === 'interview' && values.interviewTime 
-            ? values.interviewTime.format('HH.mm') + ' WIB'
+          interview_time: values.status === 'interview' && values.interview_time 
+            ? values.interview_time.format('HH.mm') + ' WIB'
             : undefined,
         });
         
@@ -65,8 +65,8 @@ export default function EditProgressModal({
         name: record.name,
         position: record.position,
         status: record.status,
-        interviewDate: record.interviewDate ? dayjs(record.interviewDate, 'DD/MM/YYYY') : null,
-        interviewTime: record.interviewTime ? dayjs(record.interviewTime, 'HH.mm') : null,
+        interview_date: record.interview_date ? dayjs(record.interview_date, 'DD/MM/YYYY') : null,
+        interview_time: record.interview_time ? dayjs(record.interview_time, 'HH.mm') : null,
       });
     }
   }, [open, record, form]);
@@ -170,7 +170,7 @@ export default function EditProgressModal({
                               Tanggal Interview <span style={{ color: 'red' }}>*</span>
                             </span>
                           }
-                          name="interviewDate"
+                          name="interview_date"
                           rules={[{ required: true, message: 'Pilih tanggal interview' }]}
                         >
                           <DatePicker 
@@ -186,7 +186,7 @@ export default function EditProgressModal({
                               Waktu Interview <span style={{ color: 'red' }}>*</span>
                             </span>
                           }
-                          name="interviewTime"
+                          name="interview_time"
                           rules={[{ required: true, message: 'Pilih waktu interview' }]}
                           style={{ marginBottom: 0 }}
                         >

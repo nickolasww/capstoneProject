@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import type { TApplicationStatus } from '@/api/lamaran-kerja/daftar-pelamar/type';
 
-export type TabType = 'pendaftar' | 'pembekasan' | 'interview' | 'diterima' | 'ditolak';
+export type { TApplicationStatus };
 
 export interface Application {
   id: string;
@@ -9,10 +10,10 @@ export interface Application {
   address: string;
   email: string;
   position: string;
-  applyDate: string;
-  status: TabType;
-  interviewDate?: string;
-  interviewTime?: string;
+  apply_date: string;
+  status: TApplicationStatus;
+  interview_date?: string;
+  interview_time?: string;
 }
 
 // Zod Schema
@@ -20,17 +21,17 @@ export const editProgressSchema = z.object({
   name: z.string(),
   position: z.string(),
   status: z.enum(['pendaftar', 'pembekasan', 'interview', 'diterima', 'ditolak']),
-  interviewDate: z.any().optional(),
-  interviewTime: z.any().optional(),
+  interview_date: z.any().optional(),
+  interview_time: z.any().optional(),
 }).refine((data) => {
-  // Jika status adalah interview, maka interviewDate dan interviewTime wajib diisi
+  // Jika status adalah interview, maka interview_date dan interview_time wajib diisi
   if (data.status === 'interview') {
-    return data.interviewDate && data.interviewTime;
+    return data.interview_date && data.interview_time;
   }
   return true;
 }, {
   message: 'Tanggal dan waktu interview wajib diisi untuk tahap interview',
-  path: ['interviewDate'],
+  path: ['interview_date'],
 });
 
 export type EditProgressFormData = z.infer<typeof editProgressSchema>;

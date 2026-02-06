@@ -1,184 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Tabs, Input, Button, Typography, Tag } from 'antd';
 import { FilterOutlined, SearchOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
+import type { TApplication, TApplicationStatus } from '@/api/lamaran-kerja/daftar-pelamar/type';
+import { getApplications, updateApplication } from '@/api/lamaran-kerja/daftar-pelamar';
 import EditProgressModal from './_components/form/edit-modal';
 
 const { Search } = Input;
 const { Text } = Typography;
 
-type TabType = 'pendaftar' | 'pembekasan' | 'interview' | 'diterima' | 'ditolak';
-
-interface Application {
-  id: string;
-  name: string;
-  phone: string;
-  address: string;
-  email: string;
-  position: string;
-  applyDate: string;
-  status: TabType;
-  interviewDate?: string;
-  interviewTime?: string;
-}
-
-const mockApplications: Application[] = [
-  {
-    id: '1',
-    name: 'Eko Prasetyo',
-    phone: '085678901234',
-    address: 'Jl. Diponegoro No. 56, Yogyakarta',
-    email: 'eko.prasetyo@email.com',
-    position: 'Mekanik',
-    applyDate: '17/09/2025',
-    status: 'pendaftar',
-  },
-  {
-    id: '2',
-    name: 'Budi Santoso',
-    phone: '085612345678',
-    address: 'Jl. Sudirman No. 12, Jakarta',
-    email: 'budi.santoso@email.com',
-    position: 'Driver',
-    applyDate: '16/09/2025',
-    status: 'pendaftar',
-  },
-  {
-    id: '3',
-    name: 'Siti Nurhaliza',
-    phone: '085698765432',
-    address: 'Jl. Gatot Subroto No. 45, Bandung',
-    email: 'siti.nurhaliza@email.com',
-    position: 'Admin',
-    applyDate: '15/09/2025',
-    status: 'pendaftar',
-  },
-  // Tahap Pembekasan
-  {
-    id: '4',
-    name: 'Ahmad Fauzi',
-    phone: '085655556666',
-    address: 'Jl. Ahmad Yani No. 78, Surabaya',
-    email: 'ahmad.fauzi@email.com',
-    position: 'Teknisi',
-    applyDate: '14/09/2025',
-    status: 'pembekasan',
-  },
-  {
-    id: '5',
-    name: 'Dewi Lestari',
-    phone: '085644443333',
-    address: 'Jl. Pemuda No. 23, Semarang',
-    email: 'dewi.lestari@email.com',
-    position: 'HRD',
-    applyDate: '13/09/2025',
-    status: 'pembekasan',
-  },
-  // Tahap Interview
-  {
-    id: '6',
-    name: 'Rudi Hartono',
-    phone: '085633332222',
-    address: 'Jl. Pahlawan No. 56, Malang',
-    email: 'rudi.hartono@email.com',
-    position: 'Marketing',
-    applyDate: '12/09/2025',
-    status: 'interview',
-    interviewDate: '28/09/2025',
-    interviewTime: '14.00 WIB',
-  },
-  {
-    id: '7',
-    name: 'Maya Anggraini',
-    phone: '085622221111',
-    address: 'Jl. Veteran No. 34, Medan',
-    email: 'maya.anggraini@email.com',
-    position: 'Sales',
-    applyDate: '11/09/2025',
-    status: 'interview',
-    interviewDate: '29/09/2025',
-    interviewTime: '15.00 WIB',
-  },
-  {
-    id: '8',
-    name: 'Joko Widodo',
-    phone: '085611119999',
-    address: 'Jl. Merdeka No. 89, Solo',
-    email: 'joko.widodo@email.com',
-    position: 'Supervisor',
-    applyDate: '10/09/2025',
-    status: 'interview',
-    interviewDate: '30/09/2025',
-    interviewTime: '10.00 WIB',
-  },
-  // Tahap Diterima
-  {
-    id: '9',
-    name: 'Lisa Andriani',
-    phone: '085699998888',
-    address: 'Jl. Raya No. 67, Denpasar',
-    email: 'lisa.andriani@email.com',
-    position: 'Accounting',
-    applyDate: '09/09/2025',
-    status: 'diterima',
-    interviewDate: '23/09/2025',
-    interviewTime: '13.00 WIB',
-  },
-  {
-    id: '10',
-    name: 'Agus Salim',
-    phone: '085688887777',
-    address: 'Jl. Proklamasi No. 90, Makassar',
-    email: 'agus.salim@email.com',
-    position: 'IT Support',
-    applyDate: '08/09/2025',
-    status: 'diterima',
-  },
-  // Belum Diperiksa
-  {
-    id: '11',
-    name: 'Rina Wati',
-    phone: '085677776666',
-    address: 'Jl. Kartini No. 45, Palembang',
-    email: 'rina.wati@email.com',
-    position: 'Receptionist',
-    applyDate: '07/09/2025',
-    status: 'ditolak',
-  },
-  {
-    id: '12',
-    name: 'Hendra Kusuma',
-    phone: '085666665555',
-    address: 'Jl. Diponegoro No. 23, Pontianak',
-    email: 'hendra.kusuma@email.com',
-    position: 'Security',
-    applyDate: '06/09/2025',
-    status: 'ditolak',
-  },
-];
-
 export default function LamaranKerjaPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>('pendaftar');
+  const [activeTab, setActiveTab] = useState<TApplicationStatus>('pendaftar');
   const [searchName, setSearchName] = useState('');
   const [searchPosition, setSearchPosition] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<Application | null>(null);
-  const [applications, setApplications] = useState<Application[]>(mockApplications);
+  const [selectedRecord, setSelectedRecord] = useState<TApplication | null>(null);
+  const [applications, setApplications] = useState<TApplication[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch applications when tab changes
+  useEffect(() => {
+    const fetchApplications = async () => {
+      setLoading(true);
+      try {
+        const response = await getApplications({ status: activeTab });
+        setApplications(response.data.items);
+      } catch (error) {
+        console.error('Error fetching applications:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApplications();
+  }, [activeTab]);
 
   const filteredApplications = applications.filter(
     (app) =>
-      app.status === activeTab &&
       app.name.toLowerCase().includes(searchName.toLowerCase()) &&
       app.position.toLowerCase().includes(searchPosition.toLowerCase())
   );
 
-  const handleEditClick = (record: Application) => {
+  const handleEditClick = (record: TApplication) => {
     setSelectedRecord(record);
     setIsModalOpen(true);
   };
@@ -188,30 +57,32 @@ export default function LamaranKerjaPage() {
     setSelectedRecord(null);
   };
 
-  const handleModalSubmit = (values: {
-    status: TabType;
-    interviewDate?: string;
-    interviewTime?: string;
+  const handleModalSubmit = async (values: {
+    status: TApplicationStatus;
+    interview_date?: string;
+    interview_time?: string;
   }) => {
     if (selectedRecord) {
-      const updatedApplications = applications.map((app) => {
-        if (app.id === selectedRecord.id) {
-          return {
-            ...app,
-            status: values.status,
-            interviewDate: values.interviewDate,
-            interviewTime: values.interviewTime,
-          };
-        }
-        return app;
-      });
-      setApplications(updatedApplications);
-      setIsModalOpen(false);
-      setSelectedRecord(null);
+      try {
+        await updateApplication({ id: selectedRecord.id }, {
+          ...selectedRecord,
+          status: values.status,
+          interview_date: values.interview_date,
+          interview_time: values.interview_time,
+        });
+        
+        // Refresh the list
+        const response = await getApplications({ status: activeTab });
+        setApplications(response.data.items);
+        setIsModalOpen(false);
+        setSelectedRecord(null);
+      } catch (error) {
+        console.error('Error updating application:', error);
+      }
     }
   };
 
-  const getStatusConfig = (status: TabType) => {
+  const getStatusConfig = (status: TApplicationStatus) => {
     switch (status) {
       case 'pembekasan':
         return { color: '#3b82f6', text: 'Tahap Pemberkasan' };
@@ -226,14 +97,14 @@ export default function LamaranKerjaPage() {
     }
   };
 
-  const columns: ColumnsType<Application> = [
+  const columns: ColumnsType<TApplication> = [
     {
       title: 'EMAIL',
       dataIndex: 'email',
       key: 'email',
       sorter: (a, b) => a.email.localeCompare(b.email),
       showSorterTooltip: { title: 'Klik untuk mengurutkan' },
-      render: (email: string, record: Application) => (
+      render: (email: string, record: TApplication) => (
         <a
           onClick={() => navigate(`/lamaran-kerja/daftar-pelamar/${record.id}`)}
           style={{
@@ -253,8 +124,8 @@ export default function LamaranKerjaPage() {
     },
     {
       title: 'TANGGAL DAFTAR',
-      dataIndex: 'applyDate',
-      key: 'applyDate',
+      dataIndex: 'apply_date',
+      key: 'apply_date',
     },
     {
       title: 'PDF CV',
@@ -273,7 +144,7 @@ export default function LamaranKerjaPage() {
       title: 'STATUS',
       dataIndex: 'status',
       key: 'status',
-      render: (status: TabType) => {
+      render: (status: TApplicationStatus) => {
         const config = getStatusConfig(status);
         return (
           <Tag 
@@ -294,11 +165,11 @@ export default function LamaranKerjaPage() {
       title: 'JADWAL INTERVIEW',
       key: 'interviewSchedule',
       render: (_, record) => {
-        if (record.interviewDate && record.interviewTime) {
+        if (record.interview_date && record.interview_time) {
           return (
             <div>
-              <div style={{ fontWeight: 500 }}>{record.interviewDate}</div>
-              <div style={{ fontSize: '12px', color: '#6b7280' }}>{record.interviewTime}</div>
+              <div style={{ fontWeight: 500 }}>{record.interview_date}</div>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>{record.interview_time}</div>
             </div>
           );
         }
@@ -326,7 +197,7 @@ export default function LamaranKerjaPage() {
     },
   ];
 
-  const handleTableChange: TableProps<Application>['onChange'] = (pagination) => {
+  const handleTableChange: TableProps<TApplication>['onChange'] = (pagination) => {
     setCurrentPage(pagination.current || 1);
     setPageSize(pagination.pageSize || 10);
   };
@@ -369,7 +240,7 @@ export default function LamaranKerjaPage() {
       {/* Tabs */}
       <Tabs
         activeKey={activeTab}
-        onChange={(key) => setActiveTab(key as TabType)}
+        onChange={(key) => setActiveTab(key as TApplicationStatus)}
         items={tabItems}
         centered
         style={{ marginBottom: 24 }}
@@ -419,10 +290,11 @@ export default function LamaranKerjaPage() {
       </div>
 
       {/* Table */}
-      <Table<Application>
+      <Table<TApplication>
         columns={columns}
         dataSource={filteredApplications}
         rowKey="id"
+        loading={loading}
         onChange={handleTableChange}
         pagination={{
           current: currentPage,

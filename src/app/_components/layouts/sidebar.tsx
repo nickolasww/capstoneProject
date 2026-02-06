@@ -97,7 +97,7 @@ export default function DashboardSidebar() {
       {/* Logo Section */}
       <div className="p-4 border-b border-gray-200">
         <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-          <div className="h-10 w-10 flex-shrink-0">
+          <div className="h-10 w-10 shrink-0">
             <img
               src={imgLogo}
               alt="PT BAS Logo"
@@ -138,7 +138,7 @@ export default function DashboardSidebar() {
                       } ${isCollapsed ? 'justify-center' : ''}`}
                       title={isCollapsed ? item.label : ''}
                     >
-                      <span className="flex-shrink-0">{item.icon}</span>
+                      <span className="shrink-0">{item.icon}</span>
                       {!isCollapsed && (
                         <>
                           <span className="text-sm flex-1 truncate text-left">{item.label}</span>
@@ -169,7 +169,7 @@ export default function DashboardSidebar() {
                                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                 }`}
                               >
-                                <span className="flex-shrink-0">{subItem.icon}</span>
+                                <span className="shrink-0">{subItem.icon}</span>
                                 {subItem.label}
                               </Link>
                             </li>
@@ -189,7 +189,7 @@ export default function DashboardSidebar() {
                     } ${isCollapsed ? 'justify-center' : ''}`}
                     title={isCollapsed ? item.label : ''}
                   >
-                    <span className="flex-shrink-0">{item.icon}</span>
+                    <span className="shrink-0">{item.icon}</span>
                     {!isCollapsed && (
                       <span className="text-sm flex-1 truncate">{item.label}</span>
                     )}

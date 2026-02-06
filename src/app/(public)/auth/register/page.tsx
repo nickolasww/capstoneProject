@@ -12,7 +12,6 @@ export default function Register() {
     email: '',
     password: ''
   });
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,7 +132,7 @@ export default function Register() {
                 Password
               </label>
               <input
-                type={showPassword ? "text" : "password"}
+                type="password"
                 id="password"
                 name="password"
                 value={formData.password}

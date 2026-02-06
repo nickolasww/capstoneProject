@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Table, Tabs, Input, Button, Avatar, Typography } from 'antd';
-import { FilterOutlined, SearchOutlined, DownloadOutlined} from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { Table, Tabs, Input, Button,Typography, Tag } from 'antd';
+import { FilterOutlined, SearchOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 
 const { Search } = Input;
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 type TabType = 'pendaftar' | 'pembekasan' | 'interview' | 'diterima' | 'ditolak';
 
@@ -19,6 +20,8 @@ interface Application {
   position: string;
   applyDate: string;
   status: TabType;
+  interviewDate?: string;
+  interviewTime?: string;
 }
 
 const mockApplications: Application[] = [
@@ -83,6 +86,8 @@ const mockApplications: Application[] = [
     position: 'Marketing',
     applyDate: '12/09/2025',
     status: 'interview',
+    interviewDate: '28/09/2025',
+    interviewTime: '14.00 WIB',
   },
   {
     id: '7',
@@ -93,6 +98,8 @@ const mockApplications: Application[] = [
     position: 'Sales',
     applyDate: '11/09/2025',
     status: 'interview',
+    interviewDate: '29/09/2025',
+    interviewTime: '15.00 WIB',
   },
   {
     id: '8',
@@ -103,6 +110,8 @@ const mockApplications: Application[] = [
     position: 'Supervisor',
     applyDate: '10/09/2025',
     status: 'interview',
+    interviewDate: '30/09/2025',
+    interviewTime: '10.00 WIB',
   },
   // Tahap Diterima
   {
@@ -114,6 +123,8 @@ const mockApplications: Application[] = [
     position: 'Accounting',
     applyDate: '09/09/2025',
     status: 'diterima',
+    interviewDate: '23/09/2025',
+    interviewTime: '13.00 WIB',
   },
   {
     id: '10',
@@ -149,6 +160,7 @@ const mockApplications: Application[] = [
 ];
 
 export default function LamaranKerjaPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('pendaftar');
   const [searchName, setSearchName] = useState('');
   const [searchPosition, setSearchPosition] = useState('');
@@ -162,36 +174,40 @@ export default function LamaranKerjaPage() {
       app.position.toLowerCase().includes(searchPosition.toLowerCase())
   );
 
+  const getStatusConfig = (status: TabType) => {
+    switch (status) {
+      case 'pembekasan':
+        return { color: '#3b82f6', text: 'Tahap Pemberkasan' };
+      case 'interview':
+        return { color: '#eab308', text: 'Tahap Interview' };
+      case 'diterima':
+        return { color: '#22c55e', text: 'Diterima' };
+      case 'ditolak':
+        return { color: '#ef4444', text: 'Ditolak' };
+      default:
+        return { color: '#9ca3af', text: 'Pendaftar' };
+    }
+  };
+
   const columns: ColumnsType<Application> = [
-    {
-      title: 'NAMA',
-      dataIndex: 'name',
-      key: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (text: string) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Avatar style={{ backgroundColor: '#7c3aed' }} size={40}>
-            {text.charAt(0)}
-          </Avatar>
-          <Text strong>{text}</Text>
-        </div>
-      ),
-    },
-    {
-      title: 'NO TELP',
-      dataIndex: 'phone',
-      key: 'phone',
-    },
-    {
-      title: 'ALAMAT',
-      dataIndex: 'address',
-      key: 'address',
-      ellipsis: true,
-    },
     {
       title: 'EMAIL',
       dataIndex: 'email',
       key: 'email',
+      sorter: (a, b) => a.email.localeCompare(b.email),
+      showSorterTooltip: { title: 'Klik untuk mengurutkan' },
+      render: (email: string, record: Application) => (
+        <a
+          onClick={() => navigate(`/lamaran-kerja/daftar-pelamar/${record.id}`)}
+          style={{
+            color: '#1890ff',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+          }}
+        >
+          {email}
+        </a>
+      ),
     },
     {
       title: 'POSISI LAMARAN',
@@ -204,7 +220,7 @@ export default function LamaranKerjaPage() {
       key: 'applyDate',
     },
     {
-      title: 'PDF',
+      title: 'PDF CV',
       key: 'pdf',
       render: () => (
         <Button 
@@ -213,6 +229,60 @@ export default function LamaranKerjaPage() {
           style={{ color: '#16a34a', padding: 0 }}
         >
           Lihat CV
+        </Button>
+      ),
+    },
+    {
+      title: 'STATUS',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: TabType) => {
+        const config = getStatusConfig(status);
+        return (
+          <Tag 
+            color={config.color}
+            style={{ 
+              padding: '4px 12px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: 500,
+            }}
+          >
+            {config.text}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: 'JADWAL INTERVIEW',
+      key: 'interviewSchedule',
+      render: (_, record) => {
+        if (record.interviewDate && record.interviewTime) {
+          return (
+            <div>
+              <div style={{ fontWeight: 500 }}>{record.interviewDate}</div>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>{record.interviewTime}</div>
+            </div>
+          );
+        }
+        return <Text type="secondary">—</Text>;
+      },
+    },
+    {
+      title: 'ACTION',
+      key: 'action',
+      render: () => (
+        <Button 
+          type="default"
+          icon={<EditOutlined />}
+          style={{ 
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          Edit Progres
         </Button>
       ),
     },

@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, type JSX } from 'react';
 import imgLogo from '@/assets/LoginPage/logo PT BAS.png';
 import {
@@ -13,6 +13,7 @@ import {
   TeamOutlined,
   UserOutlined,
   SolutionOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
 
 interface SubMenuItem {
@@ -81,7 +82,7 @@ const menuItems: MenuItem[] = [
 
 export default function DashboardSidebar() {
   const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const toggleDropdown = (label: string) => {
@@ -90,13 +91,11 @@ export default function DashboardSidebar() {
 
   return (
     <aside
-      className={`bg-white border-r border-gray-200 transition-all duration-300 ${
-        isCollapsed ? 'w-20' : 'w-64'
-      } flex flex-col`}
+      className="bg-white border-r border-gray-200 w-64 flex flex-col"
     >
       {/* Logo Section */}
       <div className="p-4 border-b border-gray-200">
-        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
+        <div className="flex items-center gap-3">
           <div className="h-10 w-10 shrink-0">
             <img
               src={imgLogo}
@@ -104,14 +103,12 @@ export default function DashboardSidebar() {
               className="w-full h-full object-contain"
             />
           </div>
-          {!isCollapsed && (
-            <div className="flex-1 min-w-0">
-              <h2 className="font-bold text-sm leading-tight text-gray-900 truncate">
-                PT BUKIT AURUMN
-              </h2>
-              <p className="text-xs text-gray-600 truncate">SEJAHTERA</p>
-            </div>
-          )}
+          <div className="flex-1 min-w-0">
+            <h2 className="font-bold text-sm leading-tight text-gray-900 truncate">
+              PT BUKIT AURUMN
+            </h2>
+            <p className="text-xs text-gray-600 truncate">SEJAHTERA</p>
+          </div>
         </div>
       </div>
 
@@ -135,27 +132,22 @@ export default function DashboardSidebar() {
                         isSubmenuActive
                           ? 'bg-green-50 text-green-700 font-medium'
                           : 'text-gray-700 hover:bg-gray-50'
-                      } ${isCollapsed ? 'justify-center' : ''}`}
-                      title={isCollapsed ? item.label : ''}
+                      }`}
                     >
                       <span className="shrink-0">{item.icon}</span>
-                      {!isCollapsed && (
-                        <>
-                          <span className="text-sm flex-1 truncate text-left">{item.label}</span>
-                          <svg
-                            className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </>
-                      )}
+                      <span className="text-sm flex-1 truncate text-left">{item.label}</span>
+                      <svg
+                        className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </button>
                     
                     {/* Submenu */}
-                    {!isCollapsed && isDropdownOpen && (
+                    {isDropdownOpen && (
                       <ul className="mt-1 ml-8 space-y-1">
                         {item.submenu?.map((subItem) => {
                           const isSubActive = location.pathname === subItem.path;
@@ -186,13 +178,10 @@ export default function DashboardSidebar() {
                       isActive
                         ? 'bg-green-50 text-green-700 font-medium'
                         : 'text-gray-700 hover:bg-gray-50'
-                    } ${isCollapsed ? 'justify-center' : ''}`}
-                    title={isCollapsed ? item.label : ''}
+                    }`}
                   >
                     <span className="shrink-0">{item.icon}</span>
-                    {!isCollapsed && (
-                      <span className="text-sm flex-1 truncate">{item.label}</span>
-                    )}
+                    <span className="text-sm flex-1 truncate">{item.label}</span>
                   </Link>
                 )}
               </li>
@@ -201,24 +190,14 @@ export default function DashboardSidebar() {
         </ul>
       </nav>
 
-      {/* Collapse Toggle Button */}
-      <div className="p-3 border-t border-gray-200">
+      {/* Logout Button */}
+      <div className=" border-t border-gray-200">
         <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+          onClick={() => navigate('/auth/login')}
+          className="w-full flex items-center justify-center gap-2 px-3 py-4 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
         >
-          {isCollapsed ? (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-            </svg>
-          ) : (
-            <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-              </svg>
-              <span>Collapse</span>
-            </>
-          )}
+          <LogoutOutlined className="text-lg" />
+          <span>Logout</span>
         </button>
       </div>
     </aside>

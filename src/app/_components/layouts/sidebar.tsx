@@ -1,10 +1,24 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState, type JSX } from 'react';
 import imgLogo from '@/assets/LoginPage/logo PT BAS.png';
+import {
+  HomeOutlined,
+  ToolOutlined,
+  BuildOutlined,
+  ShoppingCartOutlined,
+  BankOutlined,
+  ReadOutlined,
+  InboxOutlined,
+  FileTextOutlined,
+  TeamOutlined,
+  UserOutlined,
+  SolutionOutlined,
+} from '@ant-design/icons';
 
 interface SubMenuItem {
   path: string;
   label: string;
+  icon: JSX.Element;
 }
 
 interface MenuItem {
@@ -18,86 +32,50 @@ const menuItems: MenuItem[] = [
   {
     path: '/dashboard',
     label: 'Dashboard',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-    ),
+    icon: <HomeOutlined className="text-lg" />,
   },
   {
     path: '/sewa-alat-berat',
     label: 'Sewa Alat Berat',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-    ),
+    icon: <ToolOutlined className="text-lg" />,
   },
   {
     path: '/permintaan-jasa-konstruksi',
     label: 'Permintaan Jasa Konstruksi',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-      </svg>
-    ),
+    icon: <BuildOutlined className="text-lg" />,
   },
   {
     path: '/pembelian-barang',
     label: 'Pembelian Barang',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-    ),
+    icon: <ShoppingCartOutlined className="text-lg" />,
   },
   {
     label: 'Lamaran Kerja',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
+    icon: <BankOutlined className="text-lg" />,
     submenu: [
-      { path: '/lamaran-kerja/daftar-pelamar', label: 'Daftar Pelamar' },
-      { path: '/lamaran-kerja/posting-pekerjaan', label: 'Posting Pekerjaan' },
+      { path: '/lamaran-kerja/daftar-pelamar', label: 'Daftar Pelamar', icon: <UserOutlined /> },
+      { path: '/lamaran-kerja/posting-pekerjaan', label: 'Posting Pekerjaan', icon: <SolutionOutlined /> },
     ],
   },
   {
     path: '/pendaftaran-beasiswa',
     label: 'Pendaftaran Beasiswa',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-      </svg>
-    ),
+    icon: <ReadOutlined className="text-lg" />,
   },
   {
     path: '/stok-produk',
     label: 'Stok Produk',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-      </svg>
-    ),
+    icon: <InboxOutlined className="text-lg" />,
   },
   {
     path: '/tender-management',
     label: 'Tender Management',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    ),
+    icon: <FileTextOutlined className="text-lg" />,
   },
   {
     path: '/set-role',
     label: 'Set Role',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-    ),
+    icon: <TeamOutlined className="text-lg" />,
   },
 ];
 
@@ -191,9 +169,7 @@ export default function DashboardSidebar() {
                                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                 }`}
                               >
-                                <svg className="w-1.5 h-1.5 fill-current" viewBox="0 0 6 6">
-                                  <circle cx="3" cy="3" r="3" />
-                                </svg>
+                                <span className="flex-shrink-0">{subItem.icon}</span>
                                 {subItem.label}
                               </Link>
                             </li>

@@ -1,52 +1,49 @@
+'use client';
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useJobPostings } from '../jobPostingsStore';
+import type { TJobPostingRequest } from '@/api/lamaran-kerja/posting-pekerjaan/type';
+import { createJobPosting } from '@/api/lamaran-kerja/posting-pekerjaan';
 
 export default function CreateJobPostingPage() {
   const navigate = useNavigate();
-  const { addJob } = useJobPostings();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<TJobPostingRequest>({
     title: '',
     department: '',
     location: '',
-    type: '',
-    salary: '',
+    type: 'full-time',
+    salary_min: 0,
+    salary_max: 0,
     description: '',
-    requirements: '',
     deadline: '',
-    status: 'active' as const,
+    status: 'active',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (name === 'salary_min' || name === 'salary_max') {
+      setFormData(prev => ({ ...prev, [name]: parseInt(value) || 0 }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    const requirementsArray = formData.requirements
-      .split('\n')
-      .map(req => req.trim())
-      .filter(req => req.length > 0);
-
-    const deadlineDate = new Date(formData.deadline);
-    const formattedDeadline = deadlineDate.toLocaleDateString('id-ID');
-
-    addJob({
-      title: formData.title,
-      department: formData.department,
-      location: formData.location,
-      type: formData.type,
-      salary: formData.salary,
-      description: formData.description,
-      requirements: requirementsArray,
-      deadline: formattedDeadline,
-      status: formData.status,
-    });
-
-    navigate('/lamaran-kerja/posting-pekerjaan');
+    try {
+      await createJobPosting(formData);
+      navigate('/lamaran-kerja/posting-pekerjaan');
+    } catch (error) {
+      console.error('Error creating job posting:', error);
+      alert('Gagal membuat lowongan pekerjaan');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -121,26 +118,43 @@ export default function CreateJobPostingPage() {
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
-                <option value="">Pilih tipe</option>
-                <option value="Full Time">Full Time</option>
-                <option value="Part Time">Part Time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
+                <option value="full-time">Full Time</option>
+                <option value="part-time">Part Time</option>
+                <option value="contract">Contract</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Gaji <span className="text-red-600">*</span>
+                Gaji Minimum <span className="text-red-600">*</span>
               </label>
               <input
-                type="text"
-                name="salary"
-                value={formData.salary}
+                type="number"
+                name="salary_min"
+                value={formData.salary_min}
                 onChange={handleChange}
                 required
+                min="0"
+                step="100000"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Rp 5.000.000 - Rp 7.000.000"
+                placeholder="5000000"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Gaji Maximum <span className="text-red-600">*</span>
+              </label>
+              <input
+                type="number"
+                name="salary_max"
+                value={formData.salary_max}
+                onChange={handleChange}
+                required
+                min="0"
+                step="100000"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="7000000"
               />
             </div>
 
@@ -157,22 +171,6 @@ export default function CreateJobPostingPage() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Jelaskan detail pekerjaan..."
               />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Persyaratan <span className="text-red-600">*</span>
-              </label>
-              <textarea
-                name="requirements"
-                value={formData.requirements}
-                onChange={handleChange}
-                required
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Masukkan setiap persyaratan per baris&#10;Contoh:&#10;- Pengalaman minimal 2 tahun&#10;- Memiliki sertifikat K3&#10;- Bisa bekerja shift"
-              />
-              <p className="text-sm text-gray-500 mt-1">Pisahkan setiap persyaratan dengan enter/baris baru</p>
             </div>
 
             <div>
@@ -215,9 +213,10 @@ export default function CreateJobPostingPage() {
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              disabled={isSubmitting}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              Publikasikan Lowongan
+              {isSubmitting ? 'Menyimpan...' : 'Publikasikan Lowongan'}
             </button>
           </div>
         </form>

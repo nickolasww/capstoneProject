@@ -18,7 +18,7 @@ export const useUpdateApplication = () => {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<TApplicationRequest> }) =>
-      updateApplication(id, data),
+      updateApplication({id}, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] });
     },
@@ -29,7 +29,7 @@ export const useDeleteApplication = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => deleteApplication(id),
+    mutationFn: (id: string) => deleteApplication({id}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications'] });
     },

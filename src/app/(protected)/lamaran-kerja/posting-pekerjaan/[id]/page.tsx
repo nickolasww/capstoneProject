@@ -1,9 +1,71 @@
-import { useParams } from 'react-router-dom';
-import { useJobPostingDetail } from '../../daftar-pelamar/_hooks/use-job-posting-query';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import type { TJobPosting } from '@/api/lamaran-kerja/posting-pekerjaan/type';
+import { getDetailJobPosting, updateJobPosting } from '@/api/lamaran-kerja/posting-pekerjaan';
 
 export default function JobPostingDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, error } = useJobPostingDetail(id!);
+  const navigate = useNavigate();
+  const [job, setJob] = useState<TJobPosting | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const fetchDetail = async () => {
+      if (!id) return;
+
+      try {
+        const response = await getDetailJobPosting({ id });
+        setJob(response.data);
+      } catch (err) {
+        console.error('Error fetching job detail:', err);
+        setError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDetail();
+  }, [id]);
+
+  const handleCloseJob = async () => {
+    if (!job || !id) return;
+    
+    const confirmed = window.confirm('Apakah Anda yakin ingin menutup lowongan ini?');
+    if (!confirmed) return;
+
+    try {
+      await updateJobPosting({ id }, { status: 'closed' });
+      // Refresh data
+      const response = await getDetailJobPosting({ id });
+      setJob(response.data);
+    } catch (error) {
+      console.error('Error closing job:', error);
+      alert('Gagal menutup lowongan');
+    }
+  };
+
+  const formatSalary = (min: number, max: number) => {
+    const formatNumber = (num: number) => {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(num);
+    };
+    return `${formatNumber(min)} - ${formatNumber(max)}`;
+  };
+
+  const getJobTypeLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      'full-time': 'Full Time',
+      'part-time': 'Part Time',
+      'contract': 'Contract',
+    };
+    return labels[type] || type;
+  };
 
   if (isLoading) {
     return (
@@ -15,7 +77,7 @@ export default function JobPostingDetailPage() {
     );
   }
 
-  if (error || !data?.data) {
+  if (error || !job) {
     return (
       <div className="p-6 lg:p-8">
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
@@ -24,8 +86,6 @@ export default function JobPostingDetailPage() {
       </div>
     );
   }
-
-  const job = data.data;
 
   return (
     <div className="p-6 lg:p-8">
@@ -61,15 +121,6 @@ export default function JobPostingDetailPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-4">Deskripsi Pekerjaan</h2>
             <p className="text-gray-700 whitespace-pre-line">{job.description}</p>
           </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Persyaratan</h2>
-            <ul className="list-disc list-inside space-y-2">
-              {job.requirements.map((req: any, index: any) => (
-                <li key={index} className="text-gray-700">{req}</li>
-              ))}
-            </ul>
-          </div>
         </div>
 
         {/* Sidebar */}
@@ -79,11 +130,11 @@ export default function JobPostingDetailPage() {
             <div className="space-y-4">
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Tipe Pekerjaan</h3>
-                <p className="text-base text-gray-900">{job.type}</p>
+                <p className="text-base text-gray-900">{getJobTypeLabel(job.type)}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Gaji</h3>
-                <p className="text-base text-gray-900">{job.salary}</p>
+                <p className="text-base text-gray-900">{formatSalary(job.salary_min, job.salary_max)}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Lokasi</h3>
@@ -91,7 +142,7 @@ export default function JobPostingDetailPage() {
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Tanggal Posting</h3>
-                <p className="text-base text-gray-900">{job.postedDate}</p>
+                <p className="text-base text-gray-900">{job.posted_date}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Deadline</h3>
@@ -110,17 +161,25 @@ export default function JobPostingDetailPage() {
 
           <div className="space-y-3">
             <button
-              onClick={() => window.history.back()}
+              onClick={() => navigate('/lamaran-kerja/posting-pekerjaan')}
               className="w-full px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium"
             >
               Kembali
             </button>
-            <button className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+            <button 
+              onClick={() => navigate(`/lamaran-kerja/posting-pekerjaan/edit/${job.id}`)}
+              className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            >
               Edit Lowongan
             </button>
-            <button className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
-              Tutup Lowongan
-            </button>
+            {job.status === 'active' && (
+              <button 
+                onClick={handleCloseJob}
+                className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Tutup Lowongan
+              </button>
+            )}
           </div>
         </div>
       </div>

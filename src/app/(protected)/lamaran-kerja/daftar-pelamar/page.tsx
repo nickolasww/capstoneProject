@@ -226,15 +226,11 @@ export default function LamaranKerjaPage() {
   ];
 
   return (
-    <div style={{ padding: '24px 32px' }}>
-      {/* Header */}
-      <div style={{ marginBottom: 32, textAlign: 'center', flexDirection: 'column', display: 'flex' }}>
-        <Text  style={{ margin: 0, fontSize: '3rem' }}>
-          Manajemen Karir
-        </Text>
-        <Text type="secondary" style={{ fontSize: '1rem' }}>
-          Kelola data pelamar kerja dan proses rekrutmen
-        </Text>
+    <div className="p-6 lg:p-8 bg-gray-50 min-h-screen">
+      {/* Header Section */}
+      <div className="mb-14 text-center">
+        <h1 className="text-4xl  text-gray-900 mb-2">Manajemen Karir</h1>
+        <p className="text-gray-600">Kelola data pelamar kerja dan proses rekrutmen</p>
       </div>
 
       {/* Tabs */}

@@ -1,5 +1,5 @@
 import { useIsMobileScreen } from "@/utils/responsive";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import { useSession } from "@/app/_components/providers/session";
 
@@ -7,6 +7,7 @@ const PublicLayout = () => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [hasBackground, setHasBackground] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobileScreen();
   const pathname = location.pathname;
@@ -21,11 +22,63 @@ const PublicLayout = () => {
   // Hide navbar and footer on auth pages
   const isAuthPage = pathname.startsWith('/auth');
 
+  // Scroll handler untuk mengubah background navbar
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          // Cari section dengan id "mitra-kami" atau heading "Mitra Kami"
+          let mitraSection = document.getElementById('mitra-kami');
+          
+          if (!mitraSection) {
+            // Fallback: cari berdasarkan heading
+            mitraSection = Array.from(document.querySelectorAll('h2')).find(
+              (h2) => h2.textContent?.trim() === 'Mitra Kami'
+            )?.closest('section') as HTMLElement | null;
+          }
+
+          if (mitraSection) {
+            const mitraSectionTop = mitraSection.getBoundingClientRect().top;
+            const navbarHeight = 88; // Tinggi navbar (h-22 = 88px)
+            
+            // Jika section "Mitra Kami" sudah mencapai navbar, tampilkan background
+            if (mitraSectionTop <= navbarHeight) {
+              setHasBackground(true);
+            } else {
+              setHasBackground(false);
+            }
+          }
+          
+          ticking = false;
+        });
+        
+        ticking = true;
+      }
+    };
+
+    // Tambahkan event listener dengan passive untuk performa lebih baik
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Panggil sekali untuk cek posisi awal
+    handleScroll();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [pathname]); // Re-run ketika pathname berubah
+
   return (
     <div className=" bg-gray-50 flex flex-col">
       {/* Navbar */}
       {!isAuthPage && (
-      <nav className="bg-white fixed top-0 w-full z-50">
+      <nav 
+        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+          hasBackground ? 'bg-white shadow-md' : 'bg-transparent'
+        }`}
+      >
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-22">
             {/* Left side - Logo */}
@@ -34,7 +87,11 @@ const PublicLayout = () => {
               {isMobile && (
                 <button
                   onClick={() => setMobileMenuVisible(!mobileMenuVisible)}
-                  className="text-gray-700 hover:text-blue-600 focus:outline-none mr-4"
+                  className={`focus:outline-none mr-4 transition-colors ${
+                    hasBackground 
+                      ? 'text-gray-700 hover:text-blue-600' 
+                      : 'text-white hover:text-gray-200'
+                  }`}
                 >
                   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -49,7 +106,9 @@ const PublicLayout = () => {
                   className="h-8 w-auto"
                 />
               </Link>
-              <h1 className="font-bold text-xl">
+              <h1 className={`font-bold text-xl transition-colors ${
+                hasBackground ? 'text-gray-900' : 'text-white drop-shadow-lg'
+              }`}>
                 PT.BUKIT AURUMN SEJAHTERA
               </h1>
             </div>
@@ -59,19 +118,21 @@ const PublicLayout = () => {
               <div className="flex items-center space-x-10">
                 <Link
                   to="/"
-                  className={`${pathname === '/'
-                    ? 'text-black'
-                    : 'text-black hover:text-gray-500'
-                    }`}
+                  className={`transition-colors ${
+                    pathname === '/'
+                      ? hasBackground ? 'text-blue-600' : 'text-white font-semibold'
+                      : hasBackground ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                  }`}
                 >
                   Home
                 </Link>
                 <Link
                   to="/aboutpage"
-                  className={`${pathname === '/aboutpage'
-                      ? 'text-black'
-                      : 'text-black hover:text-gray-500'
-                    }`}
+                  className={`transition-colors ${
+                    pathname === '/aboutpage'
+                      ? hasBackground ? 'text-blue-600' : 'text-white font-semibold'
+                      : hasBackground ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                  }`}
                 >
                   About
                 </Link>
@@ -80,10 +141,11 @@ const PublicLayout = () => {
                 <div className="relative">
                   <button
                     onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
-                    className={`flex items-center space-x-1 ${pathname.startsWith('/services')
-                        ? 'text-black'
-                        : 'text-black hover:text-gray-500'
-                      }`}
+                    className={`flex items-center space-x-1 transition-colors ${
+                      pathname.startsWith('/services')
+                        ? hasBackground ? 'text-blue-600' : 'text-white font-semibold'
+                        : hasBackground ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                    }`}
                   >
                     <span>Services</span>
                     <svg
@@ -125,10 +187,11 @@ const PublicLayout = () => {
 
                 <Link
                   to="/karirpage"
-                  className={`${pathname === '/karirpage'
-                      ? 'text-black'
-                      : 'text-black hover:text-gray-500'
-                    }`}
+                  className={`transition-colors ${
+                    pathname === '/karirpage'
+                      ? hasBackground ? 'text-blue-600' : 'text-white font-semibold'
+                      : hasBackground ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                  }`}
                 >
                   Karir
                 </Link>
@@ -180,7 +243,7 @@ const PublicLayout = () => {
 
         {/* Mobile Menu */}
         {mobileMenuVisible && isMobile && (
-          <div className="md:hidden">
+          <div className={`md:hidden ${hasBackground ? 'bg-white' : 'bg-black/90'}`}>
             <div className="px-2 pt-2 pb-3 space-y-1">
               <Link
                 to="/"

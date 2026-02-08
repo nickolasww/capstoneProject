@@ -60,8 +60,8 @@ const PublicLayout = () => {
                 <Link
                   to="/"
                   className={`${pathname === '/'
-                    ? 'text-black font-bold'
-                    : 'text-black hover:text-black hover:font-bold'
+                    ? 'text-black'
+                    : 'text-black hover:text-gray-500'
                     }`}
                 >
                   Home
@@ -69,8 +69,8 @@ const PublicLayout = () => {
                 <Link
                   to="/aboutpage"
                   className={`${pathname === '/aboutpage'
-                      ? 'text-black font-bold'
-                      : 'text-black hover:text-black hover:font-bold'
+                      ? 'text-black'
+                      : 'text-black hover:text-gray-500'
                     }`}
                 >
                   About
@@ -81,8 +81,8 @@ const PublicLayout = () => {
                   <button
                     onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
                     className={`flex items-center space-x-1 ${pathname.startsWith('/services')
-                        ? 'text-black font-bold'
-                        : 'text-black hover:text-black hover:font-bold'
+                        ? 'text-black'
+                        : 'text-black hover:text-gray-500'
                       }`}
                   >
                     <span>Services</span>
@@ -126,13 +126,13 @@ const PublicLayout = () => {
                 <Link
                   to="/karirpage"
                   className={`${pathname === '/karirpage'
-                      ? 'text-black font-bold'
-                      : 'text-black hover:text-black hover:font-bold'
+                      ? 'text-black'
+                      : 'text-black hover:text-gray-500'
                     }`}
                 >
                   Karir
                 </Link>
-                <Link
+                {/* <Link
                   to="/beasiswapage"
                   className={`${pathname === '/beasiswapage'
                       ? 'text-black font-bold'
@@ -140,7 +140,7 @@ const PublicLayout = () => {
                     }`}
                 >
                   Beasiswa
-                </Link>
+                </Link> */}
                 
                 {/* User Authentication Section */}
                 {isAuthenticated && user ? (
@@ -334,7 +334,7 @@ const PublicLayout = () => {
                 <li><Link to="/" className="hover:text-white">Home</Link></li>
                 <li><Link to="/aboutpage" className="hover:text-white">About</Link></li>
                 <li><Link to="/karirpage" className="hover:text-white">Karir</Link></li>
-                <li><Link to="/beasiswapage" className="hover:text-white">Beasiswa</Link></li>
+                {/* <li><Link to="/beasiswapage" className="hover:text-white">Beasiswa</Link></li> */}
               </ul>
             </div>
 

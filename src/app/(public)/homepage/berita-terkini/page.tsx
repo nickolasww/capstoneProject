@@ -33,7 +33,7 @@ const BeritaTerkini = () => {
   ];
 
   return (
-    <section className="bg-gray-50 py-16">
+    <section className=" py-16">
       <div className="container mx-auto px-4">
         <h2 className="mb-4 text-center text-4xl font-bold text-gray-800">
           Berita Terkini

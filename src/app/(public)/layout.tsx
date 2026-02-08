@@ -22,10 +22,10 @@ const PublicLayout = () => {
   const isAuthPage = pathname.startsWith('/auth');
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className=" bg-gray-50 flex flex-col">
       {/* Navbar */}
       {!isAuthPage && (
-      <nav className="bg-white sticky top-0 z-50">
+      <nav className="bg-white fixed top-0 w-full z-50">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-22">
             {/* Left side - Logo */}

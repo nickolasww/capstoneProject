@@ -1,4 +1,8 @@
+'use client';
+
 import React from 'react';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 const KlienKami = () => {
   // Mock data untuk klien
@@ -45,30 +49,43 @@ const KlienKami = () => {
     },
   ];
 
-  return (
-    <section className="bg-gray-50 py-16">
-      <div className="container mx-auto px-4">
-        <h2 className="mb-4 text-center text-4xl font-bold text-gray-800">
-          Klien Kami
-        </h2>
-        <p className="mb-12 text-center text-gray-600">
-          Dipercaya oleh berbagai perusahaan terkemuka
-        </p>
+  // Embla Carousel setup with autoplay
+  const [emblaRef] = useEmblaCarousel(
+    { 
+      loop: true,
+      align: 'start',
+      dragFree: false,
+      slidesToScroll: 1,
+    },
+    [Autoplay({ delay: 1000, stopOnInteraction: false, playOnInit: true })]
+  );
 
-        {/* Client Logos Grid */}
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-4">
-          {clients.map((client) => (
-            <div
-              key={client.id}
-              className="flex items-center justify-center rounded-lg bg-white p-6 shadow-md transition hover:shadow-lg"
-            >
-              <img
-                src={client.logo}
-                alt={client.name}
-                className="h-20 w-full object-contain"
-              />
+  return (
+    <section className="pt-24">
+      <div className="container mx-auto px-4">
+        <h2 className="mb-32 text-center text-4xl font-bold text-gray-800">
+          Mitra Kami
+        </h2>
+        
+        {/* Embla Carousel Container */}
+        <div className="relative">
+          {/* Embla Viewport */}
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex">
+              {clients.map((client) => (
+                <div
+                  key={client.id}
+                  className="flex-[0_0_16rem] min-w-0 px-4"
+                >
+                  <img
+                    src={client.logo}
+                    alt={client.name}
+                    className="w-full h-32 object-contain"
+                  />
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>

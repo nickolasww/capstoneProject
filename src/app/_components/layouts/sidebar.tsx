@@ -91,7 +91,7 @@ export default function DashboardSidebar() {
 
   return (
     <aside
-      className="bg-white border-r border-gray-200 w-64 flex flex-col"
+      className="bg-white border-r border-gray-200 w-64 flex flex-col fixed top-0 left-0 h-screen z-40"
     >
       {/* Logo Section */}
       <div className="p-4 border-b border-gray-200">

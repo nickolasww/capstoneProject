@@ -47,22 +47,19 @@ const BeritaTerkini = () => {
           {news.map((item) => (
             <article
               key={item.id}
-              className="group overflow-hidden rounded-xl bg-white shadow-md transition hover:shadow-xl"
+              className="group flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-md transition"
             >
               {/* Image */}
-              <div className="relative h-56 overflow-hidden">
+              <div className="relative h-56 shrink-0 overflow-hidden">
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-110"
+                  className="h-full w-full object-cover"
                 />
-                <span className="absolute right-4 top-4 rounded-full bg-blue-600 px-3 py-1 text-sm font-semibold text-white">
-                  {item.category}
-                </span>
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div className="flex flex-1 flex-col p-6">
                 <div className="mb-2 flex items-center text-sm text-gray-500">
                   <svg
                     className="mr-2 h-4 w-4"
@@ -82,10 +79,12 @@ const BeritaTerkini = () => {
                 <h3 className="mb-3 text-xl font-bold text-gray-800 line-clamp-2">
                   {item.title}
                 </h3>
-                <p className="mb-4 text-gray-600 line-clamp-3">{item.excerpt}</p>
-                <button className="font-semibold text-blue-600 transition hover:text-blue-700">
-                  Baca Selengkapnya →
-                </button>
+                <p className="mb-4 grow text-gray-600 line-clamp-3">{item.excerpt}</p>
+                <div>
+                  <button className="font-semibold text-[#4D9232] transition hover:text-green-800">
+                    Baca Selengkapnya →
+                  </button>
+                </div>
               </div>
             </article>
           ))}
@@ -93,7 +92,7 @@ const BeritaTerkini = () => {
 
         {/* View All Button */}
         <div className="mt-12 text-center">
-          <button className="rounded-full bg-blue-600 px-8 py-3 font-semibold text-white transition hover:bg-blue-700">
+          <button className="rounded-full bg-[#4D9232] px-8 py-3 font-semibold text-white transition hover:bg-green-800">
             Lihat Semua Berita
           </button>
         </div>

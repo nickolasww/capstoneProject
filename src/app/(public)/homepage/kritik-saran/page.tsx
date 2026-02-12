@@ -61,9 +61,9 @@ const KritikDanSaran = () => {
 
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                  <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                     <svg
-                      className="h-6 w-6 text-blue-600"
+                      className="h-6 w-6 text-[#4D9232]"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -83,9 +83,9 @@ const KritikDanSaran = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                  <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                     <svg
-                      className="h-6 w-6 text-blue-600"
+                      className="h-6 w-6 text-[#4D9232]"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -105,9 +105,9 @@ const KritikDanSaran = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                  <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                     <svg
-                      className="h-6 w-6 text-blue-600"
+                      className="h-6 w-6 text-[#4D9232]"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -149,7 +149,7 @@ const KritikDanSaran = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-[#4D9232] focus:outline-none focus:ring-2 focus:ring-[#4D9232]"
                   placeholder="Masukkan nama lengkap"
                 />
               </div>
@@ -224,7 +224,7 @@ const KritikDanSaran = () => {
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition hover:bg-blue-700"
+                className="w-full rounded-lg bg-green-600 px-8 py-3 font-semibold text-white transition hover:bg-green-700"
               >
                 Kirim Pesan
               </button>

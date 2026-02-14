@@ -38,6 +38,9 @@ const PublicLayout = () => {
             } else {
               setHasBackground(false);
             }
+          } else {
+            // Jika tidak ada section "Mitra Kami" (misal pindah halaman), reset background
+            setHasBackground(false);
           }
           
           ticking = false;

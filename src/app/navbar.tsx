@@ -71,7 +71,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                 to="/"
                 className={`transition-colors ${
                   pathname === '/'
-                    ? isDarkText ? 'text-blue-600' : 'text-white font-semibold'
+                    ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
                     : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
                 }`}
               >
@@ -81,7 +81,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                 to="/aboutpage"
                 className={`transition-colors ${
                   pathname === '/aboutpage'
-                    ? isDarkText ? 'text-blue-600' : 'text-white font-semibold'
+                    ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
                     : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
                 }`}
               >
@@ -94,7 +94,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                   onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
                   className={`flex items-center space-x-1 transition-colors ${
                     pathname.startsWith('/services')
-                      ? isDarkText ? 'text-blue-600' : 'text-white font-semibold'
+                      ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
                       : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
                   }`}
                 >
@@ -140,7 +140,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                 to="/karirpage"
                 className={`transition-colors ${
                   pathname === '/karirpage'
-                    ? isDarkText ? 'text-black' : 'text-white font-semibold'
+                    ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
                     : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
                 }`}
               >

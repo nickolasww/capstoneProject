@@ -22,7 +22,7 @@ const Section = () => {
               Lihat Posisi
             </button>
             <button className="text-xl px-8 py-3 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors border-2 border-gray-300 shadow-md hover:shadow-lg">
-              Lamaran Terbuka
+              Lamaran Terdaftar
             </button>
           </div>
         </div>

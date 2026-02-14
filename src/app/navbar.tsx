@@ -7,13 +7,15 @@ interface NavbarProps {
   hasBackground: boolean;
 }
 
-const Navbar = ({ hasBackground }: NavbarProps) => {
+const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobileScreen();
   const pathname = location.pathname;
+  const hasBackground = propHasBackground;
+  const isDarkText = hasBackground || pathname === '/karirpage';
   const { user, isAuthenticated, logout } = useSession();
   const navigate = useNavigate();
 
@@ -37,7 +39,7 @@ const Navbar = ({ hasBackground }: NavbarProps) => {
               <button
                 onClick={() => setMobileMenuVisible(!mobileMenuVisible)}
                 className={`focus:outline-none mr-4 transition-colors ${
-                  hasBackground 
+                  isDarkText
                     ? 'text-gray-700 hover:text-blue-600' 
                     : 'text-white hover:text-gray-200'
                 }`}
@@ -56,7 +58,7 @@ const Navbar = ({ hasBackground }: NavbarProps) => {
               />
             </Link>
             <h1 className={`font-bold text-xl transition-colors ${
-              hasBackground ? 'text-gray-900' : 'text-white drop-shadow-lg'
+              isDarkText ? 'text-gray-900' : 'text-white drop-shadow-lg'
             }`}>
               PT.BUKIT AURUMN SEJAHTERA
             </h1>
@@ -69,8 +71,8 @@ const Navbar = ({ hasBackground }: NavbarProps) => {
                 to="/"
                 className={`transition-colors ${
                   pathname === '/'
-                    ? hasBackground ? 'text-blue-600' : 'text-white font-semibold'
-                    : hasBackground ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                    ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
+                    : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
                 }`}
               >
                 Home
@@ -79,8 +81,8 @@ const Navbar = ({ hasBackground }: NavbarProps) => {
                 to="/aboutpage"
                 className={`transition-colors ${
                   pathname === '/aboutpage'
-                    ? hasBackground ? 'text-blue-600' : 'text-white font-semibold'
-                    : hasBackground ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                    ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
+                    : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
                 }`}
               >
                 About
@@ -92,8 +94,8 @@ const Navbar = ({ hasBackground }: NavbarProps) => {
                   onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
                   className={`flex items-center space-x-1 transition-colors ${
                     pathname.startsWith('/services')
-                      ? hasBackground ? 'text-blue-600' : 'text-white font-semibold'
-                      : hasBackground ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                      ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
+                      : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
                   }`}
                 >
                   <span>Services</span>
@@ -138,8 +140,8 @@ const Navbar = ({ hasBackground }: NavbarProps) => {
                 to="/karirpage"
                 className={`transition-colors ${
                   pathname === '/karirpage'
-                    ? hasBackground ? 'text-blue-600' : 'text-white font-semibold'
-                    : hasBackground ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                    ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
+                    : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
                 }`}
               >
                 Karir

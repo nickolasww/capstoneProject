@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, type JSX } from 'react';
-import imgLogo from '@/assets/LoginPage/logo PT BAS.png';
+import imgLogo from '@/assets/logo PT BAS.png';
 import {
   HomeOutlined,
   ToolOutlined,

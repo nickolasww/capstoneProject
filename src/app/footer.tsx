@@ -5,6 +5,7 @@ import {
   LinkedinFilled,
   FacebookFilled,
 } from "@ant-design/icons";
+import LogoBas from "@/assets/logo PT BAS.png";
 
 const Footer = () => {
   return (
@@ -19,16 +20,8 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
                  {/* Logo Placeholder - assuming a triangle shape based on 'Bit' or similar, using a simple svg or text for now */}
-                 <div className="w-10 h-10 relative">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-                        <path d="M12 2L2 22H22L12 2Z" fill="url(#logo-gradient)" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
-                        <defs>
-                            <linearGradient id="logo-gradient" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#FFD700" />
-                                <stop offset="1" stopColor="#FFA500" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
+                 <div className="w-12 h-12 relative flex items-center justify-center">
+                    <img src={LogoBas} alt="PT BAS Logo" className="w-full h-full object-contain" />
                  </div>
                  <h3 className="font-bold text-lg leading-tight">PT. BUKIT AURUMN SEJAHTERA</h3>
             </div>

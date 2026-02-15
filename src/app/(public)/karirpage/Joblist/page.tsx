@@ -1,6 +1,7 @@
 import { useState } from "react";
 // import { Link } from "react-router-dom";
 import { Search, Share2, MapPin } from "lucide-react";
+import LogoBas from "@/assets/logo PT BAS.png";
 
 const JobList = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -85,18 +86,8 @@ const JobList = () => {
               <div className="flex justify-between items-start mb-4">
                  {/* Logo */}
                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 relative flex items-center justify-center">
-                        {/* Simple triangle logo representation */}
-                       <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
-                          <path d="M12 2L2 22H22L12 2Z" fill="url(#logo-gradient)" />
-                          <defs>
-                            <linearGradient id="logo-gradient" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#FFD700" />
-                                <stop offset="1" stopColor="#FFA500" />
-                            </linearGradient>
-                          </defs>
-                       </svg>
-                       {/* Text below logo roughly simulated */}
+                    <div className="w-12 h-12 relative flex items-center justify-center">
+                        <img src={LogoBas} alt="PT BAS Logo" className="w-full h-full object-contain" />
                     </div>
                  </div>
                  <button className="text-gray-400 hover:text-gray-600 transition-colors">

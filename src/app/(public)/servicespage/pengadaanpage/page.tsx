@@ -1,13 +1,10 @@
-import React from 'react'
+import UnderConstruction from '@/app/UnderConstruction'
 
 const PengadaanPage = () => {
   return (
-     <div className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">CommingSoon</h1>
-      </div>
-    </div>
+    <UnderConstruction title="Pengadaan Barang & Jasa" />
   )
 }
 
 export default PengadaanPage
+

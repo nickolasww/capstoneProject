@@ -2,6 +2,7 @@ import { useIsMobileScreen } from "@/utils/responsive";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSession } from "@/app/_components/providers/session";
+import LogoBas from "@/assets/logo PT BAS.png";
 
 interface NavbarProps {
   hasBackground: boolean;
@@ -15,7 +16,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
   const isMobile = useIsMobileScreen();
   const pathname = location.pathname;
   const hasBackground = propHasBackground;
-  const isDarkText = hasBackground || pathname === '/karirpage';
+  const isDarkText = hasBackground || pathname === '/karirpage' || pathname.startsWith('/servicespage');
   const { user, isAuthenticated, logout } = useSession();
   const navigate = useNavigate();
 
@@ -52,9 +53,9 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
 
             <Link to="/" className="flex items-center">
               <img
-                src="/vite.svg"
+                src={LogoBas}
                 alt="BAS Website"
-                className="h-8 w-auto"
+                className="h-12 w-auto object-contain"
               />
             </Link>
             <h1 className={`font-bold text-xl transition-colors ${

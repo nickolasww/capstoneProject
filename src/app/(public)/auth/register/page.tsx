@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import imgLogo from '@/assets/LoginPage/logo PT BAS.png';
+import imgLogo from '@/assets/logo PT BAS.png';
 
 
 export default function Register() {
@@ -37,7 +37,7 @@ export default function Register() {
               <img
                 src={imgLogo}
                 alt="PT Bukit Aurumn Sejahtera Logo"
-                className="absolute h-[170.38%] left-0 top-[-20.47%] w-full object-cover"
+                className="w-full object-cover"
               />
             </div>
             <h1 className="font-['Poppins'] font-bold text-sm text-center text-black leading-[1.4]">

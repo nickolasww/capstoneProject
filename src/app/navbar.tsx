@@ -16,7 +16,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
   const isMobile = useIsMobileScreen();
   const pathname = location.pathname;
   const hasBackground = propHasBackground;
-  const isDarkText = hasBackground || pathname === '/karirpage';
+  const isDarkText = hasBackground || pathname === '/karirpage' || pathname.startsWith('/servicespage');
   const { user, isAuthenticated, logout } = useSession();
   const navigate = useNavigate();
 

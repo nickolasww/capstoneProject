@@ -1,7 +1,6 @@
 import HeroSection from "./HeroSection";
 import { VisionMission } from "./VisionMission";
 import { PortfolioSection } from "./PortfolioSection";
-import { Footer } from "./FooterSection";
 
 
 export default function AboutPage() {
@@ -10,7 +9,6 @@ export default function AboutPage() {
             <HeroSection />
             <VisionMission />
             <PortfolioSection />
-            <Footer />
         </>
     );
 }

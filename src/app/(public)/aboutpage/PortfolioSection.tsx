@@ -1,4 +1,4 @@
-import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+// import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { yearsData } from "./Data/years";
@@ -55,7 +55,7 @@ export function PortfolioSection() {
                         className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -ml-4 transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center"
                         aria-label="Scroll left"
                     >
-                        <ChevronLeft className="w-6 h-6 text-[#3a6d26]" />
+                        {/* <ChevronLeft className="w-6 h-6 text-[#3a6d26]" /> */}
                     </button>
 
                     {/* Scrollable Container */}
@@ -86,7 +86,7 @@ export function PortfolioSection() {
                         className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 -mr-4 transition-all duration-300 hover:scale-110 hidden md:flex items-center justify-center"
                         aria-label="Scroll right"
                     >
-                        <ChevronRight className="w-6 h-6 text-[#3a6d26]" />
+                        {/* <ChevronRight className="w-6 h-6 text-[#3a6d26]" /> */}
                     </button>
                 </div>
 
@@ -127,7 +127,7 @@ function ProjectCard({ year, projectCount, onClick }: ProjectCardProps) {
             <div className="relative h-full flex flex-col items-center justify-center text-white px-4 py-8">
                 {/* Calendar Icon */}
                 <div className="bg-white/20 backdrop-blur-sm rounded-full p-5 mb-5 group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300 shadow-lg">
-                    <Calendar className="w-10 h-10 md:w-11 md:h-11 lg:w-12 lg:h-12" strokeWidth={2.5} />
+                    {/* <Calendar className="w-10 h-10 md:w-11 md:h-11 lg:w-12 lg:h-12" strokeWidth={2.5} /> */}
                 </div>
 
                 {/* Year */}

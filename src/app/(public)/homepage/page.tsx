@@ -1,14 +1,21 @@
-import React from 'react'
+import HeroSection from './herosection/page';
+import ProfilPerusahaan from './profil-perusahaan/page';
+import KlienKami from './mitra/page';
+import PelayananKami from './pelayanan/page';
+import BeritaTerkini from './berita-terkini/page';
+// import KritikDanSaran from './kritik-saran/page';
 
 const HomePage = () => {
   return (
-     <div className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to HomePage</h1>
-        <p className="mb-8 text-gray-600">Your application is now running!</p>
-      </div>
+    <div className="min-h-screen bg-white">
+      <HeroSection />
+      <ProfilPerusahaan />
+      <KlienKami />
+      <PelayananKami />
+      <BeritaTerkini />
+      {/* <KritikDanSaran /> */}
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default HomePage;

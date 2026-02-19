@@ -1,14 +1,13 @@
-import React from 'react'
+import JobList from "./Joblist/page";
+import Section from "./section/page";
 
 const KarirPage = () => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Karir Page Bas</h1>
-        <p className="mb-8 text-gray-600">Your application is now running!</p>
-      </div>
+    <div>
+      <Section />
+      <JobList />
     </div>
-  )
-}
+  );
+};
 
-export default KarirPage
+export default KarirPage;

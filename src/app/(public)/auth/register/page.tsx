@@ -3,10 +3,15 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import imgLogo from '@/assets/logo PT BAS.png';
 import { postRegister } from '@/api/auth/api';
+import { notification } from 'antd';
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+
 
 export default function Register() {
   const navigate = useNavigate();
+  const [api, contextHolder] = notification.useNotification();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     username: '',
@@ -28,10 +33,23 @@ export default function Register() {
         password: formData.password
       });
 
-      alert('Registrasi berhasil! Silakan login.');
-      navigate('/auth/login');
+      api.success({
+        message: 'Registrasi Berhasil',
+        description: 'Akun Anda telah berhasil dibuat. Silakan login.',
+        placement: 'topRight',
+      });
+      
+      setTimeout(() => {
+        navigate('/auth/login');
+      }, 1000);
     } catch (err: any) {
-      setError(err?.message || 'Registrasi gagal. Silakan coba lagi.');
+      const errorMsg = err?.message || 'Registrasi gagal. Silakan coba lagi.';
+      setError(errorMsg);
+      api.error({
+        message: 'Registrasi Gagal',
+        description: errorMsg,
+        placement: 'topRight',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -47,6 +65,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-linear-to-b from-[#56a439] to-[#213e16] flex items-center justify-center px-4 py-8">
+      {contextHolder}
       {/* Main Card Container */}
       <div className="bg-white rounded-2xl w-full max-w-md px-8 py-10 shadow-2xl">
         <div className="flex flex-col items-center gap-6 w-full">
@@ -156,17 +175,30 @@ export default function Register() {
               >
                 Password
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                minLength={8}
-                className="w-full h-12 bg-white border border-gray-300 rounded-lg px-4 font-['Poppins'] text-sm text-black placeholder:text-gray-400 focus:outline-none focus:border-[#4d9232] focus:ring-2 focus:ring-[#4d9232]/20 transition-all"
-                placeholder="Create a password (min. 8 characters)"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  minLength={8}
+                  className="w-full h-12 bg-white border border-gray-300 rounded-lg px-4 pr-12 font-['Poppins'] text-sm text-black placeholder:text-gray-400 focus:outline-none focus:border-[#4d9232] focus:ring-2 focus:ring-[#4d9232]/20 transition-all"
+                  placeholder="Create a password (min. 8 characters)"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                >
+                  {showPassword ? (
+                    <EyeInvisibleOutlined className="text-xl" />
+                  ) : (
+                    <EyeOutlined className="text-xl" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Create Account Button */}

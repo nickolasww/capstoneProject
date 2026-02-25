@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import imgLogo from '@/assets/logo PT BAS.png';
-
+import { postRegister } from '@/api/auth/api';
 
 export default function Register() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     username: '',
     Fullname: '',
@@ -13,9 +15,26 @@ export default function Register() {
     password: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    navigate('/');
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      await postRegister({
+        username: formData.username,
+        fullname: formData.Fullname,
+        email: formData.email,
+        password: formData.password
+      });
+
+      alert('Registrasi berhasil! Silakan login.');
+      navigate('/auth/login');
+    } catch (err: any) {
+      setError(err?.message || 'Registrasi gagal. Silakan coba lagi.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +82,12 @@ export default function Register() {
 
           {/* Register Form */}
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <p className="font-['Poppins'] text-sm">{error}</p>
+              </div>
+            )}
             
             <div className="flex flex-col gap-2">
               <label
@@ -147,9 +172,10 @@ export default function Register() {
             {/* Create Account Button */}
             <button
               type="submit"
-              className="w-full h-12 bg-[#4d9232] rounded-lg font-['Poppins'] text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md"
+              disabled={isLoading}
+              className="w-full h-12 bg-[#4d9232] rounded-lg font-['Poppins'] text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Account
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
         </div>

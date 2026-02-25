@@ -15,16 +15,24 @@ export type TResponsePaginate<T> = {
 export type TResponseData<T> = {
   status_code: number;
   data: T;
+  message?: string;
   version: string;
 };
 
+export type TDefaultResponse = TResponseData<null>;
+
 export type TResponseError = {
   status_code: number;
-  error_message: string;
-  stack_trace: string;
+  message: string;
+  error?: string;
+  stack_trace?: string;
   errors: {
-    key: string;
-    message: string;
+    path: string;
+    messages: string[];
+
+    // upload error validation
+    cell?: string;
+    message?: string;
   }[];
-  version: string;
+  version?: string;
 };

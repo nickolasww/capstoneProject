@@ -16,7 +16,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -25,9 +25,16 @@ export default function Login() {
       const result = await login(formData.email, formData.password);
       
       if (result.success) {
-        // Redirect to the page they tried to visit or dashboard
-        const from = (location.state as any)?.from || '/dashboard';
-        navigate(from, { replace: true });
+        const user = result.user;
+        
+        // Redirect to dashboard if admin or super_admin, otherwise to homepage
+        if (user?.role === 'admin' || user?.role === 'super_admin') {
+          navigate('/dashboard', { replace: true });
+        } else {
+          // Redirect to homepage for clients
+          const from = (location.state as any)?.from || '/';
+          navigate(from, { replace: true });
+        }
       } else {
         setError(result.error || 'Login gagal');
       }
@@ -90,16 +97,6 @@ export default function Login() {
               </div>
             )}
 
-            {/* Info Box for Demo Credentials */}
-            <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg">
-              <p className="font-['Poppins'] text-sm font-semibold mb-2">Demo Credentials:</p>
-              <p className="font-['Poppins'] text-xs">
-                <strong>Admin:</strong> admin@bas.com / admin123
-              </p>
-              <p className="font-['Poppins'] text-xs">
-                <strong>Client:</strong> client@bas.com / client123
-              </p>
-            </div>
 
             {/* Username/Email Field */}
             <div className="flex flex-col gap-2">
@@ -107,7 +104,7 @@ export default function Login() {
                 htmlFor="email"
                 className="font-['Poppins'] text-sm font-medium text-black leading-[1.4]"
               >
-                Username/Email
+                Email
               </label>
               <input
                 type="email"
@@ -117,7 +114,7 @@ export default function Login() {
                 onChange={handleInputChange}
                 required
                 className="w-full h-12 bg-white border border-gray-300 rounded-lg px-4 font-['Poppins'] text-sm text-black placeholder:text-gray-400 focus:outline-none focus:border-[#4d9232] focus:ring-2 focus:ring-[#4d9232]/20 transition-all"
-                placeholder="Enter your username or email"
+                placeholder="Enter your email"
               />
             </div>
 

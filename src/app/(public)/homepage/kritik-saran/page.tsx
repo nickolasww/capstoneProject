@@ -21,9 +21,9 @@ const KritikDanSaran = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    // Handle form submission here
+    // Handle form submission herey
     console.log('Form submitted:', formData);
     alert('Terima kasih atas kritik dan saran Anda!');
     // Reset form

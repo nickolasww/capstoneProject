@@ -1,14 +1,30 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { postLogin, getMe } from '@/api/auth/api';
 import { SessionToken } from '@/libs/cookies';
+import type { TPermissionWithGroup } from '@/api/auth/type';
 
 export type UserRole = 'super_admin' | 'admin' | 'client';
+
+export interface Permission {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+}
+
+export interface Role {
+  id: string;
+  name: string;
+  slug: string;
+  permissions: TPermissionWithGroup[];
+}
 
 export interface User {
   id: string;
   email: string;
   name: string;
   role: UserRole;
+  roles?: Role[];
 }
 
 interface SessionContextType {
@@ -110,6 +126,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           (typeof profileUser.role === 'string' ? profileUser.role : profileUser.role?.slug) || 
           'client'
         ) as UserRole,
+        roles: profileUser.roles || [],
       };
 
       setUser(finalUserData);

@@ -4,7 +4,7 @@ import DashboardSidebar from '@/app/_components/layouts/sidebar';
 
 export default function ProtectedLayout() {
   return (
-    <Guard requireAuth={true} allowedRoles={['admin', 'super_admin']}>
+    <Guard requireAuth={true} allowedRoles={['admin', 'super_admin']} redirectTo="/">
       <div className="min-h-screen bg-gray-50 flex">
         {/* Sidebar */}
         <DashboardSidebar />

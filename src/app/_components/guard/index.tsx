@@ -13,7 +13,7 @@ export default function Guard({
   children,
   requireAuth = false,
   allowedRoles,
-  redirectTo = '/auth/login',
+  redirectTo = '/',
 }: GuardProps) {
   const { user, isAuthenticated, isLoading } = useSession();
   const navigate = useNavigate();

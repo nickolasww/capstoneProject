@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { notification } from 'antd';
 import { postLogin, getMe } from '@/api/auth/api';
 import { SessionToken } from '@/libs/cookies';
 import type { TPermissionWithGroup } from '@/api/auth/type';
@@ -43,6 +45,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Prevent browser cache for authenticated pages
+  useEffect(() => {
+    // Force page reload when navigating back/forward after logout
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        // Page was loaded from cache
+        window.location.reload();
+      }
+    };
+
+    window.addEventListener('pageshow', handlePageShow);
+    
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow);
+    };
+  }, []);
+
   // Check for existing session on mount
   useEffect(() => {
     const verifySession = async () => {
@@ -64,6 +83,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
                 (typeof apiUser.role === 'string' ? apiUser.role : apiUser.role?.slug) || 
                 'client'
               ) as UserRole,
+              roles: apiUser.roles || [],
             };
             setUser(userData);
             localStorage.setItem(SESSION_KEY, JSON.stringify(userData));
@@ -144,6 +164,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem(SESSION_KEY);
+    SessionToken.remove();
+    
+    // Clear all cookies and storage to ensure complete logout
+    localStorage.clear();
+    sessionStorage.clear();
   };
 
   return (
@@ -167,4 +192,43 @@ export function useSession() {
     throw new Error('useSession must be used within a SessionProvider');
   }
   return context;
+}
+
+/**
+ * Component to handle automatic logout from axios interceptor
+ * Must be placed inside Router context to use useNavigate
+ */
+export function SessionAuthListener() {
+  const navigate = useNavigate();
+  const { logout } = useSession();
+
+  useEffect(() => {
+    const handleAuthLogout = (event: Event) => {
+      const customEvent = event as CustomEvent<{ message?: string }>;
+      
+      // Call logout to clear state
+      logout();
+      
+      // Show notification
+      notification.warning({
+        message: 'Sesi Berakhir',
+        description: customEvent.detail?.message || 'Sesi Anda telah berakhir. Silakan login kembali.',
+        placement: 'topRight',
+        duration: 4,
+      });
+      
+      // Navigate to homepage after a short delay
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 500);
+    };
+
+    window.addEventListener('auth:logout', handleAuthLogout);
+    
+    return () => {
+      window.removeEventListener('auth:logout', handleAuthLogout);
+    };
+  }, [navigate, logout]);
+
+  return null;
 }

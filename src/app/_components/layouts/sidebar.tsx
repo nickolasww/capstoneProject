@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, type JSX } from 'react';
+import { useSession } from '@/app/_components/providers/session';
 import imgLogo from '@/assets/logo PT BAS.png';
 import {
   HomeOutlined,
@@ -83,10 +84,16 @@ const menuItems: MenuItem[] = [
 export default function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useSession();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const toggleDropdown = (label: string) => {
     setOpenDropdown(openDropdown === label ? null : label);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/', { replace: true });
   };
 
   return (
@@ -193,7 +200,7 @@ export default function DashboardSidebar() {
       {/* Logout Button */}
       <div className=" border-t border-gray-200">
         <button
-          onClick={() => navigate('/auth/login')}
+          onClick={handleLogout}
           className="w-full flex items-center justify-center gap-2 px-3 py-4 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
         >
           <LogoutOutlined className="text-lg" />

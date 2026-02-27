@@ -80,15 +80,15 @@ export const responseInterceptor = {
         originalRequest.headers.Authorization = `Bearer ${data.data.token.access_token}`;
         return axios(originalRequest);
       } catch (refreshError) {
-        // If refresh fails, clear tokens and redirect to login
+        // If refresh fails, clear tokens and trigger logout event
         SessionToken.remove();
         SessionUser.remove();
 
-        // Store error message in sessionStorage to show after redirect
-        sessionStorage.setItem("auth_error", "Your session has expired. Please log in again.");
+        // Dispatch custom event for logout
+        window.dispatchEvent(new CustomEvent('auth:logout', { 
+          detail: { message: 'Sesi Anda telah berakhir. Silakan login kembali untuk melanjutkan.' }
+        }));
 
-        // Redirect to login page
-        window.location.href = "/auth/login";
         return Promise.reject(refreshError);
       }
     }

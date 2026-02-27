@@ -1,6 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSession } from '@/app/_components/providers/session';
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
+  const { logout } = useSession();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/', { replace: true });
+  };
+
   return (
     <div className="p-8">
       <div className="max-w-6xl mx-auto">
@@ -36,12 +45,12 @@ export default function DashboardPage() {
             >
               Create New
             </Link>
-            <Link 
-              to="/auth/login" 
-              className="px-6 py-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-center"
+            <button 
+              onClick={handleLogout}
+              className="px-6 py-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-center"
             >
               Logout
-            </Link>
+            </button>
             <Link 
               to="/" 
               className="px-6 py-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-center"

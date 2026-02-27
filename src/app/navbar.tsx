@@ -22,7 +22,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/auth/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   return (

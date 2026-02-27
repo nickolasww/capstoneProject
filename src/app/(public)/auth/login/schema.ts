@@ -1,16 +1,50 @@
 import { z } from "zod";
 
-export const LoginFormSchema = z.object({
-  email: z
-    .string()
+/**
+ * Sanitize input to prevent XSS and SQL injection patterns
+ */
+const sanitizeString = (str: string) => {
+  return str
     .trim()
-    .nonempty({ message: "Email is required" })
-    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, {
-      message: "Invalid email format",
-    }),
-  password: z
-    .string({ message: "Password is required" })
-    .min(1, { message: "Please input your password!" }),
+    .replace(/[<>"'`]/g, '') // Remove potential XSS characters
+    .replace(/[\x00-\x1F\x7F]/g, ''); // Remove control characters
+};
+
+/**
+ * Validate email format and sanitize
+ */
+const emailSchema = z
+  .string()
+  .trim()
+  .min(1, { message: "Email tidak boleh kosong" })
+  .max(255, { message: "Email terlalu panjang" })
+  .email({ message: "Format email tidak valid" })
+  .regex(/^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
+    message: "Email mengandung karakter yang tidak diperbolehkan",
+  })
+  .transform(sanitizeString)
+  // Blacklist SQL injection patterns
+  .refine(
+    (email) => !/('|"|--|;|\*|\/\*|\*\/|xp_|sp_|exec|execute|select|insert|update|delete|drop|create|alter|union)/i.test(email),
+    { message: "Input mengandung karakter yang tidak valid" }
+  );
+
+/**
+ * Validate password with security checks
+ */
+const passwordSchema = z
+  .string()
+  .min(1, { message: "Password tidak boleh kosong" })
+  .max(128, { message: "Password terlalu panjang" })
+  // Check for SQL injection patterns
+  .refine(
+    (pass) => !/('|"|--|;|xp_|sp_|exec|execute|select|insert|update|delete|drop|create|alter)/i.test(pass),
+    { message: "Password mengandung karakter yang tidak diperbolehkan" }
+  );
+
+export const LoginFormSchema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
 });
 
 export type TLoginFormData = z.infer<typeof LoginFormSchema>;

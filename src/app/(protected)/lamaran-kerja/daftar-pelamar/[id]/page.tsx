@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Tag, Typography, Card, Row, Col } from 'antd';
 import { ArrowLeftOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
-import type { TApplication, TApplicationStatus } from '@/api/lamaran-kerja/daftar-pelamar/type';
-import { getDetailApplication, updateApplication } from '@/api/lamaran-kerja/daftar-pelamar';
+import type { TJobApplication, TApplicationStatus } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/type';
+import { getDetailJobApplication, updateJobApplication } from '@/api/dashboard/lamaran-kerja/daftar-pelamar';
 import EditProgressModal from '../_components/form/edit-modal';
 
 const { Text, Title } = Typography;
@@ -13,7 +13,7 @@ const { Text, Title } = Typography;
 export default function ApplicationDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [application, setApplication] = useState<TApplication | null>(null);
+  const [application, setApplication] = useState<TJobApplication | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -23,7 +23,7 @@ export default function ApplicationDetailPage() {
       
       setLoading(true);
       try {
-        const response = await getDetailApplication({ id });
+        const response = await getDetailJobApplication({ id });
         setApplication(response.data);
       } catch (error) {
         console.error('Error fetching application detail:', error);
@@ -55,13 +55,13 @@ export default function ApplicationDetailPage() {
 
   const getStatusConfig = (status: TApplicationStatus) => {
     switch (status) {
-      case 'pembekasan':
+      case 'submitted':
         return { color: '#3b82f6', text: 'Tahap Pemberkasan' };
-      case 'interview':
+      case 'short_listed':
         return { color: '#eab308', text: 'Tahap Interview' };
-      case 'diterima':
+      case 'hired':
         return { color: '#22c55e', text: 'Diterima' };
-      case 'ditolak':
+      case 'rejected':
         return { color: '#ef4444', text: 'Ditolak' };
       default:
         return { color: '#9ca3af', text: 'Pendaftar' };
@@ -83,15 +83,18 @@ export default function ApplicationDetailPage() {
   }) => {
     if (application) {
       try {
-        await updateApplication({ id: application.id }, {
-          ...application,
+        // Combine interview_date and interview_time into interview_at
+        const interview_at = values.interview_date && values.interview_time 
+          ? `${values.interview_date}T${values.interview_time}:00Z`
+          : undefined;
+        
+        await updateJobApplication({ id: application.id }, {
           status: values.status,
-          interview_date: values.interview_date,
-          interview_time: values.interview_time,
+          interview_at,
         });
         
         // Refresh the detail data
-        const response = await getDetailApplication({ id: application.id });
+        const response = await getDetailJobApplication({ id: application.id });
         setApplication(response.data);
         setIsModalOpen(false);
       } catch (error) {
@@ -116,14 +119,14 @@ export default function ApplicationDetailPage() {
       {/* Breadcrumb */}
       <div style={{ marginBottom: 16 }}>
         <Text type="secondary">
-          Lamaran Kerja / Daftar Pelamar / Detail Pelamar: {application.name}
+          Lamaran Kerja / Daftar Pelamar / Detail Pelamar: {application.email}
         </Text>
       </div>
 
       {/* Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <Title level={3} style={{ margin: 0 }}>
-          Detail Pelamar: {application.name}
+          Detail Pelamar: {application.email}
         </Title>
         <Button 
           type="default" 
@@ -164,7 +167,7 @@ export default function ApplicationDetailPage() {
                 Posisi Lamaran
               </Text>
               <Text strong style={{ fontSize: '15px' }}>
-                {application.position}
+                {application.job_title}
               </Text>
             </div>
           </Col>
@@ -176,7 +179,7 @@ export default function ApplicationDetailPage() {
                 Tanggal Daftar
               </Text>
               <Text strong style={{ fontSize: '15px' }}>
-                {application.apply_date}
+                {new Date(application.submitted_at).toLocaleDateString('id-ID')}
               </Text>
             </div>
           </Col>
@@ -222,13 +225,13 @@ export default function ApplicationDetailPage() {
               <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
                 Jadwal Interview
               </Text>
-              {application.interview_date ? (
+              {application.interview_at ? (
                 <>
                   <Text strong style={{ fontSize: '15px', display: 'block' }}>
-                    {application.interview_date}
+                    {new Date(application.interview_at).toLocaleDateString('id-ID')}
                   </Text>
                   <Text type="secondary" style={{ fontSize: '13px' }}>
-                    {application.interview_time}
+                    {new Date(application.interview_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                   </Text>
                 </>
               ) : (
@@ -237,14 +240,14 @@ export default function ApplicationDetailPage() {
             </div>
           </Col>
 
-          {/* Row 4: Nama & Alamat */}
+          {/* Row 4: Applicant ID & Phone Number */}
           <Col xs={24} sm={12}>
             <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
               <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
-                Nama
+                Applicant ID
               </Text>
               <Text strong style={{ fontSize: '15px' }}>
-                {application.name}
+                {application.applicant_id}
               </Text>
             </div>
           </Col>
@@ -252,10 +255,10 @@ export default function ApplicationDetailPage() {
           <Col xs={24} sm={12}>
             <div style={{ backgroundColor: '#f9fafb', padding: '16px', borderRadius: '6px', height: '100%' }}>
               <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
-                Alamat
+                No. Telepon
               </Text>
               <Text strong style={{ fontSize: '15px' }}>
-                {application.address}
+                {application.phone_number}
               </Text>
             </div>
           </Col>

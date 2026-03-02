@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Form, Input, Radio, DatePicker, TimePicker, Button, Space, Typography } from 'antd';
+import { Modal, Form, Radio, Button, Space, Typography, Input, DatePicker, TimePicker } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import { z } from 'zod';
 import dayjs from 'dayjs';
@@ -12,8 +12,7 @@ interface EditProgressModalProps {
   onCancel: () => void;
   onSubmit: (values: {
     status: TApplicationStatus;
-    interview_date?: string;
-    interview_time?: string;
+    interview_at?: string;
   }) => void;
   record: Application | null;
 }
@@ -37,14 +36,17 @@ export default function EditProgressModal({
         // Validate with Zod
         editProgressSchema.parse(values);
         
+        let interview_at: string | undefined;
+        if (values.status === 'short_listed' && values.interview_date && values.interview_time) {
+          // Combine date and time into ISO string
+          const date = values.interview_date.format('YYYY-MM-DD');
+          const time = values.interview_time.format('HH:mm:ss');
+          interview_at = `${date}T${time}+07:00`; // Assuming WIB timezone
+        }
+        
         onSubmit({
           status: values.status,
-          interview_date: values.status === 'interview' && values.interview_date 
-            ? values.interview_date.format('DD/MM/YYYY') 
-            : undefined,
-          interview_time: values.status === 'interview' && values.interview_time 
-            ? values.interview_time.format('HH.mm') + ' WIB'
-            : undefined,
+          interview_at,
         });
         
         form.resetFields();
@@ -61,19 +63,26 @@ export default function EditProgressModal({
   // Set initial values when modal opens
   React.useEffect(() => {
     if (open && record) {
-      form.setFieldsValue({
-        name: record.name,
-        position: record.position,
+      const formValues: any = {
+        email: record.email,
+        job_title: record.job_title,
         status: record.status,
-        interview_date: record.interview_date ? dayjs(record.interview_date, 'DD/MM/YYYY') : null,
-        interview_time: record.interview_time ? dayjs(record.interview_time, 'HH.mm') : null,
-      });
+      };
+      
+      // Parse interview_at if exists
+      if (record.interview_at) {
+        const interviewDate = dayjs(record.interview_at);
+        formValues.interview_date = interviewDate;
+        formValues.interview_time = interviewDate;
+      }
+      
+      form.setFieldsValue(formValues);
     }
   }, [open, record, form]);
 
   return (
     <Modal
-      title="Edit Progres"
+      title="Edit Progress"
       open={open}
       onCancel={handleCancel}
       footer={[
@@ -97,23 +106,23 @@ export default function EditProgressModal({
         style={{ marginTop: 24 }}
       >
         <Form.Item
-          label="Nama Pelamar"
-          name="name"
+          label="Email Pelamar"
+          name="email"
         >
           <Input disabled style={{ color: '#000' }} />
         </Form.Item>
 
         <Form.Item
           label="Posisi Lamaran"
-          name="position"
+          name="job_title"
         >
           <Input disabled style={{ color: '#000' }} />
         </Form.Item>
 
-        {/* Tahap Progress Section with Border */}
+        {/* Status Section */}
         <div style={{ marginBottom: 16 }}>
           <Text strong style={{ display: 'block', marginBottom: 12 }}>
-            Tahap Progress
+            Tahap Progess
           </Text>
           
           <Form.Item
@@ -129,10 +138,12 @@ export default function EditProgressModal({
                   padding: '8px 12px',
                   transition: 'all 0.3s',
                 }}>
-                  <Radio value="pembekasan" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                  <Radio value="submitted" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                     Tahap Pemberkasan
                   </Radio>
                 </div>
+
+                {/* Removed 'reviewed' status option and fixed JSX structure */}
 
                 <div style={{ 
                   border: '1px solid #d9d9d9',
@@ -140,15 +151,15 @@ export default function EditProgressModal({
                   padding: '8px 12px',
                   transition: 'all 0.3s',
                 }}>
-                  <Radio value="interview" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                  <Radio value="short_listed" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                     Tahap Interview
                   </Radio>
                 </div>
                 
-                {/* Jadwal Interview - appears when interview is selected */}
+                {/* Interview Schedule - appears when short_listed is selected */}
                 <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues.status !== currentValues.status}>
                   {({ getFieldValue }) =>
-                    getFieldValue('status') === 'interview' ? (
+                    getFieldValue('status') === 'short_listed' ? (
                       <div 
                         style={{ 
                           backgroundColor: '#eff6ff', 
@@ -192,7 +203,7 @@ export default function EditProgressModal({
                         >
                           <TimePicker 
                             style={{ width: '100%' }} 
-                            format="HH.mm"
+                            format="HH:mm"
                             placeholder="Pilih waktu"
                           />
                         </Form.Item>
@@ -207,8 +218,19 @@ export default function EditProgressModal({
                   padding: '8px 12px',
                   transition: 'all 0.3s',
                 }}>
-                  <Radio value="diterima" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                  <Radio value="accepted" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                     Tahap Diterima
+                  </Radio>
+                </div>
+                
+                <div style={{ 
+                  border: '1px solid #d9d9d9',
+                  borderRadius: '6px',
+                  padding: '8px 12px',
+                  transition: 'all 0.3s',
+                }}>
+                  <Radio value="rejected" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    Tahap Ditolak
                   </Radio>
                 </div>
               </Space>

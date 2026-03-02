@@ -1,31 +1,19 @@
 import { z } from 'zod';
-import type { TApplicationStatus } from '@/api/lamaran-kerja/daftar-pelamar/type';
+import type { TApplicationStatus, TJobApplication } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/type';
 
 export type { TApplicationStatus };
+export type Application = TJobApplication;
 
-export interface Application {
-  id: string;
-  name: string;
-  phone: string;
-  address: string;
-  email: string;
-  position: string;
-  apply_date: string;
-  status: TApplicationStatus;
-  interview_date?: string;
-  interview_time?: string;
-}
-
-// Zod Schema
+// Zod Schema for status update
 export const editProgressSchema = z.object({
-  name: z.string(),
-  position: z.string(),
-  status: z.enum(['pendaftar', 'pembekasan', 'interview', 'diterima', 'ditolak']),
+  email: z.string(),
+  job_title: z.string(),
+  status: z.enum(['submitted', 'short_listed', 'accepted', 'rejected']),
   interview_date: z.any().optional(),
   interview_time: z.any().optional(),
 }).refine((data) => {
-  // Jika status adalah interview, maka interview_date dan interview_time wajib diisi
-  if (data.status === 'interview') {
+  // If status is short_listed, interview_date and interview_time are required
+  if (data.status === 'short_listed') {
     return data.interview_date && data.interview_time;
   }
   return true;

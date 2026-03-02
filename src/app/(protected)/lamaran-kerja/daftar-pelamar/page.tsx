@@ -1,12 +1,10 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Tabs, Input, Button, Typography, Tag } from 'antd';
 import { FilterOutlined, SearchOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
-import type { TApplication, TApplicationStatus } from '@/api/lamaran-kerja/daftar-pelamar/type';
-import { getApplications, updateApplication } from '@/api/lamaran-kerja/daftar-pelamar';
+import type { TJobApplication, TApplicationStatus } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/type';
+import { getJobApplications, updateJobApplication } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/index';
 import EditProgressModal from './_components/form/edit-modal';
 
 const { Search } = Input;
@@ -14,40 +12,89 @@ const { Text } = Typography;
 
 export default function LamaranKerjaPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TApplicationStatus>('pendaftar');
+  const [activeTab, setActiveTab] = useState<TApplicationStatus | 'all'>('all');
   const [searchName, setSearchName] = useState('');
   const [searchPosition, setSearchPosition] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<TApplication | null>(null);
-  const [applications, setApplications] = useState<TApplication[]>([]);
+  const [selectedRecord, setSelectedRecord] = useState<TJobApplication | null>(null);
+  const [applications, setApplications] = useState<TJobApplication[]>([]);
   const [loading, setLoading] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
-  // Fetch applications when tab changes
+  // Fetch applications when tab changes or page changes
   useEffect(() => {
     const fetchApplications = async () => {
       setLoading(true);
       try {
-        const response = await getApplications({ status: activeTab });
-        setApplications(response.data.items);
+        const params: any = { limit: pageSize };
+        
+        if (activeTab !== 'all') {
+          params.status = activeTab;
+        }
+        
+        if (searchPosition) {
+          params.job_title = searchPosition;
+        }
+        
+        console.log('Fetching with params:', params);
+        const response = await getJobApplications(params);
+        console.log('Response received:', response);
+        
+        if (response && response.job_applications) {
+          setApplications(response.job_applications.items || []);
+          setNextCursor(response.job_applications.next_cursor);
+          setHasMore(!!response.job_applications.next_cursor);
+        } else {
+          console.error('Invalid response structure:', response);
+          setApplications([]);
+          setNextCursor(null);
+          setHasMore(false);
+        }
+        setCurrentPage(1);
       } catch (error) {
         console.error('Error fetching applications:', error);
+        setApplications([]);
+        setNextCursor(null);
+        setHasMore(false);
       } finally {
         setLoading(false);
       }
     };
 
     fetchApplications();
-  }, [activeTab]);
+  }, [activeTab, searchPosition]);
 
-  const filteredApplications = applications.filter(
-    (app) =>
-      app.name.toLowerCase().includes(searchName.toLowerCase()) &&
-      app.position.toLowerCase().includes(searchPosition.toLowerCase())
-  );
+  // Load more data for pagination
+  const loadMore = async () => {
+    if (!nextCursor || loading) return;
+    
+    setLoading(true);
+    try {
+      const params: any = { limit: pageSize, cursor: nextCursor };
+      
+      if (activeTab !== 'all') {
+        params.status = activeTab;
+      }
+      
+      if (searchPosition) {
+        params.job_title = searchPosition;
+      }
+      
+      const response = await getJobApplications(params);
+      setApplications([...(applications || []), ...(response.job_applications.items || [])]);
+      setNextCursor(response.job_applications.next_cursor);
+      setHasMore(!!response.job_applications.next_cursor);
+    } catch (error) {
+      console.error('Error loading more applications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleEditClick = (record: TApplication) => {
+  const handleEditClick = (record: TJobApplication) => {
     setSelectedRecord(record);
     setIsModalOpen(true);
   };
@@ -59,21 +106,30 @@ export default function LamaranKerjaPage() {
 
   const handleModalSubmit = async (values: {
     status: TApplicationStatus;
-    interview_date?: string;
-    interview_time?: string;
+    interview_at?: string;
   }) => {
     if (selectedRecord) {
       try {
-        await updateApplication({ id: selectedRecord.id }, {
-          ...selectedRecord,
+        // Update the status and interview_at if provided
+        const updateData: any = {
           status: values.status,
-          interview_date: values.interview_date,
-          interview_time: values.interview_time,
-        });
+        };
+        
+        if (values.interview_at) {
+          updateData.interview_at = values.interview_at;
+        }
+        
+        await updateJobApplication({ id: selectedRecord.id }, updateData);
         
         // Refresh the list
-        const response = await getApplications({ status: activeTab });
-        setApplications(response.data.items);
+        const params: any = { limit: pageSize };
+        if (activeTab !== 'all') {
+          params.status = activeTab;
+        }
+        const response = await getJobApplications(params);
+        setApplications(response.job_applications.items || []);
+        setNextCursor(response.job_applications.next_cursor);
+        setHasMore(!!response.job_applications.next_cursor);
         setIsModalOpen(false);
         setSelectedRecord(null);
       } catch (error) {
@@ -84,27 +140,27 @@ export default function LamaranKerjaPage() {
 
   const getStatusConfig = (status: TApplicationStatus) => {
     switch (status) {
-      case 'pembekasan':
-        return { color: '#3b82f6', text: 'Tahap Pemberkasan' };
-      case 'interview':
-        return { color: '#eab308', text: 'Tahap Interview' };
-      case 'diterima':
-        return { color: '#22c55e', text: 'Diterima' };
-      case 'ditolak':
-        return { color: '#ef4444', text: 'Ditolak' };
+      case 'submitted':
+        return { color: '#3b82f6', text: 'Submitted' };
+      case 'short_listed':
+        return { color: '#8b5cf6', text: 'Short Listed' };
+      case 'hired':
+        return { color: '#22c55e', text: 'Hired' };
+      case 'rejected':
+        return { color: '#ef4444', text: 'Rejected' };
       default:
-        return { color: '#9ca3af', text: 'Pendaftar' };
+        return { color: '#9ca3af', text: 'Submitted' };
     }
   };
 
-  const columns: ColumnsType<TApplication> = [
+  const columns: ColumnsType<TJobApplication> = [
     {
       title: 'EMAIL',
       dataIndex: 'email',
       key: 'email',
       sorter: (a, b) => a.email.localeCompare(b.email),
       showSorterTooltip: { title: 'Klik untuk mengurutkan' },
-      render: (email: string, record: TApplication) => (
+      render: (email: string, record: TJobApplication) => (
         <a
           onClick={() => navigate(`/lamaran-kerja/daftar-pelamar/${record.id}`)}
           style={{
@@ -119,21 +175,33 @@ export default function LamaranKerjaPage() {
     },
     {
       title: 'POSISI LAMARAN',
-      dataIndex: 'position',
-      key: 'position',
+      dataIndex: 'job_title',
+      key: 'job_title',
+    },
+    {
+      title: 'NO. TELP',
+      dataIndex: 'phone_number',
+      key: 'phone_number',
     },
     {
       title: 'TANGGAL DAFTAR',
-      dataIndex: 'apply_date',
-      key: 'apply_date',
+      dataIndex: 'submitted_at',
+      key: 'submitted_at',
+      render: (date: string) => new Date(date).toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }),
     },
     {
       title: 'PDF CV',
       key: 'pdf',
-      render: () => (
+      render: (_, record) => (
         <Button 
           type="link" 
           icon={<DownloadOutlined />}
+          href={record.cv_path}
+          target="_blank"
           style={{ color: '#16a34a', padding: 0 }}
         >
           Lihat CV
@@ -161,21 +229,35 @@ export default function LamaranKerjaPage() {
         );
       },
     },
-    {
-      title: 'JADWAL INTERVIEW',
-      key: 'interviewSchedule',
-      render: (_, record) => {
-        if (record.interview_date && record.interview_time) {
-          return (
-            <div>
-              <div style={{ fontWeight: 500 }}>{record.interview_date}</div>
-              <div style={{ fontSize: '12px', color: '#6b7280' }}>{record.interview_time}</div>
-            </div>
-          );
-        }
-        return <Text type="secondary">—</Text>;
-      },
-    },
+    ...(activeTab === 'short_listed' || activeTab === 'hired' || activeTab === 'rejected'
+      ? [{
+          title: 'JADWAL INTERVIEW',
+          key: 'interviewSchedule',
+          render: (_: any, record: TJobApplication) => {
+            if (record.interview_at) {
+              const interviewDate = new Date(record.interview_at);
+              return (
+                <div>
+                  <div style={{ fontWeight: 500 }}>
+                    {interviewDate.toLocaleDateString('id-ID', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                    {interviewDate.toLocaleTimeString('id-ID', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })} WIB
+                  </div>
+                </div>
+              );
+            }
+            return <Text type="secondary">—</Text>;
+          },
+        }]
+      : []),
     {
       title: 'ACTION',
       key: 'action',
@@ -197,31 +279,48 @@ export default function LamaranKerjaPage() {
     },
   ];
 
-  const handleTableChange: TableProps<TApplication>['onChange'] = (pagination) => {
-    setCurrentPage(pagination.current || 1);
-    setPageSize(pagination.pageSize || 10);
+  // Client-side filtering for name/email search
+  const filteredApplications = applications.filter((app) => {
+    if (!searchName) return true;
+    const searchLower = searchName.toLowerCase();
+    return (
+      app.email.toLowerCase().includes(searchLower) ||
+      app.job_title.toLowerCase().includes(searchLower)
+    );
+  });
+
+  const handleTableChange: TableProps<TJobApplication>['onChange'] = (pagination) => {
+    const newPage = pagination.current || 1;
+    
+    // If moving to next page and we need more data
+    const totalItems = filteredApplications?.length ?? 0;
+    if (newPage > currentPage && newPage * pageSize > totalItems && hasMore) {
+      loadMore();
+    }
+    
+    setCurrentPage(newPage);
   };
 
   const tabItems = [
     {
-      key: 'pendaftar',
+      key: 'all',
       label: 'Semua Pelamar',
     },
     {
-      key: 'pembekasan',
+      key: 'submitted',
       label: 'Tahap Pembekasan',
     },
     {
-      key: 'interview',
+      key: 'short_listed',
       label: 'Tahap Interview',
     },
     {
-      key: 'diterima',
-      label: 'Tahap Diterima',
+      key: 'hired',
+      label: 'Accepted',
     },
     {
-      key: 'ditolak',
-      label: 'Belum Diperiksa',
+      key: 'rejected',
+      label: 'Rejected',
     },
   ];
 
@@ -236,7 +335,7 @@ export default function LamaranKerjaPage() {
       {/* Tabs */}
       <Tabs
         activeKey={activeTab}
-        onChange={(key) => setActiveTab(key as TApplicationStatus)}
+        onChange={(key) => setActiveTab(key as TApplicationStatus | 'all')}
         items={tabItems}
         centered
         style={{ marginBottom: 24 }}
@@ -286,19 +385,18 @@ export default function LamaranKerjaPage() {
       </div>
 
       {/* Table */}
-      <Table<TApplication>
+      <Table<TJobApplication>
         columns={columns}
-        dataSource={filteredApplications}
+        dataSource={filteredApplications || []}
         rowKey="id"
         loading={loading}
         onChange={handleTableChange}
         pagination={{
           current: currentPage,
           pageSize: pageSize,
-          total: filteredApplications.length,
-          showSizeChanger: true,
-          showTotal: (total, range) => `Menampilkan ${range[0]} dari ${total} data`,
-          pageSizeOptions: ['10', '20', '50', '100'],
+          total: filteredApplications?.length ?? 0,
+          showSizeChanger: false,
+          showTotal: (total, range) => `Menampilkan ${range[0]}-${range[1]} dari ${total} data${hasMore ? '+' : ''}`,
           style: { marginRight: '16px' },
         }}
         bordered

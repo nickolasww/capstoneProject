@@ -1,19 +1,17 @@
-import type { TApplicationStatus } from '@/api/lamaran-kerja/daftar-pelamar/type';
+import type { TApplicationStatus } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/type';
 
 export const APPLICATION_STATUS_LABELS: Record<TApplicationStatus, string> = {
-  pendaftar: 'Semua Pendaftar',
-  pembekasan: 'Tahap Pembekasan',
-  interview: 'Tahap Interview',
-  diterima: 'Diterima',
-  ditolak: 'Ditolak',
+  submitted: 'Semua Pendaftar',
+  short_listed: 'Tahap Interview',
+  hired: 'Diterima',
+  rejected: 'Ditolak',
 };
 
 export const APPLICATION_STATUS_COLORS: Record<TApplicationStatus, string> = {
-  pendaftar: 'bg-blue-100 text-blue-700',
-  pembekasan: 'bg-yellow-100 text-yellow-700',
-  interview: 'bg-purple-100 text-purple-700',
-  diterima: 'bg-green-100 text-green-700',
-  ditolak: 'bg-red-100 text-red-700',
+  submitted: 'bg-blue-100 text-blue-700',
+  short_listed: 'bg-yellow-100 text-yellow-700',
+  hired: 'bg-green-100 text-green-700',
+  rejected: 'bg-red-100 text-red-700',
 };
 
 export const formatDate = (dateString: string): string => {

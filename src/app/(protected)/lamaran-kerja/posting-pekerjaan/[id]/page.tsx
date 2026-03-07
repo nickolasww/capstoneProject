@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { TJobPosting } from '@/api/lamaran-kerja/posting-pekerjaan/type';
-import { getDetailJobPosting, updateJobPosting } from '@/api/lamaran-kerja/posting-pekerjaan';
+import type { TJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
+import { getDetailJobPosting, updateJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
 
 export default function JobPostingDetailPage() {
   const { id } = useParams<{ id: string }>();

@@ -3,12 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InboxOutlined , EyeOutlined, UserAddOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EnvironmentOutlined, DollarOutlined, CalendarOutlined, TeamOutlined } from '@ant-design/icons';
-import type { TJobPosting } from '@/api/lamaran-kerja/posting-pekerjaan/type';
-import { getJobPostings, deleteJobPosting } from '@/api/lamaran-kerja/posting-pekerjaan';
+import type { TJobPosting, TJobPostingsData } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
+import { getJobPostings, deleteJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
 
 export default function PostingPekerjaanPage() {
   const navigate = useNavigate();
   const [jobPostings, setJobPostings] = useState<TJobPosting[]>([]);
+  const [metadata, setMetadata] = useState<Omit<TJobPostingsData, 'list'>>({
+    total_applicant: 0,
+    total_active: 0,
+    total_vacancy: 0,
+    next_cursor: null,
+  });
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [deleteModal, setDeleteModal] = useState<{ show: boolean; job: TJobPosting | null }>({
@@ -21,8 +27,14 @@ export default function PostingPekerjaanPage() {
     const fetchJobPostings = async () => {
       setLoading(true);
       try {
-        const response = await getJobPostings({});
-        setJobPostings(response.data.items);
+        const response = await getJobPostings({ status: 'active', limit: 3 });
+        setJobPostings(response.job_positions.list);
+        setMetadata({
+          total_applicant: response.job_positions.total_applicant,
+          total_active: response.job_positions.total_active,
+          total_vacancy: response.job_positions.total_vacancy,
+          next_cursor: response.job_positions.next_cursor,
+        });
       } catch (error) {
         console.error('Error fetching job postings:', error);
       } finally {
@@ -38,11 +50,6 @@ export default function PostingPekerjaanPage() {
     job.department.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Calculate statistics
-  const totalJobs = jobPostings.length;
-  const activeJobs = jobPostings.filter(job => job.status === 'active').length;
-  const totalApplicants = jobPostings.reduce((sum, job) => sum + job.applicants, 0);
-
   const handleDeleteClick = (job: TJobPosting) => {
     setDeleteModal({ show: true, job });
   };
@@ -52,8 +59,14 @@ export default function PostingPekerjaanPage() {
       try {
         await deleteJobPosting({ id: deleteModal.job.id });
         // Refresh the list
-        const response = await getJobPostings({});
-        setJobPostings(response.data.items);
+        const response = await getJobPostings({ status: 'active', limit: 3 });
+        setJobPostings(response.job_positions.list);
+        setMetadata({
+          total_applicant: response.job_positions.total_applicant,
+          total_active: response.job_positions.total_active,
+          total_vacancy: response.job_positions.total_vacancy,
+          next_cursor: response.job_positions.next_cursor,
+        });
       } catch (error) {
         console.error('Error deleting job posting:', error);
       }
@@ -65,33 +78,32 @@ export default function PostingPekerjaanPage() {
     setDeleteModal({ show: false, job: null });
   };
 
-  const formatSalary = (min: number, max: number) => {
-    const formatNumber = (num: number) => {
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format(num);
-    };
-    return `${formatNumber(min)} - ${formatNumber(max)}`;
-  };
-
-  const getJobTypeLabel = (type: string) => {
+  const getEmploymentTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      'full-time': 'full-time',
-      'part-time': 'part-time',
-      'contract': 'contract',
+      'full_time': 'Full Time',
+      'part_time': 'Part Time',
+      'contract': 'Contract',
+      'internship': 'Internship',
     };
     return labels[type] || type;
   };
 
-  const getJobTypeBadgeColor = (type: string) => {
+  const getEmploymentTypeBadgeColor = (type: string) => {
     const colors: Record<string, string> = {
-      'full-time': 'bg-blue-100 text-blue-700',
-      'part-time': 'bg-purple-100 text-purple-700',
+      'full_time': 'bg-blue-100 text-blue-700',
+      'part_time': 'bg-purple-100 text-purple-700',
       'contract': 'bg-orange-100 text-orange-700',
+      'internship': 'bg-pink-100 text-pink-700',
     };
     return colors[type] || 'bg-gray-100 text-gray-700';
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
   };
 
   if (loading) {
@@ -121,7 +133,7 @@ export default function PostingPekerjaanPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 mb-1">Total Lowongan</p>
-              <p className="text-3xl font-bold text-gray-900">{totalJobs}</p>
+              <p className="text-3xl font-bold text-gray-900">{metadata.total_vacancy}</p>
             </div>
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
               <InboxOutlined style={{ fontSize: '24px', color: '#2563eb' }} />
@@ -133,7 +145,7 @@ export default function PostingPekerjaanPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 mb-1">Lowongan Aktif</p>
-              <p className="text-3xl font-bold text-gray-900">{activeJobs}</p>
+              <p className="text-3xl font-bold text-gray-900">{metadata.total_active}</p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <EyeOutlined style={{ fontSize: '24px', color: '#16a34a' }} />
@@ -145,7 +157,7 @@ export default function PostingPekerjaanPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 mb-1">Total Pelamar</p>
-              <p className="text-3xl font-bold text-gray-900">{totalApplicants}</p>
+              <p className="text-3xl font-bold text-gray-900">{metadata.total_applicant}</p>
             </div>
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
               <UserAddOutlined style={{ fontSize: '24px', color: '#ea580c' }} />
@@ -188,15 +200,15 @@ export default function PostingPekerjaanPage() {
                   <h3 className="text-lg font-bold text-gray-900">{job.title}</h3>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      job.status === 'active'
+                      job.publication_status === 'active'
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-700'
                     }`}
                   >
-                    {job.status === 'active' ? 'Aktif' : 'Ditutup'}
+                    {job.publication_status === 'active' ? 'Aktif' : 'Ditutup'}
                   </span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getJobTypeBadgeColor(job.type)}`}>
-                    {getJobTypeLabel(job.type)}
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEmploymentTypeBadgeColor(job.employment_type)}`}>
+                    {getEmploymentTypeLabel(job.employment_type)}
                   </span>
                 </div>
 
@@ -211,7 +223,7 @@ export default function PostingPekerjaanPage() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <DollarOutlined style={{ fontSize: '16px' }} />
-                    <span>{formatSalary(job.salary_min, job.salary_max)}</span>
+                    <span>{job.salary}</span>
                   </div>
                 </div>
 
@@ -221,11 +233,11 @@ export default function PostingPekerjaanPage() {
                   <div className="flex flex-wrap items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <CalendarOutlined className="text-gray-500" style={{ fontSize: '16px' }} />
-                      <span className="text-gray-600">Deadline: <span className="font-medium text-gray-900">{job.deadline}</span></span>
+                      <span className="text-gray-600">Ditutup: <span className="font-medium text-gray-900">{formatDate(job.closed_at)}</span></span>
                     </div>
                     <div className="flex items-center gap-2">
                       <TeamOutlined className="text-gray-500" style={{ fontSize: '16px' }} />
-                      <span className="text-gray-600"><span className="font-medium text-gray-900">{job.applicants}</span> pelamar</span>
+                      <span className="text-gray-600"><span className="font-medium text-gray-900">{job.applicant_count}</span> pelamar</span>
                     </div>
                   </div>
                 </div>

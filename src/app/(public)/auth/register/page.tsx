@@ -27,7 +27,7 @@ export default function Register() {
       });
 
       api.success({
-        message: 'Registrasi Berhasil',
+        title: 'Registrasi Berhasil',
         description: 'Akun Anda telah berhasil dibuat. Silakan login.',
         placement: 'topRight',
       });
@@ -39,7 +39,7 @@ export default function Register() {
       const errorMsg = err?.message || 'Registrasi gagal. Silakan coba lagi.';
       setError(errorMsg);
       api.error({
-        message: 'Registrasi Gagal',
+        title: 'Registrasi Gagal',
         description: errorMsg,
         placement: 'topRight',
       });

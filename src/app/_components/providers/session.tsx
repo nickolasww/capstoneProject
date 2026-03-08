@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
 import { postLogin, getMe } from '@/api/auth/api';
 import { SessionToken } from '@/libs/cookies';
 import type { TPermissionWithGroup } from '@/api/auth/type';
+import { queryClient } from '@/libs/react-query/react-query-clients';
 
 export type UserRole = 'super_admin' | 'admin' | 'client';
 
@@ -39,7 +40,9 @@ interface SessionContextType {
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
-const SESSION_KEY = 'bas_session';
+// SECURITY: Only store user_id in localStorage, not PII (email, name)
+// Full user data is kept in React state only
+const SESSION_KEY = 'bas_session_id';
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -86,7 +89,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
               roles: apiUser.roles || [],
             };
             setUser(userData);
-            localStorage.setItem(SESSION_KEY, JSON.stringify(userData));
+            // SECURITY: Only store user_id, not PII (email, name)
+            localStorage.setItem(SESSION_KEY, userData.id);
           } else {
             throw new Error("No user data in /me response");
           }
@@ -103,6 +107,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
     verifySession();
   }, []);
+
+  // Token refresh is handled automatically by axios 401 interceptor
+  // No need for manual scheduling - backend will return 401 when token expires
+  // Axios interceptor will catch 401, call /auth/refresh-token, and retry request
 
   const login = async (email: string, password: string) => {
     try {
@@ -150,7 +158,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       };
 
       setUser(finalUserData);
-      localStorage.setItem(SESSION_KEY, JSON.stringify(finalUserData));
+      // SECURITY: Only store user_id, not PII (email, name)
+      localStorage.setItem(SESSION_KEY, finalUserData.id);
 
       return { success: true, user: finalUserData };
     } catch (err: any) {
@@ -163,19 +172,26 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
+    // Clear user_id from localStorage
     localStorage.removeItem(SESSION_KEY);
     SessionToken.remove();
+    
+    // Clear React Query cache to remove all cached data
+    queryClient.clear();
     
     // Clear all cookies and storage to ensure complete logout
     localStorage.clear();
     sessionStorage.clear();
   };
 
+  // Memoize isAuthenticated to prevent unnecessary recalculations on every render
+  const isAuthenticated = useMemo(() => !!user, [user]);
+
   return (
     <SessionContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        isAuthenticated,
         login,
         logout,
         isLoading,
@@ -211,7 +227,7 @@ export function SessionAuthListener() {
       
       // Show notification
       notification.warning({
-        message: 'Sesi Berakhir',
+        title: 'Sesi Berakhir',
         description: customEvent.detail?.message || 'Sesi Anda telah berakhir. Silakan login kembali.',
         placement: 'topRight',
         duration: 4,

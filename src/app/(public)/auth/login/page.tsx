@@ -25,7 +25,7 @@ export default function Login() {
 
       if (result.success) {
         api.success({
-          message: "Login Berhasil",
+          title: "Login Berhasil",
           description: "Selamat datang kembali!",
           placement: "topRight",
         });
@@ -44,7 +44,7 @@ export default function Login() {
         const errorMsg = result.error || "Login gagal";
         setError(errorMsg);
         api.error({
-          message: "Login Gagal",
+          title: "Login Gagal",
           description: errorMsg,
           placement: "topRight",
         });
@@ -53,7 +53,7 @@ export default function Login() {
       const errorMsg = "Terjadi kesalahan saat login";
       setError(errorMsg);
       api.error({
-        message: "Error",
+        title: "Error",
         description: errorMsg,
         placement: "topRight",
       });

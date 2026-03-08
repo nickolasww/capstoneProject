@@ -1,9 +1,10 @@
 import imgProject from "@/assets/AboutPages/Hero Pictures BAS about.png";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useDeferredValue } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import { Search, ArrowLeft } from "lucide-react";
 import { yearsData } from "./Data/years";
 import { projectsData } from "./Data/projects";
+import { useDebounce } from "@/app/_hooks/use-debounce";
 
 interface Project {
     id: number;
@@ -22,6 +23,7 @@ export function ProjectYear() {
     const navigate = useNavigate();
     const [projectsList, setProjectsList] = useState<Project[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const debouncedSearchQuery = useDebounce(searchQuery);
 
     const currentYearInfo = year ? yearsData[year as keyof typeof yearsData] : null;
 
@@ -40,17 +42,23 @@ export function ProjectYear() {
         }
     }, [year, navigate]);
 
-    const filteredProjects = projectsList.filter((project: Project) => {
-        if (!searchQuery) return true;
+    // Memoize filtered projects to prevent recalculation on every render
+    const filteredProjects = useMemo(() => {
+        return projectsList.filter((project: Project) => {
+            if (!debouncedSearchQuery) return true;
 
-        const query = searchQuery.toLowerCase();
-        return (
-            project.title.toLowerCase().includes(query) ||
-            project.location.toLowerCase().includes(query) ||
-            project.client.toLowerCase().includes(query) ||
-            project.description.toLowerCase().includes(query)
-        );
-    });
+            const query = debouncedSearchQuery.toLowerCase();
+            return (
+                project.title.toLowerCase().includes(query) ||
+                project.location.toLowerCase().includes(query) ||
+                project.client.toLowerCase().includes(query) ||
+                project.description.toLowerCase().includes(query)
+            );
+        });
+    }, [projectsList, debouncedSearchQuery]);
+
+    // Defer project cards rendering to prevent UI blocking while user is typing
+    const deferredFilteredProjects = useDeferredValue(filteredProjects);
 
     return (
         <div className="min-h-screen bg-white">
@@ -103,14 +111,14 @@ export function ProjectYear() {
 
                     {/* Projects Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                        {filteredProjects.length === 0 ? (
+                        {deferredFilteredProjects.length === 0 ? (
                             <div className="col-span-full text-center py-20">
                                 <p className="font-['Poppins'] text-xl text-gray-600">
                                     {searchQuery ? 'Tidak ada proyek yang ditemukan' : 'Tidak ada proyek untuk tahun ini'}
                                 </p>
                             </div>
                         ) : (
-                            filteredProjects.map((project: Project) => (
+                            deferredFilteredProjects.map((project: Project) => (
                                 <ProjectCard key={project.id} project={project} />
                             ))
                         )}

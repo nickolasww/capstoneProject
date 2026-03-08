@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InboxOutlined , EyeOutlined, UserAddOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EnvironmentOutlined, DollarOutlined, CalendarOutlined, TeamOutlined } from '@ant-design/icons';
 import type { TJobPosting, TJobPostingsData } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
 import { getJobPostings, deleteJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
+import { useDebounce } from '@/app/_hooks/use-debounce';
 
 export default function PostingPekerjaanPage() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function PostingPekerjaanPage() {
   });
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm);
   const [deleteModal, setDeleteModal] = useState<{ show: boolean; job: TJobPosting | null }>({
     show: false,
     job: null,
@@ -45,10 +47,16 @@ export default function PostingPekerjaanPage() {
     fetchJobPostings();
   }, []);
 
-  const filteredPostings = jobPostings.filter((job) =>
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.department.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Memoize filtered postings to prevent recalculation on every render
+  const filteredPostings = useMemo(() => {
+    return jobPostings.filter((job) =>
+      job.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+      job.department.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+    );
+  }, [jobPostings, debouncedSearchTerm]);
+
+  // Defer cards rendering to prevent UI blocking while user is typing
+  const deferredFilteredPostings = useDeferredValue(filteredPostings);
 
   const handleDeleteClick = (job: TJobPosting) => {
     setDeleteModal({ show: true, job });
@@ -191,7 +199,7 @@ export default function PostingPekerjaanPage() {
 
       {/* Job Cards */}
       <div className="grid grid-cols-1 gap-4">
-        {filteredPostings.map((job) => (
+        {deferredFilteredPostings.map((job) => (
           <div key={job.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
               {/* Left Section - Job Info */}

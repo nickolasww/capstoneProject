@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Tabs, Input, Button, Typography, Tag } from 'antd';
 import { FilterOutlined, SearchOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
@@ -6,6 +6,7 @@ import type { ColumnsType, TableProps } from 'antd/es/table';
 import type { TJobApplication, TApplicationStatus } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/type';
 import { getJobApplications, updateJobApplication } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/index';
 import EditProgressModal from './_components/form/edit-modal';
+import { useDebounce } from '@/app/_hooks/use-debounce';
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -15,6 +16,8 @@ export default function LamaranKerjaPage() {
   const [activeTab, setActiveTab] = useState<TApplicationStatus | 'all'>('all');
   const [searchName, setSearchName] = useState('');
   const [searchPosition, setSearchPosition] = useState('');
+  const debouncedSearchName = useDebounce(searchName);
+  const debouncedSearchPosition = useDebounce(searchPosition);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<TJobApplication | null>(null);
   const [applications, setApplications] = useState<TJobApplication[]>([]);
@@ -35,8 +38,8 @@ export default function LamaranKerjaPage() {
           params.status = activeTab;
         }
         
-        if (searchPosition) {
-          params.job_title = searchPosition;
+        if (debouncedSearchPosition) {
+          params.job_title = debouncedSearchPosition;
         }
         
         console.log('Fetching with params:', params);
@@ -65,7 +68,7 @@ export default function LamaranKerjaPage() {
     };
 
     fetchApplications();
-  }, [activeTab, searchPosition]);
+  }, [activeTab, debouncedSearchPosition]);
 
   // Load more data for pagination
   const loadMore = async () => {
@@ -79,8 +82,8 @@ export default function LamaranKerjaPage() {
         params.status = activeTab;
       }
       
-      if (searchPosition) {
-        params.job_title = searchPosition;
+      if (debouncedSearchPosition) {
+        params.job_title = debouncedSearchPosition;
       }
       
       const response = await getJobApplications(params);
@@ -279,21 +282,26 @@ export default function LamaranKerjaPage() {
     },
   ];
 
-  // Client-side filtering for name/email search
-  const filteredApplications = applications.filter((app) => {
-    if (!searchName) return true;
-    const searchLower = searchName.toLowerCase();
-    return (
-      app.email.toLowerCase().includes(searchLower) ||
-      app.job_title.toLowerCase().includes(searchLower)
-    );
-  });
+  // Memoize filtered applications to prevent recalculation on every render
+  const filteredApplications = useMemo(() => {
+    return applications.filter((app) => {
+      if (!debouncedSearchName) return true;
+      const searchLower = debouncedSearchName.toLowerCase();
+      return (
+        app.email.toLowerCase().includes(searchLower) ||
+        app.job_title.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [applications, debouncedSearchName]);
+
+  // Defer table rendering to prevent UI blocking while user is typing
+  const deferredFilteredApplications = useDeferredValue(filteredApplications);
 
   const handleTableChange: TableProps<TJobApplication>['onChange'] = (pagination) => {
     const newPage = pagination.current || 1;
     
     // If moving to next page and we need more data
-    const totalItems = filteredApplications?.length ?? 0;
+    const totalItems = deferredFilteredApplications?.length ?? 0;
     if (newPage > currentPage && newPage * pageSize > totalItems && hasMore) {
       loadMore();
     }
@@ -387,14 +395,14 @@ export default function LamaranKerjaPage() {
       {/* Table */}
       <Table<TJobApplication>
         columns={columns}
-        dataSource={filteredApplications || []}
+        dataSource={deferredFilteredApplications || []}
         rowKey="id"
         loading={loading}
         onChange={handleTableChange}
         pagination={{
           current: currentPage,
           pageSize: pageSize,
-          total: filteredApplications?.length ?? 0,
+          total: deferredFilteredApplications?.length ?? 0,
           showSizeChanger: false,
           showTotal: (total, range) => `Menampilkan ${range[0]}-${range[1]} dari ${total} data${hasMore ? '+' : ''}`,
           style: { marginRight: '16px' },

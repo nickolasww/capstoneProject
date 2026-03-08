@@ -1,5 +1,3 @@
-import type { TResponseData } from '@/commons/types/response';
-
 export type TJobStatus = 'active' | 'closed';
 export type TEmploymentType = 'full_time' | 'contract' | 'part_time' | 'internship';
 
@@ -59,5 +57,16 @@ export type TJobPostingsResponse = {
   message: string;
 };
 
+// Single job posting detail response
+export type TJobPostingDetailData = {
+  job_positions: TJobPosting;
+  message: string;
+};
+
+// Update response (only returns message)
+export type TJobPostingUpdateResponse = {
+  message: string;
+};
+
 export type TJobPostingListResponse = TJobPostingsResponse;
-export type TJobPostingDetailResponse = TResponseData<TJobPosting>;
+export type TJobPostingDetailResponse = TJobPostingDetailData;

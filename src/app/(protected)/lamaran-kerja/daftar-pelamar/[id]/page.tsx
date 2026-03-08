@@ -7,6 +7,7 @@ import { ArrowLeftOutlined, DownloadOutlined, EditOutlined } from '@ant-design/i
 import type { TJobApplication, TApplicationStatus } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/type';
 import { getDetailJobApplication, updateJobApplication } from '@/api/dashboard/lamaran-kerja/daftar-pelamar';
 import EditProgressModal from '../_components/form/edit-modal';
+import Loading from '@/app/loading';
 
 const { Text, Title } = Typography;
 
@@ -36,11 +37,7 @@ export default function ApplicationDetailPage() {
   }, [id]);
 
   if (loading) {
-    return (
-      <div style={{ padding: '24px 32px', textAlign: 'center' }}>
-        <Text>Loading...</Text>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!application) {

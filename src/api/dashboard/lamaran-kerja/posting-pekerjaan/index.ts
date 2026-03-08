@@ -5,6 +5,7 @@ import type {
   TFilterJobPosting,
   TJobPostingListResponse,
   TJobPostingDetailResponse,
+  TJobPostingUpdateResponse,
 } from './type';
 
 /**
@@ -74,11 +75,30 @@ export const getJobPostings = async (
 export const getDetailJobPosting = async (
   params: { id: string }
 ): Promise<TJobPostingDetailResponse> => {
-  const response = await api.get<TJobPostingDetailResponse>(
-    `/job-positions/admin/${params.id}`
-  );
-  
-  return response.data;
+  try {
+    const response = await api.get<any>(
+      `/job-positions/admin/${params.id}`
+    );
+    
+    // Handle different response structures
+    let responseData = response.data;
+    
+    // If response.data has a data property (wrapped response)
+    if (responseData.data && responseData.data.job_positions) {
+      responseData = responseData.data;
+    }
+    
+    // Ensure proper structure
+    const result: TJobPostingDetailResponse = {
+      job_positions: responseData.job_positions,
+      message: responseData.message || 'success',
+    };
+    
+    return result;
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
 };
 
 /**
@@ -106,13 +126,31 @@ export const createJobPosting = async (
 export const updateJobPosting = async (
   params: { id: string },
   data: Partial<TJobPostingRequest>
-): Promise<TJobPostingDetailResponse> => {
-  const response = await api.patch<TJobPostingDetailResponse>(
-    `/job-positions/admin/${params.id}`,
-    data
-  );
-  
-  return response.data;
+): Promise<TJobPostingUpdateResponse> => {
+  try {
+    const response = await api.patch<any>(
+      `/job-positions/admin/${params.id}`,
+      data
+    );
+    
+    // Handle different response structures
+    let responseData = response.data;
+    
+    // If response.data has a data property (wrapped response)
+    if (responseData.data) {
+      responseData = responseData.data;
+    }
+    
+    // Return simple message response
+    const result: TJobPostingUpdateResponse = {
+      message: responseData.message || 'successfully updated job position',
+    };
+    
+    return result;
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
 };
 
 /**

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { TJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
 import { getDetailJobPosting, updateJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
+import Loading from '@/app/loading';
 
 export default function JobPostingDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -18,7 +19,7 @@ export default function JobPostingDetailPage() {
 
       try {
         const response = await getDetailJobPosting({ id });
-        setJob(response.data);
+        setJob(response.job_positions);
       } catch (err) {
         console.error('Error fetching job detail:', err);
         setError(true);
@@ -37,44 +38,38 @@ export default function JobPostingDetailPage() {
     if (!confirmed) return;
 
     try {
-      await updateJobPosting({ id }, { status: 'closed' });
+      await updateJobPosting({ id }, { is_active: false, publication_status: 'closed' });
       // Refresh data
       const response = await getDetailJobPosting({ id });
-      setJob(response.data);
+      setJob(response.job_positions);
     } catch (error) {
       console.error('Error closing job:', error);
       alert('Gagal menutup lowongan');
     }
   };
 
-  const formatSalary = (min: number, max: number) => {
-    const formatNumber = (num: number) => {
-      return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-      }).format(num);
-    };
-    return `${formatNumber(min)} - ${formatNumber(max)}`;
-  };
-
-  const getJobTypeLabel = (type: string) => {
+  const getEmploymentTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      'full-time': 'Full Time',
-      'part-time': 'Part Time',
+      'full_time': 'Full Time',
+      'part_time': 'Part Time',
       'contract': 'Contract',
+      'internship': 'Internship',
     };
     return labels[type] || type;
   };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('id-ID', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   if (isLoading) {
-    return (
-      <div className="p-6 lg:p-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error || !job) {
@@ -104,12 +99,12 @@ export default function JobPostingDetailPage() {
         </div>
         <span
           className={`px-4 py-2 rounded-full text-sm font-medium ${
-            job.status === 'active'
+            job.is_active && job.publication_status === 'active'
               ? 'bg-green-100 text-green-700'
               : 'bg-gray-100 text-gray-700'
           }`}
         >
-          {job.status === 'active' ? 'Aktif' : 'Ditutup'}
+          {job.is_active && job.publication_status === 'active' ? 'Aktif' : 'Ditutup'}
         </span>
       </div>
 
@@ -121,6 +116,20 @@ export default function JobPostingDetailPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-4">Deskripsi Pekerjaan</h2>
             <p className="text-gray-700 whitespace-pre-line">{job.description}</p>
           </div>
+
+          {job.requirements && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Persyaratan</h2>
+              <p className="text-gray-700 whitespace-pre-line">{job.requirements}</p>
+            </div>
+          )}
+
+          {job.responsibilities && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Tanggung Jawab</h2>
+              <p className="text-gray-700 whitespace-pre-line">{job.responsibilities}</p>
+            </div>
+          )}
         </div>
 
         {/* Sidebar */}
@@ -130,31 +139,35 @@ export default function JobPostingDetailPage() {
             <div className="space-y-4">
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Tipe Pekerjaan</h3>
-                <p className="text-base text-gray-900">{getJobTypeLabel(job.type)}</p>
+                <p className="text-base text-gray-900">{getEmploymentTypeLabel(job.employment_type)}</p>
               </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Gaji</h3>
-                <p className="text-base text-gray-900">{formatSalary(job.salary_min, job.salary_max)}</p>
-              </div>
+              {job.salary && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">Gaji</h3>
+                  <p className="text-base text-gray-900">{job.salary}</p>
+                </div>
+              )}
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Lokasi</h3>
                 <p className="text-base text-gray-900">{job.location}</p>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Tanggal Posting</h3>
-                <p className="text-base text-gray-900">{job.posted_date}</p>
+                <p className="text-base text-gray-900">{formatDate(job.posted_at)}</p>
               </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Deadline</h3>
-                <p className="text-base text-red-600 font-semibold">{job.deadline}</p>
-              </div>
+              {job.closed_at && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">Tanggal Ditutup</h3>
+                  <p className="text-base text-red-600">{formatDate(job.closed_at)}</p>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Statistik</h2>
             <div className="text-center">
-              <p className="text-4xl font-bold text-green-600">{job.applicants}</p>
+              <p className="text-4xl font-bold text-green-600">{job.applicant_count || 0}</p>
               <p className="text-sm text-gray-600 mt-1">Total Pelamar</p>
             </div>
           </div>
@@ -167,12 +180,12 @@ export default function JobPostingDetailPage() {
               Kembali
             </button>
             <button 
-              onClick={() => navigate(`/lamaran-kerja/posting-pekerjaan/edit/${job.id}`)}
+              onClick={() => navigate(`/lamaran-kerja/posting-pekerjaan/${job.id}/update`)}
               className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
             >
               Edit Lowongan
             </button>
-            {job.status === 'active' && (
+            {job.is_active && job.publication_status === 'active' && (
               <button 
                 onClick={handleCloseJob}
                 className="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"

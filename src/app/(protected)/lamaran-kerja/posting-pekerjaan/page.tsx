@@ -1,22 +1,17 @@
 'use client';
 
-import { useState, useEffect, useMemo, useDeferredValue } from 'react';
+import { useState, useMemo, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InboxOutlined , EyeOutlined, UserAddOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EnvironmentOutlined, DollarOutlined, CalendarOutlined, TeamOutlined } from '@ant-design/icons';
-import type { TJobPosting, TJobPostingsData } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
+import Loading from '@/app/loading';
+import type { TJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
 import { getJobPostings, deleteJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
 import { useDebounce } from '@/app/_hooks/use-debounce';
+import { useQuery } from '@/app/_hooks/request/use-query';
+import { useMutation } from '@/app/_hooks/request/use-mutation';
 
 export default function PostingPekerjaanPage() {
   const navigate = useNavigate();
-  const [jobPostings, setJobPostings] = useState<TJobPosting[]>([]);
-  const [metadata, setMetadata] = useState<Omit<TJobPostingsData, 'list'>>({
-    total_applicant: 0,
-    total_active: 0,
-    total_vacancy: 0,
-    next_cursor: null,
-  });
-  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
   const [deleteModal, setDeleteModal] = useState<{ show: boolean; job: TJobPosting | null }>({
@@ -24,28 +19,38 @@ export default function PostingPekerjaanPage() {
     job: null,
   });
 
-  // Fetch job postings on mount
-  useEffect(() => {
-    const fetchJobPostings = async () => {
-      setLoading(true);
-      try {
-        const response = await getJobPostings({ status: 'active', limit: 3 });
-        setJobPostings(response.job_positions.list);
-        setMetadata({
-          total_applicant: response.job_positions.total_applicant,
-          total_active: response.job_positions.total_active,
-          total_vacancy: response.job_positions.total_vacancy,
-          next_cursor: response.job_positions.next_cursor,
-        });
-      } catch (error) {
-        console.error('Error fetching job postings:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch job postings using React Query
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['job-postings', 'active'],
+    queryFn: () => getJobPostings({ status: 'active', limit: 100 }),
+    staleTime: 1 * 60 * 1000, // Data considered fresh for 1 minute
+    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    retry: 3, // Retry failed requests 3 times
+  });
 
-    fetchJobPostings();
-  }, []);
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteJobPosting({ id }),
+    onSuccess: () => {
+      // Refetch the list after successful deletion
+      refetch();
+      setDeleteModal({ show: false, job: null });
+    },
+    onError: (error) => {
+      console.error('Error deleting job posting:', error);
+      setDeleteModal({ show: false, job: null });
+    },
+  });
+
+  // Extract data with safe defaults
+  const jobPostings = data?.job_positions.list ?? [];
+  const metadata = {
+    total_applicant: data?.job_positions.total_applicant ?? 0,
+    total_active: data?.job_positions.total_active ?? 0,
+    total_vacancy: data?.job_positions.total_vacancy ?? 0,
+    next_cursor: data?.job_positions.next_cursor ?? null,
+  };
 
   // Memoize filtered postings to prevent recalculation on every render
   const filteredPostings = useMemo(() => {
@@ -64,22 +69,8 @@ export default function PostingPekerjaanPage() {
 
   const handleConfirmDelete = async () => {
     if (deleteModal.job) {
-      try {
-        await deleteJobPosting({ id: deleteModal.job.id });
-        // Refresh the list
-        const response = await getJobPostings({ status: 'active', limit: 3 });
-        setJobPostings(response.job_positions.list);
-        setMetadata({
-          total_applicant: response.job_positions.total_applicant,
-          total_active: response.job_positions.total_active,
-          total_vacancy: response.job_positions.total_vacancy,
-          next_cursor: response.job_positions.next_cursor,
-        });
-      } catch (error) {
-        console.error('Error deleting job posting:', error);
-      }
+      deleteMutation.mutate(deleteModal.job.id);
     }
-    setDeleteModal({ show: false, job: null });
   };
 
   const handleCancelDelete = () => {
@@ -114,13 +105,28 @@ export default function PostingPekerjaanPage() {
     });
   };
 
-  if (loading) {
+  // Show loading state
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  // Show error state
+  if (error) {
     return (
       <div className="p-6 lg:p-8">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-            <p className="mt-4 text-gray-600">Memuat data...</p>
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <SearchOutlined className="text-red-600" style={{ fontSize: '32px' }} />
+            </div>
+            <p className="text-lg font-medium text-gray-900 mb-2">Gagal memuat data</p>
+            <p className="text-sm text-gray-600 mb-4">Terjadi kesalahan saat mengambil data lowongan</p>
+            <button
+              onClick={() => refetch()}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Coba Lagi
+            </button>
           </div>
         </div>
       </div>
@@ -280,7 +286,7 @@ export default function PostingPekerjaanPage() {
         ))}
       </div>
 
-      {filteredPostings.length === 0 && !loading && (
+      {filteredPostings.length === 0 && !isLoading && (
         <div className="bg-white rounded-lg shadow-sm p-12">
           <div className="text-center text-gray-500">
             <SearchOutlined className="mx-auto mb-4 text-gray-300" style={{ fontSize: '64px' }} />
@@ -292,8 +298,8 @@ export default function PostingPekerjaanPage() {
 
       {/* Delete Confirmation Modal */}
       {deleteModal.show && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
             <div className="text-center">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <DeleteOutlined className="text-red-600" style={{ fontSize: '32px' }} />
@@ -305,15 +311,17 @@ export default function PostingPekerjaanPage() {
               <div className="flex gap-3">
                 <button
                   onClick={handleCancelDelete}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                  disabled={deleteMutation.isPending}
+                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Batal
                 </button>
                 <button
                   onClick={handleConfirmDelete}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  disabled={deleteMutation.isPending}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Hapus
+                  {deleteMutation.isPending ? 'Menghapus...' : 'Hapus'}
                 </button>
               </div>
             </div>

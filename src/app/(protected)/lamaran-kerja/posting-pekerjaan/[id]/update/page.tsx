@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { TJobPosting, TJobType, TJobStatus } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
+import type { TJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
 import { getDetailJobPosting, updateJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
+import Loading from '@/app/loading';
 
 export default function UpdateJobPostingPage() {
     const { id } = useParams<{ id: string }>();
@@ -11,14 +12,17 @@ export default function UpdateJobPostingPage() {
 
     const [formData, setFormData] = useState<Partial<TJobPosting>>({
         title: '',
-        department: '',
         location: '',
-        type: 'full-time',
-        salary_min: 0,
-        salary_max: 0,
+        slug: '',
+        department: '',
+        salary: '',
+        employment_type: 'full_time',
         description: '',
-        deadline: '',
-        status: 'active',
+        requirements: '',
+        responsibilities: '',
+        publication_status: 'active',
+        is_active: true,
+        closed_at: '',
     });
 
     const [isLoading, setIsLoading] = useState(true);
@@ -31,17 +35,21 @@ export default function UpdateJobPostingPage() {
             
             try {
                 const response = await getDetailJobPosting({ id });
-                const job = response.data;
+                const job = response.job_positions;
+                
                 setFormData({
-                    title: job.title,
-                    department: job.department,
-                    location: job.location,
-                    type: job.type,
-                    salary_min: job.salary_min,
-                    salary_max: job.salary_max,
-                    description: job.description,
-                    deadline: job.deadline,
-                    status: job.status,
+                    title: job.title || '',
+                    location: job.location || '',
+                    slug: job.slug || '',
+                    department: job.department || '',
+                    salary: job.salary || '',
+                    employment_type: job.employment_type || 'full_time',
+                    description: job.description || '',
+                    requirements: job.requirements || '',
+                    responsibilities: job.responsibilities || '',
+                    publication_status: job.publication_status || 'active',
+                    is_active: job.is_active ?? true,
+                    closed_at: job.closed_at || '',
                 });
                 setIsLoading(false);
             } catch (error) {
@@ -55,10 +63,11 @@ export default function UpdateJobPostingPage() {
     }, [id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const { name, value, type } = e.target;
         
-        if (name === 'salary_min' || name === 'salary_max') {
-            setFormData(prev => ({ ...prev, [name]: parseInt(value) || 0 }));
+       if (type === 'checkbox') {
+            const target = e.target as HTMLInputElement;
+            setFormData(prev => ({ ...prev, [name]: target.checked }));
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
         }
@@ -82,13 +91,7 @@ export default function UpdateJobPostingPage() {
     };
 
     if (isLoading) {
-        return (
-            <div className="p-6 lg:p-8">
-                <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-                </div>
-            </div>
-        );
+        return <Loading />;
     }
 
     if (notFound) {
@@ -173,49 +176,30 @@ export default function UpdateJobPostingPage() {
                                 Tipe Pekerjaan <span className="text-red-600">*</span>
                             </label>
                             <select
-                                name="type"
-                                value={formData.type}
+                                name="employment_type"
+                                value={formData.employment_type}
                                 onChange={handleChange}
                                 required
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             >
-                                <option value="full-time">Full Time</option>
-                                <option value="part-time">Part Time</option>
+                                <option value="full_time">Full Time</option>
+                                <option value="part_time">Part Time</option>
                                 <option value="contract">Contract</option>
+                                <option value="internship">Internship</option>
                             </select>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Gaji Minimum <span className="text-red-600">*</span>
+                                Gaji
                             </label>
                             <input
-                                type="number"
-                                name="salary_min"
-                                value={formData.salary_min}
+                                type="text"
+                                name="salary"
+                                value={formData.salary}
                                 onChange={handleChange}
-                                required
-                                min="0"
-                                step="100000"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                placeholder="5000000"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Gaji Maximum <span className="text-red-600">*</span>
-                            </label>
-                            <input
-                                type="number"
-                                name="salary_max"
-                                value={formData.salary_max}
-                                onChange={handleChange}
-                                required
-                                min="0"
-                                step="100000"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                placeholder="7000000"
+                                placeholder="Rp 5.000.000 - Rp 7.000.000"
                             />
                         </div>
 
@@ -234,33 +218,61 @@ export default function UpdateJobPostingPage() {
                             />
                         </div>
 
-                        <div>
+                        <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Deadline <span className="text-red-600">*</span>
+                                Persyaratan
                             </label>
-                            <input
-                                type="date"
-                                name="deadline"
-                                value={formData.deadline}
+                            <textarea
+                                name="requirements"
+                                value={formData.requirements}
                                 onChange={handleChange}
-                                required
+                                rows={5}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                placeholder="• Minimal S1 di bidang terkait&#10;• 3+ tahun pengalaman&#10;• Menguasai..."
+                            />
+                        </div>
+
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Tanggung Jawab
+                            </label>
+                            <textarea
+                                name="responsibilities"
+                                value={formData.responsibilities}
+                                onChange={handleChange}
+                                rows={5}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                placeholder="• Bertanggung jawab atas...&#10;• Mengelola tim...&#10;• Membuat laporan..."
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Status
+                                Status Publikasi
                             </label>
                             <select
-                                name="status"
-                                value={formData.status}
+                                name="publication_status"
+                                value={formData.publication_status}
                                 onChange={handleChange}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             >
                                 <option value="active">Aktif</option>
                                 <option value="closed">Ditutup</option>
                             </select>
+                        </div>
+
+                        <div className="flex items-center">
+                            <input
+                                type="checkbox"
+                                id="is_active"
+                                name="is_active"
+                                checked={formData.is_active || false}
+                                onChange={handleChange}
+                                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                            />
+                            <label htmlFor="is_active" className="ml-2 text-sm font-medium text-gray-700">
+                                Aktifkan Lowongan
+                            </label>
                         </div>
                     </div>
 

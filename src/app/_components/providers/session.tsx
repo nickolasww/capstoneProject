@@ -1,10 +1,11 @@
-import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
 import { postLogin, getMe } from '@/api/auth/api';
 import { SessionToken } from '@/libs/cookies';
 import type { TPermissionWithGroup } from '@/api/auth/type';
 import { queryClient } from '@/libs/react-query/react-query-clients';
+import { useQuery } from '@/app/_hooks/request/use-query';
 
 export type UserRole = 'super_admin' | 'admin' | 'client';
 
@@ -36,17 +37,146 @@ interface SessionContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; user?: User; error?: string }>;
   logout: () => void;
   isLoading: boolean;
+  refetchUser: () => void;
 }
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
+// Query keys for session management
+export const SESSION_QUERY_KEYS = {
+  USER: ['session', 'user'] as const,
+};
+
 // SECURITY: Only store user_id in localStorage, not PII (email, name)
-// Full user data is kept in React state only
+// Full user data is kept in React Query cache only
 const SESSION_KEY = 'bas_session_id';
 
+// ============================================================================
+// HELPER FUNCTIONS - Extract & Transform Logic
+// ============================================================================
+
+/**
+ * Extract tokens from API response
+ * Works with normalized response from axios interceptor
+ * Handles: { data: { user, token } }, { user, token }, nested token objects
+ */
+const extractTokensFromResponse = (response: any) => {
+  // Response is already normalized by axios interceptor
+  // Check data field first (normalized location), then fallback to root
+  const source = response.data || response;
+  const apiUser = source.user || source.users;
+  
+  let tokenSource = null;
+  
+  // Priority 1: Token inside user object
+  if (apiUser?.token) {
+    tokenSource = apiUser;
+  }
+  // Priority 2: Token at data level  
+  else if (source.token) {
+    tokenSource = source;
+  }
+  
+  if (!tokenSource) {
+    throw new Error('No token found in response');
+  }
+  
+  // Handle both string and object token formats
+  if (typeof tokenSource.token === 'string') {
+    return {
+      access_token: tokenSource.token,
+      refresh_token: tokenSource.refresh_token || '',
+      access_token_expires_in: tokenSource.access_token_expires_in || '',
+      refresh_token_expires_in: tokenSource.refresh_token_expires_in || '',
+    };
+  }
+  
+  // Token is an object
+  return {
+    access_token: tokenSource.token.access_token,
+    refresh_token: tokenSource.token.refresh_token,
+    access_token_expires_in: tokenSource.token.access_token_expires_in || '',
+    refresh_token_expires_in: tokenSource.token.refresh_token_expires_in || '',
+  };
+};
+
+/**
+ * Extract user data from API response
+ * Works with normalized response from axios interceptor
+ */
+const extractUserFromResponse = (response: any) => {
+  // Response is already normalized by axios interceptor
+  // Try normalized data field first, then fallback to root level fields
+  const source = response.data || response;
+  return source.user || source.users || source;
+};
+
+/**
+ * Transform API user response to User object
+ */
+const transformApiUserToUser = (apiUser: any): User | null => {
+  if (!apiUser) return null;
+  
+  return {
+    id: apiUser.id,
+    email: apiUser.email || '',
+    name: apiUser.fullname || apiUser.username || '',
+    role: (
+      apiUser.roles?.[0]?.slug || 
+      (typeof apiUser.role === 'string' ? apiUser.role : apiUser.role?.slug) || 
+      'client'
+    ) as UserRole,
+    roles: apiUser.roles || [],
+  };
+};
+
+/**
+ * Check if user data is complete (has all required fields)
+ */
+const isUserDataComplete = (user: User | null): boolean => {
+  return !!(user?.id && user?.email && user?.name && user?.roles);
+};
+
+// Custom hook for fetching user session using React Query
+function useUserSessionQuery() {
+  return useQuery<User | null>({
+    queryKey: SESSION_QUERY_KEYS.USER,
+    queryFn: async () => {
+      const token = SessionToken.get()?.access_token;
+      
+      if (!token) {
+        return null;
+      }
+      
+      try {
+        const response = await getMe();
+        // Based on previous structure, user might be in 'users' or 'data'
+        const apiUser = extractUserFromResponse(response);
+        
+        const userData = transformApiUserToUser(apiUser);
+        
+        if (userData) {
+          // SECURITY: Only store user_id, not PII (email, name)
+          localStorage.setItem(SESSION_KEY, userData.id);
+        }
+        
+        return userData;
+      } catch (error) {
+        console.error('Session verification failed:', error);
+        // If token is invalid, clear session
+        localStorage.removeItem(SESSION_KEY);
+        SessionToken.remove();
+        return null;
+      }
+    },
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+  });
+}
+
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: user, isLoading, refetch } = useUserSessionQuery();
 
   // Prevent browser cache for authenticated pages
   useEffect(() => {
@@ -65,116 +195,68 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Check for existing session on mount
-  useEffect(() => {
-    const verifySession = async () => {
-      const token = SessionToken.get()?.access_token;
-      
-      if (token) {
-        try {
-          const response = await getMe();
-          // Based on previous structure, user might be in 'users' or 'data'
-          const apiUser = response.users || response.data?.user || response.user || response;
-          
-          if (apiUser) {
-            const userData: User = {
-              id: apiUser.id,
-              email: apiUser.email || '',
-              name: apiUser.fullname || apiUser.username || '',
-              role: (
-                apiUser.roles?.[0]?.slug || 
-                (typeof apiUser.role === 'string' ? apiUser.role : apiUser.role?.slug) || 
-                'client'
-              ) as UserRole,
-              roles: apiUser.roles || [],
-            };
-            setUser(userData);
-            // SECURITY: Only store user_id, not PII (email, name)
-            localStorage.setItem(SESSION_KEY, userData.id);
-          } else {
-            throw new Error("No user data in /me response");
-          }
-        } catch (error) {
-          console.error('Session verification failed:', error);
-          // If token is invalid, clear session
-          setUser(null);
-          localStorage.removeItem(SESSION_KEY);
-          SessionToken.remove();
-        }
-      }
-      setIsLoading(false);
-    };
-
-    verifySession();
-  }, []);
-
   // Token refresh is handled automatically by axios 401 interceptor
   // No need for manual scheduling - backend will return 401 when token expires
   // Axios interceptor will catch 401, call /auth/refresh-token, and retry request
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await postLogin({ email, password });
+      // Step 1: Login and get response
+      const loginResponse = await postLogin({ email, password });
 
-      // Handle various response structures:
-      // 1. { data: { user, token } }
-      // 2. { user, token, refresh_token }
-      // 3. { users: { ..., token, refresh_token } }
-      const authData = (response as any).data || response;
-      
-      // Try to find user data in 'users' (plural) or 'user' (singular)
-      const apiUser = authData.users || authData.user;
-      
-      // Extract tokens: priority 1: inside apiUser, priority 2: at root of authData
-      let accessToken = '';
-      let refreshToken = '';
+      // Step 2: Extract and store tokens
+      const tokens = extractTokensFromResponse(loginResponse);
+      SessionToken.set(tokens);
 
-      if (apiUser && apiUser.token) {
-        accessToken = apiUser.token;
-        refreshToken = apiUser.refresh_token || '';
-      } else {
-        accessToken = typeof authData.token === 'object' ? authData.token.access_token : authData.token;
-        refreshToken = typeof authData.token === 'object' ? authData.token.refresh_token : (authData.refresh_token || authData.token);
+      // Step 3: Extract user data from login response
+      const loginUserData = extractUserFromResponse(loginResponse);
+      let userData = transformApiUserToUser(loginUserData);
+
+      // Step 4: If user data incomplete, fetch from /me endpoint
+      // This optimizes by only calling getMe() when necessary
+      if (!isUserDataComplete(userData)) {
+        console.log('User data incomplete from login, fetching from /me endpoint');
+        const profileResponse = await getMe();
+        const profileUserData = extractUserFromResponse(profileResponse);
+        userData = transformApiUserToUser({
+          ...profileUserData,
+          id: profileUserData.id || loginUserData.id,
+          email: profileUserData.email || loginUserData.email,
+          fullname: profileUserData.fullname || loginUserData.fullname || loginUserData.username,
+        });
       }
 
-      SessionToken.set({
-        access_token: accessToken,
-        refresh_token: refreshToken || ''
-      });
+      // Step 5: Validate and store user data
+      if (!userData) {
+        throw new Error('No user data available');
+      }
 
-      const profileResponse = await getMe();
-      const profileUser = profileResponse.users || profileResponse.data?.user || profileResponse.user || profileResponse;
-      
-      const finalUserData: User = {
-        id: profileUser.id || apiUser.id,
-        email: profileUser.email || apiUser.email || '',
-        name: profileUser.fullname || apiUser.fullname || apiUser.username || '',
-        role: (
-          profileUser.roles?.[0]?.slug || 
-          (typeof profileUser.role === 'string' ? profileUser.role : profileUser.role?.slug) || 
-          'client'
-        ) as UserRole,
-        roles: profileUser.roles || [],
-      };
-
-      setUser(finalUserData);
       // SECURITY: Only store user_id, not PII (email, name)
-      localStorage.setItem(SESSION_KEY, finalUserData.id);
-
-      return { success: true, user: finalUserData };
+      localStorage.setItem(SESSION_KEY, userData.id);
+      
+      // Update React Query cache with user data
+      queryClient.setQueryData(SESSION_QUERY_KEYS.USER, userData);
+      
+      return { success: true, user: userData };
     } catch (err: any) {
+      // Clear any partial data on error
+      SessionToken.remove();
+      localStorage.removeItem(SESSION_KEY);
+      
       return { 
         success: false, 
-        error: err?.message || 'Email atau password salah' 
+        error: err?.response?.data?.message || err?.message || 'Email atau password salah' 
       };
     }
   };
 
   const logout = () => {
-    setUser(null);
     // Clear user_id from localStorage
     localStorage.removeItem(SESSION_KEY);
     SessionToken.remove();
+    
+    // Explicitly set user to null to trigger immediate re-render
+    queryClient.setQueryData(SESSION_QUERY_KEYS.USER, null);
     
     // Clear React Query cache to remove all cached data
     queryClient.clear();
@@ -184,17 +266,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     sessionStorage.clear();
   };
 
-  // Memoize isAuthenticated to prevent unnecessary recalculations on every render
-  const isAuthenticated = useMemo(() => !!user, [user]);
+  // Direct boolean check instead of useMemo
+  const isAuthenticated = !!user;
 
   return (
     <SessionContext.Provider
       value={{
-        user,
+        user: user ?? null,
         isAuthenticated,
         login,
         logout,
         isLoading,
+        refetchUser: () => refetch(),
       }}
     >
       {children}

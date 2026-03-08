@@ -1,51 +1,22 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { Form, Input, notification, ConfigProvider } from 'antd';
+import { Link } from 'react-router-dom';
+import { Form, Input, ConfigProvider } from 'antd';
 import imgLogo from '@/assets/logo PT BAS.png';
-import { postRegister } from '@/api/auth/api';
 import { createZodSync } from "@/utils/zod-sync";
 import { RegisterFormSchema, TRegisterFormData } from "./schema";
+import { usePostRegister } from "./_hooks/use-post-register";
 
 const rule = createZodSync(RegisterFormSchema);
 
 export default function Register() {
-  const navigate = useNavigate();
-  const [api, contextHolder] = notification.useNotification();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { mutate: registerMutate, isPending, error } = usePostRegister();
 
-  const onFinish = async (values: TRegisterFormData) => {
-    setIsLoading(true);
-    setError('');
-    
-    try {
-      await postRegister({
-        username: values.username,
-        fullname: values.Fullname,
-        email: values.email,
-        password: values.password
-      });
-
-      api.success({
-        title: 'Registrasi Berhasil',
-        description: 'Akun Anda telah berhasil dibuat. Silakan login.',
-        placement: 'topRight',
-      });
-      
-      setTimeout(() => {
-        navigate('/auth/login');
-      }, 1000);
-    } catch (err: any) {
-      const errorMsg = err?.message || 'Registrasi gagal. Silakan coba lagi.';
-      setError(errorMsg);
-      api.error({
-        title: 'Registrasi Gagal',
-        description: errorMsg,
-        placement: 'topRight',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const onFinish = (values: TRegisterFormData) => {
+    registerMutate({
+      username: values.username,
+      fullname: values.Fullname,
+      email: values.email,
+      password: values.password
+    });
   };
 
   return (
@@ -65,7 +36,6 @@ export default function Register() {
       }}
     >
       <div className="min-h-screen bg-linear-to-b from-[#56a439] to-[#213e16] flex items-center justify-center px-4 py-8">
-        {contextHolder}
         {/* Main Card Container */}
         <div className="bg-white rounded-2xl w-full max-w-md px-8 py-10 shadow-2xl">
           <div className="flex flex-col items-center gap-6 w-full">
@@ -107,11 +77,13 @@ export default function Register() {
               requiredMark={false}
             >
               {/* Error Message */}
-              {error && (
+              {error ? (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-                  <p className="font-['Poppins'] text-sm">{error}</p>
+                  <p className="font-['Poppins'] text-sm">
+                    {String((error as any)?.message || "Registrasi gagal. Silakan coba lagi.")}
+                  </p>
                 </div>
-              )}
+              ) : null}
               
               <Form.Item
                 label={
@@ -181,10 +153,10 @@ export default function Register() {
               <Form.Item>
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isPending}
                   className="w-full h-12 bg-[#4d9232] rounded-lg font-['Poppins'] text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
+                  {isPending ? 'Creating Account...' : 'Create Account'}
                 </button>
               </Form.Item>
             </Form>

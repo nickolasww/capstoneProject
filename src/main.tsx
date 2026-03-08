@@ -17,12 +17,12 @@ const router = createBrowserRouter([routes]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <SessionProvider>
-      <Auth0ProviderWrapper>
-        <ReactQueryProvider>
+    <ReactQueryProvider>
+      <SessionProvider>
+        <Auth0ProviderWrapper>
           <RouterProvider router={router} />
-        </ReactQueryProvider>
-      </Auth0ProviderWrapper>
-    </SessionProvider>
+        </Auth0ProviderWrapper>
+      </SessionProvider>
+    </ReactQueryProvider>
   </StrictMode>,
 );

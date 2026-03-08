@@ -1,65 +1,18 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { Form, Input, notification, Spin, ConfigProvider } from "antd";
+import { Link, useNavigate } from "react-router-dom";
+import { Form, Input, Spin, ConfigProvider } from "antd";
 import imgLogo from "@/assets/logo PT BAS.png";
-import { useSession } from "@/app/_components/providers/session";
 import { createZodSync } from "@/utils/zod-sync";
 import { LoginFormSchema, TLoginFormData } from "./schema";
+import { usePostLogin } from "./_hooks/use-post-login";
 
 const rule = createZodSync(LoginFormSchema);
 
 export default function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { login } = useSession();
-  const [api, contextHolder] = notification.useNotification();
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate: loginMutate, isPending, error } = usePostLogin();
 
-  const onFinish = async (values: TLoginFormData) => {
-    setError("");
-    setIsLoading(true);
-
-    try {
-      const result = await login(values.email, values.password);
-
-      if (result.success) {
-        api.success({
-          title: "Login Berhasil",
-          description: "Selamat datang kembali!",
-          placement: "topRight",
-        });
-
-        const user = result.user;
-
-        setTimeout(() => {
-          if (user?.role === "admin" || user?.role === "super_admin") {
-            navigate("/dashboard", { replace: true });
-          } else {
-            const from = (location.state as any)?.from || "/";
-            navigate(from, { replace: true });
-          }
-        }, 1000);
-      } else {
-        const errorMsg = result.error || "Login gagal";
-        setError(errorMsg);
-        api.error({
-          title: "Login Gagal",
-          description: errorMsg,
-          placement: "topRight",
-        });
-      }
-    } catch (err) {
-      const errorMsg = "Terjadi kesalahan saat login";
-      setError(errorMsg);
-      api.error({
-        title: "Error",
-        description: errorMsg,
-        placement: "topRight",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const onFinish = (values: TLoginFormData) => {
+    loginMutate(values);
   };
 
   return (
@@ -79,7 +32,6 @@ export default function Login() {
       }}
     >
       <div className="min-h-screen bg-linear-to-b from-[#56a439] to-[#213e16] flex items-center justify-center px-4 py-8">
-        {contextHolder}
         {/* Main Card Container */}
         <div className="bg-white rounded-2xl w-full max-w-md px-8 py-10 shadow-2xl">
           <div className="flex flex-col items-center gap-6 w-full">
@@ -121,11 +73,13 @@ export default function Login() {
               requiredMark={false}
             >
               {/* Error Message */}
-              {error && (
+              {error ? (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-                  <p className="font-['Poppins'] text-sm">{error}</p>
+                  <p className="font-['Poppins'] text-sm">
+                    {String((error as any)?.message || "Terjadi kesalahan saat login")}
+                  </p>
                 </div>
-              )}
+              ) : null}
 
               {/* Email Field */}
               <Form.Item
@@ -174,10 +128,10 @@ export default function Login() {
               <Form.Item>
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isPending}
                   className="w-full h-12 bg-[#4d9232] rounded-lg font-['Poppins'] text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? <Spin /> : "Log In"}
+                  {isPending ? <Spin /> : "Log In"}
                 </button>
               </Form.Item>
             </Form>

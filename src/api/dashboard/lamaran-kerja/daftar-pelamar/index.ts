@@ -55,7 +55,7 @@ export const getJobApplications = async (
     // Ensure proper structure
     const result: TApplicationListResponse = {
       job_applications: {
-        items: responseData.job_applications?.items || [],
+        list: responseData.job_applications?.list || [],
         next_cursor: responseData.job_applications?.next_cursor || null,
       },
       message: responseData.message || 'success',

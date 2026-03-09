@@ -33,7 +33,7 @@ export type TFilterApplication = {
 // Cursor-based pagination response
 export type TJobApplicationsData = {
   next_cursor: string | null;
-  items: TJobApplication[];
+  list: TJobApplication[];
 };
 
 export type TJobApplicationsResponse = {

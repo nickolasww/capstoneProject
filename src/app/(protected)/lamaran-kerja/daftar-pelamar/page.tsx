@@ -47,7 +47,7 @@ export default function LamaranKerjaPage() {
         console.log('Response received:', response);
         
         if (response && response.job_applications) {
-          setApplications(response.job_applications.items || []);
+          setApplications(response.job_applications.list || []);
           setNextCursor(response.job_applications.next_cursor);
           setHasMore(!!response.job_applications.next_cursor);
         } else {
@@ -87,7 +87,7 @@ export default function LamaranKerjaPage() {
       }
       
       const response = await getJobApplications(params);
-      setApplications([...(applications || []), ...(response.job_applications.items || [])]);
+      setApplications([...(applications || []), ...(response.job_applications.list || [])]);
       setNextCursor(response.job_applications.next_cursor);
       setHasMore(!!response.job_applications.next_cursor);
     } catch (error) {
@@ -130,7 +130,7 @@ export default function LamaranKerjaPage() {
           params.status = activeTab;
         }
         const response = await getJobApplications(params);
-        setApplications(response.job_applications.items || []);
+        setApplications(response.job_applications.list || []);
         setNextCursor(response.job_applications.next_cursor);
         setHasMore(!!response.job_applications.next_cursor);
         setIsModalOpen(false);

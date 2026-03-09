@@ -2,7 +2,12 @@ import { createContext, useContext, useEffect, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
 import { postLogin, getMe } from '@/api/auth/api';
-import { SessionToken } from '@/libs/cookies';
+import { 
+  getAccessToken, 
+  setAccessToken, 
+  setRefreshToken, 
+  removeAllTokens 
+} from '@/libs/localstorage';
 import type { TPermissionWithGroup } from '@/api/auth/type';
 import { queryClient } from '@/libs/react-query/react-query-clients';
 import { useQuery } from '@/app/_hooks/request/use-query';
@@ -58,57 +63,125 @@ const SESSION_KEY = 'bas_session_id';
 /**
  * Extract tokens from API response
  * Works with normalized response from axios interceptor
- * Handles: { data: { user, token } }, { user, token }, nested token objects
+ * Handles multiple backend response formats:
+ * - Nested: { data: { data: { user, token: { access_token, refresh_token } } } }
+ * - Flat: { id, username, token: "string", refresh_token: "string" }
  */
 const extractTokensFromResponse = (response: any) => {
-  // Response is already normalized by axios interceptor
-  // Check data field first (normalized location), then fallback to root
-  const source = response.data || response;
-  const apiUser = source.user || source.users;
+  console.log('[Token Extraction] Full response:', response);
   
-  let tokenSource = null;
+  // Multiple levels to check based on axios normalization
+  // Level 1: response.data.data (most nested - from backend)
+  // Level 2: response.data (normalized by axios)
+  // Level 3: response (direct)
+  const possibleSources = [
+    response.data?.data,  // { data: { data: { user, token } } }
+    response.data,        // { data: { user, token } }
+    response,             // { user, token }
+  ].filter(Boolean);
   
-  // Priority 1: Token inside user object
-  if (apiUser?.token) {
-    tokenSource = apiUser;
+  console.log('[Token Extraction] Possible sources:', possibleSources);
+  
+  let tokenData = null;
+  let sourceWithToken = null;
+  
+  for (const source of possibleSources) {
+    // Check if token exists at this level
+    if (source.token) {
+      tokenData = source.token;
+      sourceWithToken = source;
+      console.log('[Token Extraction] Found token at source level');
+      break;
+    }
+    
+    // Check if token exists inside user object
+    const user = source.user || source.users;
+    if (user?.token) {
+      tokenData = user.token;
+      sourceWithToken = user;
+      console.log('[Token Extraction] Found token inside user object');
+      break;
+    }
   }
-  // Priority 2: Token at data level  
-  else if (source.token) {
-    tokenSource = source;
-  }
   
-  if (!tokenSource) {
+  if (!tokenData) {
+    console.error('[Token Extraction] No token found in response:', response);
     throw new Error('No token found in response');
   }
   
   // Handle both string and object token formats
-  if (typeof tokenSource.token === 'string') {
-    return {
-      access_token: tokenSource.token,
-      refresh_token: tokenSource.refresh_token || '',
-      access_token_expires_in: tokenSource.access_token_expires_in || '',
-      refresh_token_expires_in: tokenSource.refresh_token_expires_in || '',
+  if (typeof tokenData === 'string') {
+    console.log('[Token Extraction] Token is string format (flat structure)');
+    // Backend sends flat structure: { token: "access_token_string", refresh_token: "refresh_token_string" }
+    // Need to get refresh_token from same source level
+    const result = {
+      access_token: tokenData,
+      refresh_token: sourceWithToken?.refresh_token || '',
+      access_token_expires_in: sourceWithToken?.access_token_expires_in || '',
+      refresh_token_expires_in: sourceWithToken?.refresh_token_expires_in || '',
     };
+    
+    console.log('[Token Extraction] Extracted token data:', {
+      hasAccessToken: !!result.access_token,
+      hasRefreshToken: !!result.refresh_token,
+      accessExpiresIn: result.access_token_expires_in,
+      refreshExpiresIn: result.refresh_token_expires_in,
+    });
+    
+    return result;
   }
   
-  // Token is an object
-  return {
-    access_token: tokenSource.token.access_token,
-    refresh_token: tokenSource.token.refresh_token,
-    access_token_expires_in: tokenSource.token.access_token_expires_in || '',
-    refresh_token_expires_in: tokenSource.token.refresh_token_expires_in || '',
+  // Token is an object - extract all fields
+  const result = {
+    access_token: tokenData.access_token,
+    refresh_token: tokenData.refresh_token,
+    access_token_expires_in: tokenData.access_token_expires_in || '',
+    refresh_token_expires_in: tokenData.refresh_token_expires_in || '',
   };
+  
+  console.log('[Token Extraction] Extracted token data:', {
+    hasAccessToken: !!result.access_token,
+    hasRefreshToken: !!result.refresh_token,
+    accessExpiresIn: result.access_token_expires_in,
+    refreshExpiresIn: result.refresh_token_expires_in,
+  });
+  
+  return result;
 };
 
 /**
  * Extract user data from API response
  * Works with normalized response from axios interceptor
+ * Handles both nested and flat structures
  */
 const extractUserFromResponse = (response: any) => {
-  // Response is already normalized by axios interceptor
-  // Try normalized data field first, then fallback to root level fields
-  const source = response.data || response;
-  return source.user || source.users || source;
+  console.log('[User Extraction] Full response:', response);
+  
+  // Multiple levels to check based on axios normalization
+  const possibleSources = [
+    response.data?.data,  // { data: { data: { user } } }
+    response.data,        // { data: { user } }
+    response,             // { user }
+  ].filter(Boolean);
+  
+  for (const source of possibleSources) {
+    // Check for nested user object first
+    const user = source.user || source.users;
+    if (user && typeof user === 'object' && user.id) {
+      console.log('[User Extraction] Found user data in nested structure:', { id: user.id, email: user.email });
+      return user;
+    }
+    
+    // Check for flat structure (user data directly in source)
+    // Backend might send: { id, username, fullname, token, refresh_token }
+    if (source.id && (source.username || source.fullname || source.email)) {
+      console.log('[User Extraction] Found user data in flat structure:', { id: source.id, username: source.username });
+      return source;
+    }
+  }
+  
+  console.error('[User Extraction] No user found in response:', response);
+  return null;
 };
 
 /**
@@ -142,7 +215,7 @@ function useUserSessionQuery() {
   return useQuery<User | null>({
     queryKey: SESSION_QUERY_KEYS.USER,
     queryFn: async () => {
-      const token = SessionToken.get()?.access_token;
+      const token = getAccessToken();
       
       if (!token) {
         return null;
@@ -165,7 +238,7 @@ function useUserSessionQuery() {
         console.error('Session verification failed:', error);
         // If token is invalid, clear session
         localStorage.removeItem(SESSION_KEY);
-        SessionToken.remove();
+        removeAllTokens();
         return null;
       }
     },
@@ -195,9 +268,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Token refresh is handled automatically by axios 401 interceptor
+  // Token refresh is handled automatically by React Query error handlers
   // No need for manual scheduling - backend will return 401 when token expires
-  // Axios interceptor will catch 401, call /auth/refresh-token, and retry request
+  // React Query error handler will catch 401, call /auth/refresh-token, and retry request
 
   const login = async (email: string, password: string) => {
     try {
@@ -206,7 +279,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
       // Step 2: Extract and store tokens
       const tokens = extractTokensFromResponse(loginResponse);
-      SessionToken.set(tokens);
+      
+      // Store tokens in localStorage
+      setAccessToken(tokens.access_token);
+      setRefreshToken(tokens.refresh_token);
 
       // Step 3: Extract user data from login response
       const loginUserData = extractUserFromResponse(loginResponse);
@@ -240,7 +316,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       return { success: true, user: userData };
     } catch (err: any) {
       // Clear any partial data on error
-      SessionToken.remove();
+      removeAllTokens();
       localStorage.removeItem(SESSION_KEY);
       
       return { 
@@ -253,7 +329,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     // Clear user_id from localStorage
     localStorage.removeItem(SESSION_KEY);
-    SessionToken.remove();
+    removeAllTokens();
     
     // Explicitly set user to null to trigger immediate re-render
     queryClient.setQueryData(SESSION_QUERY_KEYS.USER, null);

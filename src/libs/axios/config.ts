@@ -1,7 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import { SessionToken, type TokenData } from "../cookies/index";
+import { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { getAccessToken } from "../localstorage/index";
 import { env } from "../env";
-import { SessionUser } from "../localstorage/index";
 
 // ============================================================================
 // RESPONSE NORMALIZATION
@@ -60,18 +59,9 @@ function normalizeApiResponse(response: AxiosResponse): AxiosResponse {
   return response;
 }
 
-// Track if a refresh is in progress to prevent multiple simultaneous refresh requests
-let isRefreshing = false;
-let refreshSubscribers: Array<(token: string) => void> = [];
-
-function subscribeTokenRefresh(cb: (token: string) => void) {
-  refreshSubscribers.push(cb);
-}
-
-function onRefreshed(token: string) {
-  refreshSubscribers.forEach(cb => cb(token));
-  refreshSubscribers = [];
-}
+// ============================================================================
+// AXIOS CONFIGURATION
+// ============================================================================
 
 export const axiosConfig: AxiosRequestConfig = {
   baseURL: env.VITE_API_BASE_URL,
@@ -97,50 +87,41 @@ export const axiosConfig: AxiosRequestConfig = {
   },
 };
 
-// Request interceptor to add auth token and proactively refresh if needed
-export const requestInterceptor = async (config: InternalAxiosRequestConfig) => {
-  // Skip token refresh for the refresh endpoint itself
+// ============================================================================
+// REQUEST INTERCEPTOR
+// ============================================================================
+
+/**
+ * Request interceptor to add access token to all requests
+ * Reads token from localStorage and adds to Authorization header
+ * IMPORTANT: Skip Authorization header for refresh-token endpoint
+ */
+export const requestInterceptor = (config: InternalAxiosRequestConfig) => {
+  // Skip adding Authorization header for refresh token endpoint
+  // Backend doesn't require (and might reject) Authorization header for this endpoint
   if (config.url?.includes('/auth/refresh-token')) {
+    console.log('[Axios Interceptor] Skipping Authorization header for refresh-token endpoint');
     return config;
   }
-
-  // Check if token is expiring soon and refresh proactively
-  if (SessionToken.isAccessTokenExpiringSoon() && !isRefreshing) {
-    const refreshToken = SessionToken.get()?.refresh_token;
-    
-    if (refreshToken && !SessionToken.isRefreshTokenExpired()) {
-      isRefreshing = true;
-      
-      try {
-        const { data } = await axios.post(`${env.VITE_API_BASE_URL}/auth/refresh-token`, {
-          refresh_token: refreshToken,
-        });
-
-        const newTokenData: TokenData = {
-          access_token: data.data.token.access_token,
-          refresh_token: data.data.token.refresh_token,
-          access_token_expires_in: data.data.token.access_token_expires_in,
-          refresh_token_expires_in: data.data.token.refresh_token_expires_in,
-        };
-
-        SessionToken.set(newTokenData);
-        onRefreshed(data.data.token.access_token);
-      } catch (error) {
-        console.error('Proactive token refresh failed:', error);
-      } finally {
-        isRefreshing = false;
-      }
-    }
-  }
-
-  const token = SessionToken.get()?.access_token;
+  
+  // Get access token from localStorage
+  const token = getAccessToken();
+  
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
   return config;
 };
 
-// Response interceptor for response normalization, token refresh, and error handling
+// ============================================================================
+// RESPONSE INTERCEPTOR
+// ============================================================================
+
+/**
+ * Response interceptor for response normalization and error handling
+ * Token refresh is handled by React Query error handlers, not here
+ */
 export const responseInterceptor = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onFulfilled: (response: AxiosResponse<any, any>) => {
@@ -150,7 +131,7 @@ export const responseInterceptor = {
   onRejected: async (error: unknown) => {
     // Type guard for axios error
     const axiosError = error as {
-      config?: InternalAxiosRequestConfig & { _retry?: boolean };
+      config?: InternalAxiosRequestConfig;
       response?: {
         status?: number;
         data?: {
@@ -160,80 +141,17 @@ export const responseInterceptor = {
       };
     };
 
-    const originalRequest = axiosError.config;
-
-    // If error is 401 and we haven't retried yet
-    if (axiosError.response?.status === 401 && originalRequest && !originalRequest._retry) {
-      // If already refreshing, queue this request
-      if (isRefreshing) {
-        return new Promise((resolve) => {
-          subscribeTokenRefresh((token: string) => {
-            if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${token}`;
-            }
-            resolve(axios(originalRequest));
-          });
-        });
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        const refreshToken = SessionToken.get()?.refresh_token;
-        if (!refreshToken) {
-          throw new Error("No refresh token available");
-        }
-
-        // Check if refresh token is expired
-        if (SessionToken.isRefreshTokenExpired()) {
-          throw new Error("Refresh token expired");
-        }
-
-        // Call refresh token endpoint
-        const { data } = await axios.post(`${env.VITE_API_BASE_URL}/auth/refresh-token`, {
-          refresh_token: refreshToken,
-        });
-
-        const newTokenData: TokenData = {
-          access_token: data.data.token.access_token,
-          refresh_token: data.data.token.refresh_token,
-          access_token_expires_in: data.data.token.access_token_expires_in,
-          refresh_token_expires_in: data.data.token.refresh_token_expires_in,
-        };
-
-        // Update stored tokens with expiry information
-        SessionToken.set(newTokenData);
-
-        // Notify all queued requests of the new token
-        onRefreshed(data.data.token.access_token);
-
-        // Retry original request with new token
-        if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${data.data.token.access_token}`;
-        }
-        return axios(originalRequest);
-      } catch (refreshError) {
-        // If refresh fails, clear tokens and trigger logout event
-        SessionToken.remove();
-        SessionUser.remove();
-
-        // Dispatch custom event for logout
-        window.dispatchEvent(new CustomEvent('auth:logout', { 
-          detail: { message: 'Sesi Anda telah berakhir. Silakan login kembali untuk melanjutkan.' }
-        }));
-
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
+    // IMPORTANT: Don't modify error structure!
+    // React Query error handlers need access to response.status
+    // to trigger refresh token flow on 401/500 errors
+    
+    // Log error for debugging (optional)
+    if (axiosError.response?.data?.message) {
+      console.error('[Axios Error]', axiosError.response.status, axiosError.response.data.message);
     }
 
-    // Format error response for better handling
-    if (axiosError.response?.data) {
-      return Promise.reject(axiosError.response.data);
-    }
-
+    // Return original error with full structure intact
+    // This ensures React Query error handler can access response.status
     return Promise.reject(error);
   },
 };

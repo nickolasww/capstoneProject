@@ -1,15 +1,31 @@
 import { useState, useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "@/app/navbar";
 import Footer from "@/app/footer";
+import { useSession } from "@/app/_components/providers/session";
+import Loading from "../loading";
 
 const PublicLayout = () => {
   const [hasBackground, setHasBackground] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const pathname = location.pathname;
+  const { user, isAuthenticated, isLoading } = useSession();
 
   // Hide navbar and footer on auth pages
   const isAuthPage = pathname.startsWith('/auth');
+
+  // Redirect authenticated admin/super_admin to dashboard
+  useEffect(() => {
+    if (isLoading) return;
+    // Skip redirect for auth pages (login/register flow)
+    if (isAuthPage) return;
+    // If user is authenticated and has admin role, redirect to dashboard
+    if (isAuthenticated && user && (user.role === 'admin' || user.role === 'super_admin')) {
+      console.log('[Public Layout] Authenticated admin detected, redirecting to dashboard');
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, user, isLoading, isAuthPage, navigate]);
 
   // Scroll handler untuk mengubah background navbar
   useEffect(() => {
@@ -20,7 +36,6 @@ const PublicLayout = () => {
         window.requestAnimationFrame(() => {
           // Cari section dengan id "mitra-kami" atau heading "Mitra Kami"
           let mitraSection = document.getElementById('mitra-kami');
-          
           if (!mitraSection) {
             // Fallback: cari berdasarkan heading
             mitraSection = Array.from(document.querySelectorAll('h2')).find(
@@ -30,8 +45,7 @@ const PublicLayout = () => {
 
           if (mitraSection) {
             const mitraSectionTop = mitraSection.getBoundingClientRect().top;
-            const navbarHeight = 88; // Tinggi navbar (h-22 = 88px)
-            
+            const navbarHeight = 88; 
             // Jika section "Mitra Kami" sudah mencapai navbar, tampilkan background
             if (mitraSectionTop <= navbarHeight) {
               setHasBackground(true);
@@ -61,6 +75,13 @@ const PublicLayout = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [pathname]); // Re-run ketika pathname berubah
+
+  // Show loading state while checking authentication for non-auth pages
+  if (!isAuthPage && isLoading) {
+    return (
+      <Loading /> 
+    );
+  }
 
   return (
     <div className=" bg-gray-50 flex flex-col">

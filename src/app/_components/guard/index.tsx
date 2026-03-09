@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSession, type UserRole } from '../providers/session';
+import Loading from '@/app/loading';
 
 interface GuardProps {
   children: React.ReactNode;
@@ -45,14 +46,7 @@ export default function Guard({
 
   // Show loading state
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   // If authentication is required but user is not authenticated, don't render children

@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Spinner } from '@/app/loading';
 
 const KritikDanSaran = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,19 +23,32 @@ const KritikDanSaran = () => {
     }));
   };
 
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    // Handle form submission herey
-    console.log('Form submitted:', formData);
-    alert('Terima kasih atas kritik dan saran Anda!');
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: '',
-    });
+    setIsSubmitting(true);
+    
+    try {
+      // Handle form submission here
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      console.log('Form submitted:', formData);
+      alert('Terima kasih atas kritik dan saran Anda!');
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: '',
+      });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -224,9 +239,17 @@ const KritikDanSaran = () => {
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-green-600 px-8 py-3 font-semibold text-white transition hover:bg-green-700"
+                disabled={isSubmitting}
+                className="w-full rounded-lg bg-green-600 px-8 py-3 font-semibold text-white transition hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Kirim Pesan
+                {isSubmitting ? (
+                  <>
+                    <Spinner size="small" color="#ffffff" />
+                    <span>Mengirim...</span>
+                  </>
+                ) : (
+                  'Kirim Pesan'
+                )}
               </button>
             </form>
           </div>

@@ -6,10 +6,9 @@ import type { TJobPositionListResponse } from "@/api/karir/type";
 interface UseJobPositionsQueryParams {
   search?: string;
   limit?: number;
-  enabled?: boolean;
 }
 
-export const useJobPositionsQuery = ({ search, limit = 3, enabled = true }: UseJobPositionsQueryParams = {}) => {
+export const useJobPositionsQuery = ({ search, limit = 3 }: UseJobPositionsQueryParams = {}) => {
   const {
     data,
     isLoading,
@@ -27,7 +26,6 @@ export const useJobPositionsQuery = ({ search, limit = 3, enabled = true }: UseJ
       }),
     getNextPageParam: (lastPage) => lastPage.job_positions.next_cursor,
     initialPageParam: undefined,
-    enabled, // Only run query if enabled
     staleTime: 0, // Always fetch fresh data
     refetchOnMount: 'always', // Always refetch when component mounts
   });

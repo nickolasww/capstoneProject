@@ -1,19 +1,16 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { SearchOutlined, ShareAltOutlined, EnvironmentOutlined, LoginOutlined } from '@ant-design/icons';
+import { SearchOutlined, ShareAltOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import LogoBas from "@/assets/logo PT BAS.png";
 import { useDebounce } from "@/app/_hooks/use-debounce";
-import { useSession } from "@/app/_components/providers/session";
-import LoadingPage from "@/app/loading";
+import LoadingPage, { Spinner } from "@/app/loading";
 import ErrorPage from "@/app/error";
 import { useJobPositionsQuery } from "./_hooks/use-job-positions-query";
 
 const JobList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearch = useDebounce(searchQuery, 500);
-  const { isAuthenticated, isLoading: isAuthLoading } = useSession();
+  const debouncedSearch = useDebounce(searchQuery);
   
-  // Fetch job positions with infinite query (only if authenticated)
+  // Fetch job positions with infinite query
   const {
     jobs,
     totalJobs,
@@ -24,41 +21,8 @@ const JobList = () => {
     isFetchingNextPage,
   } = useJobPositionsQuery({ 
     search: debouncedSearch, 
-    limit: 3,
-    enabled: isAuthenticated // Only fetch if user is logged in
+    limit: 8
   });
-
-  // Show loading while checking authentication
-  if (isAuthLoading) {
-    return <LoadingPage />;
-  }
-
-  // Show login prompt if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white min-h-screen">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="bg-gray-50 rounded-lg p-12 max-w-md w-full text-center">
-              <LoginOutlined className="text-6xl text-[#48892F] mb-6" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Login Diperlukan
-              </h2>
-              <p className="text-gray-600 mb-8">
-                Untuk melihat daftar lowongan pekerjaan, silakan login terlebih dahulu.
-              </p>
-              <Link
-                to="/auth/login"
-                className="inline-block px-8 py-3 bg-[#48892F] text-white rounded-md font-medium hover:bg-[#3f7a29] transition-colors"
-              >
-                Login Sekarang
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   // Show loading page on initial load
   if (isLoading) {
@@ -165,19 +129,21 @@ const JobList = () => {
         </div>
 
         {/* Load More Button */}
-        {isFetchingNextPage && (
-          <div className="mt-8">
-            <LoadingPage />
-          </div>
-        )}
-        
-        {hasNextPage && !isFetchingNextPage && (
+        {hasNextPage && (
           <div className="mt-8 flex justify-center">
             <button
               onClick={() => fetchNextPage()}
-              className="px-8 py-3 bg-[#48892F] text-white rounded-md font-medium hover:bg-[#3f7a29] transition-colors"
+              disabled={isFetchingNextPage}
+              className="px-8 py-3 bg-[#48892F] text-white rounded-md font-medium hover:bg-[#3f7a29] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              Muat Lebih Banyak
+              {isFetchingNextPage ? (
+                <>
+                  <Spinner size="small" color="#ffffff" />
+                  <span>Memuat...</span>
+                </>
+              ) : (
+                "Muat Lebih Banyak"
+              )}
             </button>
           </div>
         )}

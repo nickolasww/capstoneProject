@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useDeferredValue } from 'react';
+import { useState, useMemo, useDeferredValue, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Tabs, Input, Button, Typography, Tag } from 'antd';
 import { FilterOutlined, SearchOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
@@ -7,6 +7,8 @@ import type { TJobApplication, TApplicationStatus } from '@/api/dashboard/lamara
 import { getJobApplications, updateJobApplication } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/index';
 import EditProgressModal from './_components/form/edit-modal';
 import { useDebounce } from '@/app/_hooks/use-debounce';
+import { useQuery } from '@/app/_hooks/request/use-query';
+import { useMutation } from '@/app/_hooks/request/use-mutation';
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -20,63 +22,14 @@ export default function LamaranKerjaPage() {
   const debouncedSearchPosition = useDebounce(searchPosition);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<TJobApplication | null>(null);
-  const [applications, setApplications] = useState<TJobApplication[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  // Fetch applications when tab changes or page changes
-  useEffect(() => {
-    const fetchApplications = async () => {
-      setLoading(true);
-      try {
-        const params: any = { limit: pageSize };
-        
-        if (activeTab !== 'all') {
-          params.status = activeTab;
-        }
-        
-        if (debouncedSearchPosition) {
-          params.job_title = debouncedSearchPosition;
-        }
-        
-        console.log('Fetching with params:', params);
-        const response = await getJobApplications(params);
-        console.log('Response received:', response);
-        
-        if (response && response.job_applications) {
-          setApplications(response.job_applications.list || []);
-          setNextCursor(response.job_applications.next_cursor);
-          setHasMore(!!response.job_applications.next_cursor);
-        } else {
-          console.error('Invalid response structure:', response);
-          setApplications([]);
-          setNextCursor(null);
-          setHasMore(false);
-        }
-        setCurrentPage(1);
-      } catch (error) {
-        console.error('Error fetching applications:', error);
-        setApplications([]);
-        setNextCursor(null);
-        setHasMore(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchApplications();
-  }, [activeTab, debouncedSearchPosition]);
-
-  // Load more data for pagination
-  const loadMore = async () => {
-    if (!nextCursor || loading) return;
-    
-    setLoading(true);
-    try {
-      const params: any = { limit: pageSize, cursor: nextCursor };
+  // Fetch job applications using React Query with caching
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ['job-applications', activeTab, debouncedSearchPosition],
+    queryFn: () => {
+      const params: any = { limit: 100 }; // Fetch more for better UX
       
       if (activeTab !== 'all') {
         params.status = activeTab;
@@ -86,16 +39,43 @@ export default function LamaranKerjaPage() {
         params.job_title = debouncedSearchPosition;
       }
       
-      const response = await getJobApplications(params);
-      setApplications([...(applications || []), ...(response.job_applications.list || [])]);
-      setNextCursor(response.job_applications.next_cursor);
-      setHasMore(!!response.job_applications.next_cursor);
-    } catch (error) {
-      console.error('Error loading more applications:', error);
-    } finally {
-      setLoading(false);
-    }
+      return getJobApplications(params);
+    },
+    staleTime: 1 * 60 * 1000, // Data considered fresh for 1 minute
+    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    refetchOnMount: false, // Only refetch if data is stale, not on every mount
+    retry: 3,
+  });
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: ({ id, updateData }: { id: string; updateData: any }) => 
+      updateJobApplication({ id }, updateData),
+    onSuccess: () => {
+      // Refetch the list after successful update
+      refetch();
+      setIsModalOpen(false);
+      setSelectedRecord(null);
+    },
+    onError: (error) => {
+      console.error('Error updating application:', error);
+    },
+  });
+
+  // Extract data with safe defaults
+  const applications = data?.job_applications?.list ?? [];
+
+  // Reset to page 1 when filters change
+  const handleTabChange = (key: string) => {
+    setActiveTab(key as TApplicationStatus | 'all');
+    setCurrentPage(1);
   };
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchPosition]);
 
   const handleEditClick = (record: TJobApplication) => {
     setSelectedRecord(record);
@@ -112,32 +92,16 @@ export default function LamaranKerjaPage() {
     interview_at?: string;
   }) => {
     if (selectedRecord) {
-      try {
-        // Update the status and interview_at if provided
-        const updateData: any = {
-          status: values.status,
-        };
-        
-        if (values.interview_at) {
-          updateData.interview_at = values.interview_at;
-        }
-        
-        await updateJobApplication({ id: selectedRecord.id }, updateData);
-        
-        // Refresh the list
-        const params: any = { limit: pageSize };
-        if (activeTab !== 'all') {
-          params.status = activeTab;
-        }
-        const response = await getJobApplications(params);
-        setApplications(response.job_applications.list || []);
-        setNextCursor(response.job_applications.next_cursor);
-        setHasMore(!!response.job_applications.next_cursor);
-        setIsModalOpen(false);
-        setSelectedRecord(null);
-      } catch (error) {
-        console.error('Error updating application:', error);
+      // Update the status and interview_at if provided
+      const updateData: any = {
+        status: values.status,
+      };
+      
+      if (values.interview_at) {
+        updateData.interview_at = values.interview_at;
       }
+      
+      updateMutation.mutate({ id: selectedRecord.id, updateData });
     }
   };
 
@@ -298,15 +262,7 @@ export default function LamaranKerjaPage() {
   const deferredFilteredApplications = useDeferredValue(filteredApplications);
 
   const handleTableChange: TableProps<TJobApplication>['onChange'] = (pagination) => {
-    const newPage = pagination.current || 1;
-    
-    // If moving to next page and we need more data
-    const totalItems = deferredFilteredApplications?.length ?? 0;
-    if (newPage > currentPage && newPage * pageSize > totalItems && hasMore) {
-      loadMore();
-    }
-    
-    setCurrentPage(newPage);
+    setCurrentPage(pagination.current || 1);
   };
 
   const tabItems = [
@@ -334,6 +290,17 @@ export default function LamaranKerjaPage() {
 
   return (
     <div className="p-6 lg:p-8 bg-gray-50 min-h-screen">
+      {/* Background fetching indicator */}
+      {isFetching && data && (
+        <div className="fixed top-20 right-8 z-50 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span className="text-sm font-medium">Memperbarui data...</span>
+        </div>
+      )}
+
       {/* Header Section */}
       <div className="mb-14 text-center">
         <h1 className="text-4xl  text-gray-900 mb-2">Manajemen Karir</h1>
@@ -343,7 +310,7 @@ export default function LamaranKerjaPage() {
       {/* Tabs */}
       <Tabs
         activeKey={activeTab}
-        onChange={(key) => setActiveTab(key as TApplicationStatus | 'all')}
+        onChange={handleTabChange}
         items={tabItems}
         centered
         style={{ marginBottom: 24 }}
@@ -397,14 +364,14 @@ export default function LamaranKerjaPage() {
         columns={columns}
         dataSource={deferredFilteredApplications || []}
         rowKey="id"
-        loading={loading}
+        loading={isLoading || isFetching}
         onChange={handleTableChange}
         pagination={{
           current: currentPage,
           pageSize: pageSize,
           total: deferredFilteredApplications?.length ?? 0,
           showSizeChanger: false,
-          showTotal: (total, range) => `Menampilkan ${range[0]}-${range[1]} dari ${total} data${hasMore ? '+' : ''}`,
+          showTotal: (total, range) => `Menampilkan ${range[0]}-${range[1]} dari ${total} data`,
           style: { marginRight: '16px' },
         }}
         bordered

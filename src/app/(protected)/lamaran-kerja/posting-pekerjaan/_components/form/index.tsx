@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Select, Button, notification, DatePicker, Switch } from 'antd';
+import { Spinner } from '@/app/loading';
 import { createJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
 import { JobPostingFormSchema } from './schema';
 import { createZodSync } from '@/utils/zod-sync';
@@ -366,8 +367,9 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
               type="primary"
               size="large"
               htmlType="submit"
-              loading={isSubmitting}
+              disabled={isSubmitting}
               className="bg-green-600 hover:bg-green-700"
+              icon={isSubmitting ? <Spinner size="small" color="#ffffff" /> : null}
             >
               {isSubmitting ? 'Menyimpan...' : 'Publikasikan Lowongan'}
             </Button>

@@ -3,7 +3,7 @@
 import { useState, useMemo, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InboxOutlined , EyeOutlined, UserAddOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EnvironmentOutlined, DollarOutlined, CalendarOutlined, TeamOutlined } from '@ant-design/icons';
-import Loading from '@/app/loading';
+import Loading, { Spinner } from '@/app/loading';
 import type { TJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
 import { getJobPostings, deleteJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
 import { useDebounce } from '@/app/_hooks/use-debounce';
@@ -26,6 +26,7 @@ export default function PostingPekerjaanPage() {
     staleTime: 1 * 60 * 1000, // Data considered fresh for 1 minute
     gcTime: 5 * 60 * 1000, // Cache for 5 minutes
     refetchOnWindowFocus: true, // Refetch when user returns to tab
+    refetchOnMount: false, // Only refetch if data is stale, not on every mount
     retry: 3, // Retry failed requests 3 times
   });
 
@@ -330,9 +331,16 @@ export default function PostingPekerjaanPage() {
                 <button
                   onClick={handleConfirmDelete}
                   disabled={deleteMutation.isPending}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {deleteMutation.isPending ? 'Menghapus...' : 'Hapus'}
+                  {deleteMutation.isPending ? (
+                    <>
+                      <Spinner size="small" color="#ffffff" />
+                      <span>Menghapus...</span>
+                    </>
+                  ) : (
+                    'Hapus'
+                  )}
                 </button>
               </div>
             </div>

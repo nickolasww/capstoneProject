@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Form, Input, ConfigProvider } from 'antd';
 import imgLogo from '@/assets/logo PT BAS.png';
+import { Spinner } from '@/app/loading';
 import { createZodSync } from "@/utils/zod-sync";
 import { RegisterFormSchema, TRegisterFormData } from "./schema";
 import { usePostRegister } from "./_hooks/use-post-register";
@@ -154,9 +155,16 @@ export default function Register() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full h-12 bg-[#4d9232] rounded-lg font-['Poppins'] text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full h-12 bg-[#4d9232] rounded-lg font-['Poppins'] text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {isPending ? 'Creating Account...' : 'Create Account'}
+                  {isPending ? (
+                    <>
+                      <Spinner size="small" color="#ffffff" />
+                      <span>Creating Account...</span>
+                    </>
+                  ) : (
+                    'Create Account'
+                  )}
                 </button>
               </Form.Item>
             </Form>

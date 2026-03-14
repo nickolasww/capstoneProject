@@ -40,7 +40,7 @@ export const getJobPositions = async (
     if (responseData.data && responseData.data.job_positions) {
       responseData = responseData.data;
     }
-    
+
     // Ensure proper structure matching backend response
     const result: TJobPositionListResponse = {
       job_positions: {
@@ -63,11 +63,27 @@ export const getJobPositions = async (
  * @returns Promise with job position detail
  */
 export const getDetailJobPosition = async (
-  params: { id: string }
+  params: { slug: string }
 ): Promise<TJobPositionDetailResponse> => {
-  const response = await api.get<TJobPositionDetailResponse>(
-    `/job-positions/${params.id}`
-  );
-  
-  return response.data;
+  try {
+    const response = await api.get(
+      `/job-positions/slug/${params.slug}`
+    );
+
+    let responseData = response.data;
+
+    if (responseData.data) {
+      responseData = responseData.data;
+    }
+
+    const result: TJobPositionDetailResponse = {
+      job_positions: responseData.job_positions || responseData,
+      message: responseData.message || response.data.message || 'success',
+    };
+
+    return result;
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
 };

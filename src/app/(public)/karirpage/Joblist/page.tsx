@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SearchOutlined, ShareAltOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import LogoBas from "@/assets/logo PT BAS.png";
 import { useDebounce } from "@/app/_hooks/use-debounce";
 import LoadingPage, { Spinner } from "@/app/loading";
@@ -7,6 +8,7 @@ import ErrorPage from "@/app/error";
 import { useJobPositionsQuery } from "./_hooks/use-job-positions-query";
 
 const JobList = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery);
   
@@ -117,10 +119,23 @@ const JobList = () => {
 
               {/* Actions */}
               <div className="flex items-center justify-between">
-                <button className="px-8 py-3 bg-gray-50 text-gray-600 rounded-md font-medium hover:bg-gray-100 transition-colors text-sm border border-transparent hover:border-gray-200">
+                <button
+                  onClick={() => {
+                    const slug = typeof job.slug === 'string' ? job.slug.trim() : '';
+                    if (!slug) {
+                      return;
+                    }
+
+                    navigate(`/karirpage/Joblist/${slug}`);
+                  }}
+                  className="px-8 py-3 bg-gray-50 text-gray-600 rounded-md font-medium hover:bg-gray-100 transition-colors text-sm border border-transparent hover:border-gray-200"
+                >
                   Lihat Detail
                 </button>
-                <button className="px-12 py-3 bg-[#48892F] text-white rounded-md font-medium hover:bg-[#3f7a29] transition-colors text-sm">
+                <button
+                  onClick={() => navigate('/auth/login')}
+                  className="px-12 py-3 bg-[#48892F] text-white rounded-md font-medium hover:bg-[#3f7a29] transition-colors text-sm"
+                >
                   Lamar
                 </button>
               </div>

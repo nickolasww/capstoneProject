@@ -122,11 +122,16 @@ const JobList = () => {
                 <button
                   onClick={() => {
                     const slug = typeof job.slug === 'string' ? job.slug.trim() : '';
-                    if (!slug) {
+                    const fallbackSlug = typeof job.title === 'string'
+                      ? job.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+                      : '';
+                    const nextSlug = slug || fallbackSlug;
+
+                    if (!nextSlug) {
                       return;
                     }
 
-                    navigate(`/karirpage/Joblist/${slug}`);
+                    navigate(`/karirpage/Joblist/${nextSlug}`);
                   }}
                   className="px-8 py-3 bg-gray-50 text-gray-600 rounded-md font-medium hover:bg-gray-100 transition-colors text-sm border border-transparent hover:border-gray-200"
                 >

@@ -5,6 +5,13 @@ import type {
   TFilterJobPosition
 } from "./type";
 
+const toSlug = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
 /**
  * Get list of job positions with cursor-based pagination
  * @param params - Filter parameters including limit and cursor
@@ -41,10 +48,20 @@ export const getJobPositions = async (
       responseData = responseData.data;
     }
 
+    const list = (responseData.job_positions?.list || []).map((item: any) => {
+      const rawSlug = typeof item.slug === 'string' ? item.slug.trim() : '';
+      const fallbackSlug = typeof item.title === 'string' ? toSlug(item.title) : '';
+
+      return {
+        ...item,
+        slug: rawSlug || fallbackSlug,
+      };
+    });
+
     // Ensure proper structure matching backend response
     const result: TJobPositionListResponse = {
       job_positions: {
-        list: responseData.job_positions?.list || [],
+        list,
         next_cursor: responseData.job_positions?.next_cursor || null,
       },
       message: responseData.message || 'success',

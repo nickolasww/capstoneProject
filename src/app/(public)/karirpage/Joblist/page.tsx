@@ -6,10 +6,13 @@ import { useDebounce } from "@/app/_hooks/use-debounce";
 import LoadingPage, { Spinner } from "@/app/loading";
 import ErrorPage from "@/app/error";
 import { useJobPositionsQuery } from "./_hooks/use-job-positions-query";
+import { JobApplicationModal } from "./_components/JobApplicationModal";
 
 const JobList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedJobId, setSelectedJobId] = useState<string | number | null>(null);
+  const [selectedJobTitle, setSelectedJobTitle] = useState<string>("");
   const debouncedSearch = useDebounce(searchQuery);
   
   // Fetch job positions with infinite query
@@ -138,7 +141,10 @@ const JobList = () => {
                   Lihat Detail
                 </button>
                 <button
-                  onClick={() => navigate('/auth/login')}
+                  onClick={() => {
+                    setSelectedJobId(job.id);
+                    setSelectedJobTitle(job.title);
+                  }}
                   className="px-12 py-3 bg-[#48892F] text-white rounded-md font-medium hover:bg-[#3f7a29] transition-colors text-sm"
                 >
                   Lamar
@@ -170,6 +176,45 @@ const JobList = () => {
       </>
     )}
       </div>
+
+      {/* Application Modal */}
+      {selectedJobId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 max-h-screen overflow-y-auto py-8">
+          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4 relative">
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setSelectedJobId(null);
+                setSelectedJobTitle("");
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"
+            >
+              <span className="text-2xl">×</span>
+            </button>
+
+            {/* Header */}
+            <div className="px-8 pt-8 pb-4 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Lamar Posisi: <span className="text-[#48892F]">{selectedJobTitle}</span>
+              </h2>
+              <p className="text-gray-600 text-sm mt-1">Lengkapi form di bawah untuk melamar posisi ini</p>
+            </div>
+
+            {/* Form */}
+            <div className="px-8 py-6 max-h-[calc(100vh-300px)] overflow-y-auto">
+              <JobApplicationModal
+                jobPositionId={selectedJobId}
+                jobTitle={selectedJobTitle}
+                onSubmitSuccess={() => {
+                  setSelectedJobId(null);
+                  setSelectedJobTitle("");
+                  // You can show a success message here
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

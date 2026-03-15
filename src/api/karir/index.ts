@@ -2,7 +2,8 @@ import { api } from "@/libs/axios";
 import type { 
   TJobPositionListResponse, 
   TJobPositionDetailResponse,
-  TFilterJobPosition
+  TFilterJobPosition,
+  TJobApplicationResponse
 } from "./type";
 
 const toSlug = (value: string) =>
@@ -96,6 +97,38 @@ export const getDetailJobPosition = async (
     const result: TJobPositionDetailResponse = {
       job_positions: responseData.job_positions || responseData,
       message: responseData.message || response.data.message || 'success',
+    };
+
+    return result;
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Submit job application
+ * @param formData - FormData containing job application information
+ * @returns Promise with submission response
+ */
+export const submitJobApplication = async (
+  formData: FormData
+): Promise<TJobApplicationResponse> => {
+  try {
+    // Authorization will be automatically added by axios interceptor from localStorage token
+    const response = await api.post(
+      '/job-applications',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      }
+    );
+
+    const result: TJobApplicationResponse = {
+      message: response.data.message || 'Job application submitted successfully',
+      data: response.data.data,
     };
 
     return result;

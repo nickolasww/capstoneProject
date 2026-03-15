@@ -42,3 +42,28 @@ export type TJobPositionDetailData = {
 
 export type TJobPositionListResponse = TJobPositionsResponse;
 export type TJobPositionDetailResponse = TJobPositionDetailData;
+
+// Job Application types
+export type TJobApplicationSubmission = {
+  job_position_id: string | number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  address: string;
+  file: File;
+};
+
+export type TJobApplicationResponse = {
+  message: string;
+  data?: {
+    id?: string | number;
+    job_position_id?: string | number;
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone_number?: string;
+    address?: string;
+    created_at?: string;
+  };
+};

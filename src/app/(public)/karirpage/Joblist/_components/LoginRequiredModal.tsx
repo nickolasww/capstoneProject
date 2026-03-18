@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import {useEffect} from 'react';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 interface LoginRequiredModalProps {
   isOpen: boolean;
@@ -48,7 +49,7 @@ export const LoginRequiredModal = ({
         {/* Icon */}
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
-            <span className="text-3xl">⚠️</span>
+            <ExclamationCircleOutlined className="text-yellow-500 text-3xl" />
           </div>
         </div>
 
@@ -72,7 +73,7 @@ export const LoginRequiredModal = ({
           </button>
           <button
             onClick={handleLogin}
-            className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors"
+            className="flex-1 px-4 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"
           >
             Login
           </button>

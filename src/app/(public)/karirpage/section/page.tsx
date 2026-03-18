@@ -2,22 +2,30 @@ import BgKiri from '@/assets/karirpage/BgKarirKiri.svg';
 import BgKanan from '@/assets/karirpage/BgKarirKanan.svg';
 
 const Section = () => {
+
+  const handleScrollToJobList = () => {
+    const el = document.getElementById('joblist-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className='relative min-h-screen flex items-center justify-center bg-[#E7F4E2] overflow-hidden'>
         {/* Background Images */}
         <div className="absolute inset-0 z-0 w-full pointer-events-none">
-          <div className="hidden xl:block absolute left-0 top-0 bottom-0 h-full w-[700px] 2xl:w-[900px]">
+          <div className="hidden xl:block absolute left-0 top-0 bottom-0 h-full w-175 2xl:w-225">
             <img 
               src={BgKiri} 
               alt="Background Left" 
-              className="w-full lg:h-[800px] xl:h-[1000px] 2xl:h-full object-cover object-left"
+              className="w-full lg:h-200 xl:h-250 2xl:h-full object-cover object-left"
             />
           </div>
-          <div className="hidden xl:block absolute right-0 top-0 bottom-0 h-full w-[900px] 2xl:w-[1300px]">
+          <div className="hidden xl:block absolute right-0 top-0 bottom-0 h-full w-225 2xl:w-325">
              <img 
               src={BgKanan} 
               alt="Background Right" 
-              className="w-full lg:h-[600px] xl:h-[1000px] 2xl:h-full object-cover object-right"
+              className="w-full lg:h-150 xl:h-250 2xl:h-full object-cover object-right"
             />
           </div>
         </div>
@@ -33,7 +41,10 @@ const Section = () => {
           
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="text-xl px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl cursor-pointer">
+            <button
+              className="text-xl px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl cursor-pointer"
+              onClick={handleScrollToJobList}
+            >
               Lihat Posisi
             </button>
             <button className="text-xl px-8 py-3 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors border-2 border-gray-300 shadow-md hover:shadow-lg cursor-pointer">

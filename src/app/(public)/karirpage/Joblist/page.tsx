@@ -7,12 +7,15 @@ import LoadingPage, { Spinner } from "@/app/loading";
 import ErrorPage from "@/app/error";
 import { useJobPositionsQuery } from "./_hooks/use-job-positions-query";
 import { JobApplicationModal } from "./_components/JobApplicationModal";
+import { LoginRequiredModal } from "./_components/LoginRequiredModal";
+import { getAccessToken } from "@/libs/localstorage";
 
 const JobList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedJobId, setSelectedJobId] = useState<string | number | null>(null);
   const [selectedJobTitle, setSelectedJobTitle] = useState<string>("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const debouncedSearch = useDebounce(searchQuery);
   
   // Fetch job positions with infinite query
@@ -142,6 +145,12 @@ const JobList = () => {
                 </button>
                 <button
                   onClick={() => {
+                    const token = getAccessToken();
+                    if (!token) {
+                      setSelectedJobTitle(job.title);
+                      setShowLoginModal(true);
+                      return;
+                    }
                     setSelectedJobId(job.id);
                     setSelectedJobTitle(job.title);
                   }}
@@ -176,6 +185,13 @@ const JobList = () => {
       </>
     )}
       </div>
+
+      {/* Login Required Modal */}
+      <LoginRequiredModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        jobTitle={selectedJobTitle}
+      />
 
       {/* Application Modal */}
       {selectedJobId && (

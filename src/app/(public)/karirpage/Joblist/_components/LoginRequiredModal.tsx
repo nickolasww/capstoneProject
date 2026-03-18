@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import {useEffect} from 'react';
 
 interface LoginRequiredModalProps {
   isOpen: boolean;
@@ -13,6 +14,20 @@ export const LoginRequiredModal = ({
 }: LoginRequiredModalProps) => {
   const navigate = useNavigate();
 
+  // Handle prevent scroll when modal is open/closed
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function to restore scroll when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const handleLogin = () => {
@@ -20,8 +35,16 @@ export const LoginRequiredModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-8 animate-fadeIn">
+    <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4 p-8 animate-fadeIn relative">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <span className="text-2xl">×</span>
+        </button>
+
         {/* Icon */}
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -54,31 +77,7 @@ export const LoginRequiredModal = ({
             Login
           </button>
         </div>
-
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-        >
-          <span className="text-2xl">×</span>
-        </button>
       </div>
-
-      <style>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

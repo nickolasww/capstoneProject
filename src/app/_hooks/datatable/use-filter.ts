@@ -1,8 +1,15 @@
 import { useState, useCallback } from 'react';
 
+type ForFilter = { 
+  status?: 'active' | 'inactive';
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+}
+
 export type FilterParams = {
   search?: string;
-  filter?: Record<string, any>;
+  filter?: ForFilter;
   sort_by?: string;
   order?: 'ASC' | 'DESC';
 };

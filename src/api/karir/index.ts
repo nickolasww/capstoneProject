@@ -3,7 +3,10 @@ import type {
   TJobPositionListResponse, 
   TJobPositionDetailResponse,
   TFilterJobPosition,
-  TJobApplicationResponse
+  TJobApplicationResponse,
+  TJobPosition,
+  TJobApplicationHistory,
+  TJobApplicationsHistoryResponse
 } from "./type";
 
 const toSlug = (value: string) =>
@@ -49,7 +52,7 @@ export const getJobPositions = async (
       responseData = responseData.data;
     }
 
-    const list = (responseData.job_positions?.list || []).map((item: any) => {
+    const list = (responseData.job_positions?.list || []).map((item: TJobPosition) => {
       const rawSlug = typeof item.slug === 'string' ? item.slug.trim() : '';
       const fallbackSlug = typeof item.title === 'string' ? toSlug(item.title) : '';
 
@@ -132,6 +135,45 @@ export const submitJobApplication = async (
     };
 
     return result;
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get job application history for the logged-in user
+ * @param params - Optional filter/search params
+ * @returns Promise with job application history list
+ */
+export const getJobApplicationsHistory = async (
+  params: { search?: string; limit?: number; cursor?: string } = {}
+): Promise<TJobApplicationsHistoryResponse> => {
+  try {
+    const { limit = 8, cursor, search } = params;
+    const queryParams: Record<string, string> = {
+      limit: limit.toString(),
+    };
+    if (cursor) queryParams.cursor = cursor;
+    if (search) queryParams.search = search;
+
+    const response = await api.get('/job-applications/history', { params: queryParams });
+    // Normalisasi agar selalu return dalam bentuk { job_applications: { items: [...] }, message }
+    let items: TJobApplicationHistory[] = [];
+    let message = 'success';
+    if (Array.isArray(response.data)) {
+      items = response.data;
+    } else if (response.data?.job_applications?.items) {
+      items = response.data.job_applications.items;
+      message = response.data.message || message;
+    } else if (Array.isArray(response.data?.items)) {
+      items = response.data.items;
+      message = response.data.message || message;
+    }
+    return {
+      job_applications: { items },
+      message,
+    };
   } catch (error) {
     console.error('API Error:', error);
     throw error;

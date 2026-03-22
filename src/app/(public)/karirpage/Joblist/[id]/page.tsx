@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
 	ArrowLeftOutlined,
 	EnvironmentOutlined,
-	CalendarOutlined,
 	ClockCircleOutlined,
 	ShareAltOutlined,
 	ApartmentOutlined,
@@ -70,6 +70,7 @@ const DetailSection = ({ title, items, fallback }: { title: string; items: strin
 };
 
 export default function JobPositionDetailPage() {
+	const location = useLocation();
 	const navigate = useNavigate();
 	const { id } = useParams<{ id: string }>();
 	const slug = id || '';
@@ -98,6 +99,9 @@ export default function JobPositionDetailPage() {
 
 	const job = detailResponse?.job_positions;
 
+	// Cek apakah sudah daftar dari state atau localStorage/logic lain
+	const appliedFromState = location.state?.applied;
+
 	// Breadcrumbs array (Karir > Daftar Pekerjaan > Judul/Detail)
 	const breadcrumbs = [
 		{ label: 'Karir', path: '/karirpage' },
@@ -107,7 +111,7 @@ export default function JobPositionDetailPage() {
 
 	const descriptionItems = useMemo(() => parseTextBlocks(job?.description), [job?.description]);
 	const requirementsItems = useMemo(() => parseTextBlocks(job?.requirements), [job?.requirements]);
-	const responsibilitiesItems = useMemo(() => parseTextBlocks(job?.responsibilities), [job?.responsibilities]);
+	// const responsibilitiesItems = useMemo(() => parseTextBlocks(job?.responsibilities), [job?.responsibilities]);
 
 	const relatedJobs = useMemo(() => {
 		const jobs = jobsResponse?.job_positions.list || [];
@@ -166,7 +170,7 @@ export default function JobPositionDetailPage() {
 		<section className="min-h-screen px-4 py-32 sm:px-6 lg:px-8 lg:py-32 bg-white">
 			<div className="">
 				<button
-					onClick={() => navigate('/karirpage')}
+					onClick={() => navigate(-1)}
 					className="inline-flex items-center gap-2 text-md font-medium text-[#26341F] transition hover:text-[#48892F]"
 				>
 					<ArrowLeftOutlined />
@@ -219,8 +223,9 @@ export default function JobPositionDetailPage() {
 
 							<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
 								<button
-									onClick={() => navigate('/auth/login')}
-									className="inline-flex items-center justify-center rounded-md bg-[#48892F] px-8 py-3 text-sm font-semibold text-white transition hover:bg-[#3B7225] sm:min-w-35"
+									disabled={appliedFromState}
+									onClick={() => !appliedFromState && navigate('/auth/login')}
+									className={`inline-flex items-center justify-center rounded-md px-8 py-3 text-sm font-semibold sm:min-w-35 transition ${appliedFromState ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-[#48892F] text-white hover:bg-[#3B7225]'}`}
 								>
 									Lamar
 								</button>

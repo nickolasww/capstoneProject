@@ -76,7 +76,7 @@ export const getDetailJobPosting = async (
   params: { id: string }
 ): Promise<TJobPostingDetailResponse> => {
   try {
-    const response = await api.get<any>(
+    const response = await api.get(
       `/job-positions/admin/${params.id}`
     );
     
@@ -128,7 +128,7 @@ export const updateJobPosting = async (
   data: Partial<TJobPostingRequest>
 ): Promise<TJobPostingUpdateResponse> => {
   try {
-    const response = await api.patch<any>(
+    const response = await api.patch(
       `/job-positions/admin/${params.id}`,
       data
     );

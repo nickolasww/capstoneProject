@@ -1,13 +1,30 @@
 import BgKiri from '@/assets/karirpage/BgKarirKiri.svg';
 import BgKanan from '@/assets/karirpage/BgKarirKanan.svg';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getAccessToken } from '@/libs/localstorage';
+import { LoginRequiredLamaranModal } from '../lamaran-terdaftar/_components/LoginRequiredLamaranModal';
 
 const Section = () => {
+
+
+  const navigate = useNavigate();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const handleScrollToJobList = () => {
     const el = document.getElementById('joblist-section');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleLamaranTerdaftarClick = () => {
+    const token = getAccessToken();
+    if (!token) {
+      setShowLoginModal(true);
+      return;
+    }
+    navigate('/karirpage/lamaran-terdaftar');
   };
 
   return (
@@ -47,9 +64,16 @@ const Section = () => {
             >
               Lihat Posisi
             </button>
-            <button className="text-xl px-8 py-3 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors border-2 border-gray-300 shadow-md hover:shadow-lg cursor-pointer">
+            <button
+              className="text-xl px-8 py-3 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors border-2 border-gray-300 shadow-md hover:shadow-lg cursor-pointer"
+              onClick={handleLamaranTerdaftarClick}
+            >
               Lamaran Terdaftar
             </button>
+            <LoginRequiredLamaranModal
+              isOpen={showLoginModal}
+              onClose={() => setShowLoginModal(false)}
+            />
           </div>
         </div>
     </div>

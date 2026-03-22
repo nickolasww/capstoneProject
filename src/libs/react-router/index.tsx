@@ -5,10 +5,6 @@ import { getDirectoryPath } from '@/libs/react-router/utils/route';
 
 type FileGlob = Record<string, () => Promise<any>>;
 
-interface RouteMap {
-  [path: string]: RouteObject;
-}
-
 /**
  * Create lazy component wrapper with Suspense
  */

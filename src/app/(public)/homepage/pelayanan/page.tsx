@@ -1,5 +1,3 @@
-import React from 'react';
-
 const PelayananKami = () => {
   // Mock data untuk pelayanan
   const services = [

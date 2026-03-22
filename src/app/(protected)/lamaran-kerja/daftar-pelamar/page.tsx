@@ -13,6 +13,17 @@ import { useMutation } from '@/app/_hooks/request/use-mutation';
 const { Search } = Input;
 const { Text } = Typography;
 
+type JobApplicationParams = {
+  limit?: number;
+  status?: TApplicationStatus;
+  job_title?: string;
+};
+
+type UpdateJobApplicationData = {
+  status: TApplicationStatus;
+  interview_at?: string;
+};
+
 export default function LamaranKerjaPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TApplicationStatus | 'all'>('all');
@@ -29,7 +40,7 @@ export default function LamaranKerjaPage() {
   const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['job-applications', activeTab, debouncedSearchPosition],
     queryFn: () => {
-      const params: any = { limit: 100 }; // Fetch more for better UX
+      const params: JobApplicationParams = { limit: 100 }; // Fetch more for better UX
       
       if (activeTab !== 'all') {
         params.status = activeTab;
@@ -50,7 +61,7 @@ export default function LamaranKerjaPage() {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: ({ id, updateData }: { id: string; updateData: any }) => 
+    mutationFn: ({ id, updateData }: { id: string; updateData: UpdateJobApplicationData }) => 
       updateJobApplication({ id }, updateData),
     onSuccess: () => {
       // Refetch the list after successful update
@@ -87,23 +98,17 @@ export default function LamaranKerjaPage() {
     setSelectedRecord(null);
   };
 
-  const handleModalSubmit = async (values: {
-    status: TApplicationStatus;
-    interview_at?: string;
-  }) => {
-    if (selectedRecord) {
-      // Update the status and interview_at if provided
-      const updateData: any = {
-        status: values.status,
-      };
-      
-      if (values.interview_at) {
-        updateData.interview_at = values.interview_at;
-      }
-      
-      updateMutation.mutate({ id: selectedRecord.id, updateData });
+const handleModalSubmit = async (values: UpdateJobApplicationData) => {
+  if (selectedRecord) {
+    const updateData: UpdateJobApplicationData = {
+      status: values.status,
+    };
+    if (values.interview_at) {
+      updateData.interview_at = values.interview_at;
     }
-  };
+    updateMutation.mutate({ id: selectedRecord.id, updateData });
+  }
+};
 
   const getStatusConfig = (status: TApplicationStatus) => {
     switch (status) {
@@ -200,7 +205,7 @@ export default function LamaranKerjaPage() {
       ? [{
           title: 'JADWAL INTERVIEW',
           key: 'interviewSchedule',
-          render: (_: any, record: TJobApplication) => {
+          render: (_: unknown, record: TJobApplication) => {
             if (record.interview_at) {
               const interviewDate = new Date(record.interview_at);
               return (

@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { InboxOutlined } from '@ant-design/icons';
+import { Upload, Input } from 'antd';
+const { TextArea } = Input;
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { jobApplicationSchema, type TJobApplicationFormData } from './schema';
@@ -28,6 +31,14 @@ export const JobApplicationForm = ({
   } = useForm<TJobApplicationFormData>({
     resolver: zodResolver(jobApplicationSchema),
     mode: 'onBlur',
+    defaultValues: {
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone_number: '',
+      address: '',
+      file: undefined as unknown as File, // file memang harus File, biarkan undefined
+    },
   });
 
   const { mutate, isPending } = useJobApplicationMutation({
@@ -61,145 +72,121 @@ export const JobApplicationForm = ({
     });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFileName(file.name);
-      // Set the file in the form state properly
-      setValue('file', file, { shouldValidate: true });
-    } else {
-      setSelectedFileName('');
-    }
-  };
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-6 p-8 bg-linear-to-br from-green-50 to-emerald-50 rounded-2xl"
+      className="p-8 bg-[#f2f8ee] rounded-xl shadow-md border border-gray-300 w-full mx-auto max-w-full xl:max-w-400"
+      style={{ minWidth: 0 }}
     >
-      {/* First Name */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Nama Depan
-        </label>
-        <input
-          {...register('first_name')}
-          type="text"
-          placeholder="Masukkan nama depan Anda"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400"
-        />
-        {errors.first_name && (
-          <p className="text-red-500 text-sm mt-1">{errors.first_name.message}</p>
-        )}
-      </div>
-
-      {/* Last Name */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Nama Belakang
-        </label>
-        <input
-          {...register('last_name')}
-          type="text"
-          placeholder="Masukkan nama belakang Anda"
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400"
-        />
-        {errors.last_name && (
-          <p className="text-red-500 text-sm mt-1">{errors.last_name.message}</p>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Email */}
+      {/* Grid for 2 columns */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mb-4">
+        {/* First Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Alamat Email
-          </label>
-          <input
-            {...register('email')}
-            type="email"
-            placeholder="email@example.com"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400"
+          <label className="block text-xs font-medium text-gray-700 mb-1">Nama Depan</label>
+          <TextArea
+            {...register('first_name')}
+            placeholder="Masukkan nama depan Anda"
+            autoSize={{ minRows: 1, maxRows: 2 }}
+            className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+          {errors.first_name && (
+            <p className="text-red-500 text-xs mt-1">{errors.first_name.message}</p>
           )}
         </div>
-
+        {/* Last Name */}
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Nama Belakang</label>
+          <TextArea
+            {...register('last_name')}
+            placeholder="Masukkan nama belakang Anda"
+            autoSize={{ minRows: 1, maxRows: 2 }}
+            className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+          />
+          {errors.last_name && (
+            <p className="text-red-500 text-xs mt-1">{errors.last_name.message}</p>
+          )}
+        </div>
+        {/* Email */}
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Alamat Email</label>
+          <TextArea
+            {...register('email')}
+            placeholder="email@example.com"
+            autoSize={{ minRows: 1, maxRows: 2 }}
+            className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+          />
+          {errors.email && (
+            <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+          )}
+        </div>
         {/* Phone Number */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Nomor Telp
-          </label>
-          <input
+          <label className="block text-xs font-medium text-gray-700 mb-1">Nomor Telp</label>
+          <TextArea
             {...register('phone_number')}
-            type="tel"
             placeholder="08xxxxxxxx"
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400"
+            autoSize={{ minRows: 1, maxRows: 2 }}
+            className="w-full rounded-md border  border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
           />
           {errors.phone_number && (
-            <p className="text-red-500 text-sm mt-1">{errors.phone_number.message}</p>
+            <p className="text-red-500 text-xs mt-1">{errors.phone_number.message}</p>
           )}
         </div>
       </div>
 
       {/* Address */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Alamat
-        </label>
-        <textarea
+      <div className="mb-4">
+        <label className="block text-xs font-medium text-gray-700 mb-1">Alamat</label>
+        <TextArea
           {...register('address')}
           placeholder="Masukkan alamat lengkap Anda"
-          rows={3}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 resize-none"
+          autoSize={{ minRows: 4, maxRows: 6 }}
+          className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 resize-none shadow-sm"
         />
         {errors.address && (
-          <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>
+          <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>
         )}
       </div>
 
-      {/* File Upload */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          CV/Resume
-        </label>
-        <div className="relative">
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={handleFileChange}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
-          <div className={`w-full px-4 py-3 rounded-lg border-2 border-dashed flex items-center justify-between bg-white transition-colors ${
-            errors.file ? 'border-red-400 hover:border-red-500' : 'border-gray-300 hover:border-green-500'
-          }`}>
-            <span className={`${
-              errors.file ? 'text-red-600' : 'text-gray-600'
-            }`}>
-              {selectedFileName || 'Pilih file PDF atau DOC/DOCX'}
-            </span>
-            <span className="text-gray-400 text-sm">Max 5MB</span>
+      {/* File Upload - CV/Resume with Ant Design Dragger */}
+      <div className="mb-4">
+        <label className="block text-xs font-medium text-gray-700 mb-1">CV/Resume</label>
+        <Upload.Dragger
+          name="file"
+          multiple={false}
+          accept=".pdf,.doc,.docx"
+          beforeUpload={file => {
+            setValue('file', file, { shouldValidate: true });
+            setSelectedFileName(file.name);
+            return false; // Prevent auto upload
+          }}
+          showUploadList={false}
+        >
+          <div className="flex flex-col items-center justify-center min-h-55">
+            <p className="ant-upload-drag-icon text-4xl text-green-400"><InboxOutlined /></p>
+            <p className="ant-upload-text text-base">Klik atau drag file ke area ini untuk upload</p>
+            <p className="ant-upload-hint text-xs text-gray-400">Hanya PDF, DOC, atau DOCX. Max 5MB</p>
+            <span className="block mt-2 text-sm text-gray-600">{selectedFileName || ''}</span>
           </div>
-        </div>
+        </Upload.Dragger>
         {errors.file && (
-          <p className="text-red-500 text-sm mt-1">⚠️ {errors.file.message}</p>
+          <p className="text-red-500 text-xs mt-1">⚠️ {errors.file.message}</p>
         )}
       </div>
 
       {/* Error Alert */}
       {submitError && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-700 text-sm font-medium">⚠️ {submitError}</p>
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
+          <p className="text-red-700 text-xs font-medium">⚠️ {submitError}</p>
         </div>
       )}
 
-      {/* Submit Button */}
-      <div className="flex justify-center pt-4">
+      {/* Submit Button Centered */}
+      <div className="flex justify-center pt-2">
         <button
           type="submit"
           disabled={isPending}
-          className="px-12 py-3 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-10 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {isPending ? (
             <>

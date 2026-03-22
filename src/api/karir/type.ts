@@ -1,3 +1,32 @@
+// Response type for job application history
+export type TJobApplicationsHistoryResponse = {
+  job_applications: {
+    items: TJobApplicationHistory[];
+  };
+  message: string;
+};
+// Job Application History type for lamaran-terdaftar page
+export type TJobApplicationHistory = {
+  id?: string;
+  application_id?: string;
+  job_position_id?: string | number;
+  job_id?: string | number;
+  job_title?: string;
+  job_position_title?: string;
+  job_position?: { title?: string };
+  job_position_slug?: string;
+  job_slug?: string;
+  status?: string;
+  applied_at?: string;
+  updated_at?: string;
+  interview_at?: string | null;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
+  phone_number?: string;
+  address?: string;
+  created_at?: string;
+};
 export type TEmploymentType = 'full_time' | 'part_time' | 'contract' | 'internship';
 
 export type TJobPosition = {

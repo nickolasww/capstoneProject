@@ -46,7 +46,7 @@ export const getUserProfile = async (): Promise<TUserProfileResponse> => {
  * Get current user session from users/me
  * GET /users/me
  */
-export const getMe = async (): Promise<any> => {
+export const getMe = async (): Promise<TUserProfileResponse> => {
   const { data } = await api({
     url: "/users/me",
     method: "GET",

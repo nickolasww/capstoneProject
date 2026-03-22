@@ -1,6 +1,7 @@
 import { QueryClient, InvalidateQueryFilters, MutationCache, QueryCache } from "@tanstack/react-query";
 import { queryErrorHandler, mutationErrorHandler } from "./error-handler";
 
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

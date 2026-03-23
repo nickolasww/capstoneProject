@@ -14,6 +14,8 @@ RUN corepack enable \
 
 COPY . .
 
+ARG API_URL
+ENV VITE_API_URL=$API_URL
 RUN pnpm build
 
 FROM nginx:alpine AS production

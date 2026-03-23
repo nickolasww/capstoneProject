@@ -9,8 +9,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    args:
-      API_URL: ${VITE_API_BASE_URL}
+      args:
+        API_URL: https://bas-backend.bukitaurumnsejahtera.co.id
     container_name: bas-frontend
     ports:
      - ${PORT}:80

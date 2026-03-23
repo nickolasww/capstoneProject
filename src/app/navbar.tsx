@@ -186,14 +186,14 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
 
       {/* Mobile Menu */}
       {mobileMenuVisible && isMobile && (
-        <div className={`md:hidden ${hasBackground ? 'bg-white' : 'bg-black/90'}`}>
+        <div className={`md:hidden bg-transparent`}>
           <div className="px-2 pt-2 pb-3 space-y-1">
             <Link
               to="/"
               onClick={() => setMobileMenuVisible(false)}
               className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-100'
+                  ? 'text-white hover:font-semibold'
+                  : 'text-white hover:font-semibold'
                 }`}
             >
               Home
@@ -202,8 +202,8 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               to="/aboutpage"
               onClick={() => setMobileMenuVisible(false)}
               className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/aboutpage'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-100'
+                  ? 'text-white hover:font-semibold'
+                  : 'text-white hover:font-semibold'
                 }`}
             >
               About
@@ -214,8 +214,8 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               <button
                 onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
                 className={`w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors flex items-center justify-between ${pathname.startsWith('/services')
-                    ? 'text-blue-600 bg-blue-50'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-100'
+                    ? 'text-white hover:font-semibold'
+                    : 'text-white hover:font-semibold'
                   }`}
               >
                 <span>Services</span>
@@ -233,21 +233,21 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                   <Link
                     to="/servicespage/sewapage"
                     onClick={() => setMobileMenuVisible(false)}
-                    className="block px-3 py-2 rounded-md text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    className="block px-3 py-2 rounded-md text-sm text-white hover:font-semibold transition-colors"
                   >
                     Sewa Alat Berat
                   </Link>
                   <Link
                     to="/servicespage/konstruksipage"
                     onClick={() => setMobileMenuVisible(false)}
-                    className="block px-3 py-2 rounded-md text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    className="block px-3 py-2 rounded-md text-sm text-white hover:font-semibold transition-colors"
                   >
                     Konstruksi
                   </Link>
                   <Link
                     to="/servicespage/pengadaanpage"
                     onClick={() => setMobileMenuVisible(false)}
-                    className="block px-3 py-2 rounded-md text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    className="block px-3 py-2 rounded-md text-sm text-white hover:font-semibold transition-colors"
                   >
                     Pengadaan Barang Jasa
                   </Link>
@@ -259,8 +259,8 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               to="/karirpage"
               onClick={() => setMobileMenuVisible(false)}
               className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/karirpage'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-100'
+                  ? 'text-white hover:font-semibold'
+                  : 'text-white hover:font-semibold'
                 }`}
             >
               Karir
@@ -269,8 +269,8 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               to="/auth/login"
               onClick={() => setMobileMenuVisible(false)}
               className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/auth/login'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-100'
+                  ? 'text-white hover:font-semibold'
+                  : 'text-white hover:font-semibold'
                 }`}
             >
               Login
@@ -279,8 +279,8 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               to="/auth/register"
               onClick={() => setMobileMenuVisible(false)}
               className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/auth/register'
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-700 hover:text-blue-600 hover:bg-gray-100'
+                  ? 'text-white hover:font-semibold'
+                  : 'text-white hover:font-semibold'
                 }`}
             >
               Register

@@ -1,3 +1,7 @@
+import suplier from "@/assets/homepage/suplier.jpg"
+import konstruksi from "@/assets/homepage/konstruksi.png"
+import pengadaan from "@/assets/homepage/pengadaan.png"
+
 const PelayananKami = () => {
   // Mock data untuk pelayanan
   const services = [
@@ -5,22 +9,22 @@ const PelayananKami = () => {
       id: 1,
       title: 'Supplier Jual Beli',
       description:
-        'Menyediakan berbagai kebutuhan material konstruksi berkualitas tinggi',
-      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&h=300&fit=crop',
+        'Menyediakan kebutuhan alat berat untuk proyek konstruksi dan industri berkat produk berkualitas. dan telah dipercaya banyak perusahaan',
+      image: suplier,
     },
     {
       id: 2,
       title: 'Jasa Konstruksi',
       description:
-        'Layanan konstruksi profesional untuk berbagai jenis proyek pembangunan',
-      image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&h=300&fit=crop',
+        'Inovatif, tepat waktu, dan berkualitas, menciptakan solusi bangunan unggul untuk keberlanjutan proyek Anda.',
+      image: konstruksi,
     },
     {
       id: 3,
       title: 'Pengadaan Barang',
       description:
-        'Solusi pengadaan barang yang efisien dan terpercaya untuk kebutuhan Anda',
-      image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=300&fit=crop', 
+        'Menyediakan kebutuhan alat berat untuk proyek konstruksi dan industri berkat produk berkualitas dan telah dipercaya banyak perusahaan',
+      image: pengadaan,
     },
   ];
 
@@ -39,7 +43,7 @@ const PelayananKami = () => {
               className="group flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-lg transition hover:shadow-2xl"
             >
               {/* Image */}
-              <div className="relative h-48 shrink-0 overflow-hidden">
+              <div className="relative h-66 shrink-0 overflow-hidden">
                 <img
                   src={service.image}
                   alt={service.title}
@@ -53,7 +57,7 @@ const PelayananKami = () => {
                 <h3 className="mb-2 text-center text-2xl font-bold text-[#4D9232]">
                   {service.title}
                 </h3>
-                <p className="mb-4 grow text-center text-[#4D9232]">
+                <p className="mb-4 grow text-center text-[#4D9232] text-sm">
                   {service.description}
                 </p>
                 <div className="flex justify-center">

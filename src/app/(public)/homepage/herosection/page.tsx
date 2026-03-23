@@ -1,10 +1,12 @@
+import hero from "@/assets/homepage/hero.jpg"
+
 const HeroSection = () => {
   return (
     <section className="relative h-[94vh] w-full overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 ">
         <img
-          src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1920&h=1080&fit=crop"
+          src={hero}
           alt="Hero Background"
           className="h-full w-full object-cover"
         />

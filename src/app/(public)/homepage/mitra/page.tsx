@@ -1,9 +1,5 @@
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import mitra1 from "@/assets//homepage/mitra1.svg";
-import mitra2 from "@/assets//homepage/mitra2.svg";
-import mitra3 from "@/assets//homepage/mitra3.svg";
-import mitra4 from "@/assets//homepage/mitra4.svg";
 
 import kabbadung from "@/assets/homepage/mitra/KAB BADUNG.png";
 import kabbatang from "@/assets/homepage/mitra/KAB BATANG.png";

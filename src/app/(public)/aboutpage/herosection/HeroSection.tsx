@@ -1,12 +1,12 @@
 import imgHero from "@/assets/AboutPages/Hero Pictures BAS about.png";
+import heroImg from "@/assets/AboutPages/hero-about.jpg"
 
 export default function HeroSection() {
     return (
-        <section className="relative h-[500px] md:h-[612px] w-full overflow-hidden">
-
+        <section className="relative h-[94vh] w-full overflow-hidden">
             <div className="absolute inset-0">
                 <img
-                    src={imgHero}
+                    src={heroImg}
                     alt="PT Bukit Aurumn Sejahtera Team"
                     className="w-full h-full object-cover opacity-60"
                 />
@@ -15,7 +15,7 @@ export default function HeroSection() {
 
             {/* Content */}
             <div className="relative h-full flex items-center justify-center px-6">
-                <div className="max-w-2xl text-center text-white space-y-6 md:space-y-12">
+                <div className="max-w-3xl text-center text-white space-y-6 md:space-y-12">
                     <h1 className="font-semibold text-4xl md:text-5xl lg:text-6xl leading-tight">
                         Tentang Kami
                     </h1>

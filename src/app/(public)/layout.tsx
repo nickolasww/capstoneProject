@@ -43,19 +43,24 @@ const PublicLayout = () => {
             )?.closest('section') as HTMLElement | null;
           }
 
-          if (mitraSection) {
-            const mitraSectionTop = mitraSection.getBoundingClientRect().top;
-            const navbarHeight = 88; 
-            // Jika section "Mitra Kami" sudah mencapai navbar, tampilkan background
-            if (mitraSectionTop <= navbarHeight) {
-              setHasBackground(true);
-            } else {
-              setHasBackground(false);
-            }
-          } else {
-            // Jika tidak ada section "Mitra Kami" (misal pindah halaman), reset background
-            setHasBackground(false);
+          //aboutpage visimisi
+          let visimisiSection = document.getElementById('visimisi-section');
+          if (!visimisiSection) {
+            visimisiSection = Array.from(document.querySelectorAll('h2')).find(
+              (h2) => h2.textContent?.trim() === 'Visi & Misi'
+            )?.closest('section') as HTMLElement | null;
           }
+
+        const navbarHeight = 88;
+        const mitraTop = mitraSection ? mitraSection.getBoundingClientRect().top : Infinity;
+        const visimisiTop = visimisiSection ? visimisiSection.getBoundingClientRect().top : Infinity;
+
+        // Jika salah satu sudah mencapai navbar, tampilkan background
+        if (mitraTop <= navbarHeight || visimisiTop <= navbarHeight) {
+          setHasBackground(true);
+        } else {
+          setHasBackground(false);
+        }
           
           ticking = false;
         });

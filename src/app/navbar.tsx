@@ -15,8 +15,8 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
   const location = useLocation();
   const isMobile = useIsMobileScreen();
   const pathname = location.pathname;
-  const hasBackground = propHasBackground || pathname.startsWith('/karirpage/Joblist/');
-  const isDarkText = hasBackground || pathname === '/karirpage' || pathname.startsWith('/servicespage');
+  const hasBackground = propHasBackground || pathname.startsWith('/karirpage/Joblist/');  
+  const isDarkText = hasBackground || pathname === '/karirpage' || pathname.startsWith('/servicespage') || pathname.startsWith('/aboutpage/visimisi');
   const { user, isAuthenticated, logout } = useSession();
   const navigate = useNavigate();
 

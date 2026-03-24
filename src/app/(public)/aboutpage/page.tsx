@@ -1,6 +1,6 @@
-import HeroSection from "./HeroSection";
-import { VisionMission } from "./VisionMission";
-import { PortfolioSection } from "./PortfolioSection";
+import HeroSection from "./herosection/HeroSection";
+import VisionMission from "./visimisi/page";
+import { PortfolioSection } from "./portofolio/PortfolioSection";
 
 
 export default function AboutPage() {

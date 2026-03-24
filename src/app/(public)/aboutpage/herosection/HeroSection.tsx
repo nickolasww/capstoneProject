@@ -1,4 +1,3 @@
-import imgHero from "@/assets/AboutPages/Hero Pictures BAS about.png";
 import heroImg from "@/assets/AboutPages/hero-about.jpg"
 
 export default function HeroSection() {

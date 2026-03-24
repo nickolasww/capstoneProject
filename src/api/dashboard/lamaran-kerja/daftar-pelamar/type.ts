@@ -8,7 +8,7 @@ export type TJobApplication = {
   applicant_id: string;
   job_title: string;
   email: string;
-  cv_path: string;
+  file_id: string;
   status: TApplicationStatus;
   phone_number: string;
   submitted_at: string;
@@ -17,7 +17,7 @@ export type TJobApplication = {
 
 export type TApplicationRequest = {
   job_id?: string;
-  cv_path?: string;
+  file_id?: string;
   phone_number?: string;
   status?: TApplicationStatus;
   interview_at?: string;

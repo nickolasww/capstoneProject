@@ -4,11 +4,12 @@ import { Table, Tabs, Input, Button, Typography, Tag } from 'antd';
 import { FilterOutlined, SearchOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType, TableProps } from 'antd/es/table';
 import type { TJobApplication, TApplicationStatus } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/type';
-import { getJobApplications, updateJobApplication } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/index';
+import { getJobApplications, setInterviewSchedule, updateJobApplication } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/index';
 import EditProgressModal from './_components/form/edit-modal';
 import { useDebounce } from '@/app/_hooks/use-debounce';
 import { useQuery } from '@/app/_hooks/request/use-query';
 import { useMutation } from '@/app/_hooks/request/use-mutation';
+import { viewJobApplicationCV } from '@/api/dashboard/lamaran-kerja/daftar-pelamar/index';
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -100,13 +101,27 @@ export default function LamaranKerjaPage() {
 
 const handleModalSubmit = async (values: UpdateJobApplicationData) => {
   if (selectedRecord) {
-    const updateData: UpdateJobApplicationData = {
-      status: values.status,
-    };
-    if (values.interview_at) {
-      updateData.interview_at = values.interview_at;
+    if (values.status === 'short_listed' && values.interview_at) {
+      await setInterviewSchedule({
+        application_id: selectedRecord.id,
+        interview_at: values.interview_at,
+        application_status: 'short_listed',
+      });
+    } else {
+      await updateJobApplication( {id: selectedRecord.id}, { status: values.status } );
     }
-    updateMutation.mutate({ id: selectedRecord.id, updateData });
+    refetch();
+    setIsModalOpen(false);
+    setSelectedRecord(null);
+  }
+};
+
+const handleViewCV = async (file_id: string) => {
+  try {
+    const url = await viewJobApplicationCV(file_id);
+    window.open(url, '_blank');
+  } catch (error) {
+    console.error('Gagal mengambil link CV:', error);
   }
 };
 
@@ -115,13 +130,13 @@ const handleModalSubmit = async (values: UpdateJobApplicationData) => {
       case 'submitted':
         return { color: '#3b82f6', text: 'Submitted' };
       case 'short_listed':
-        return { color: '#8b5cf6', text: 'Short Listed' };
+        return { color: '#8b5cf6', text: 'Tahap Interview' };
       case 'hired':
         return { color: '#22c55e', text: 'Hired' };
       case 'rejected':
         return { color: '#ef4444', text: 'Rejected' };
       default:
-        return { color: '#9ca3af', text: 'Submitted' };
+        return { color: '#3b82f6', text: 'Submitted' };
     }
   };
 
@@ -172,8 +187,7 @@ const handleModalSubmit = async (values: UpdateJobApplicationData) => {
         <Button 
           type="link" 
           icon={<DownloadOutlined />}
-          href={record.cv_path}
-          target="_blank"
+          onClick={() => handleViewCV(record.file_id)}
           style={{ color: '#16a34a', padding: 0 }}
         >
           Lihat CV
@@ -295,16 +309,6 @@ const handleModalSubmit = async (values: UpdateJobApplicationData) => {
 
   return (
     <div className="p-6 lg:p-8 bg-gray-50 min-h-screen">
-      {/* Background fetching indicator */}
-      {isFetching && data && (
-        <div className="fixed top-20 right-8 z-50 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
-          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <span className="text-sm font-medium">Memperbarui data...</span>
-        </div>
-      )}
 
       {/* Header Section */}
       <div className="mb-14 text-center">

@@ -111,10 +111,36 @@ export const updateJobApplication = async (
   req: Partial<TApplicationRequest>
 ): Promise<TResponseData<null>> => {
   const response = await api.patch<TResponseData<null>>(
-    `/job-applications/admin/${params.id}`,
+    `/job-applications/admin/${params.id}/status`,
     req
   );
   
   return response.data;
 };
 
+export const setInterviewSchedule = async ({
+  application_id,
+  interview_at,
+  application_status,
+}: {
+  application_id: string;
+  interview_at: string;
+  application_status: string;
+}) => {
+  const response = await api.post('/interviews', {
+    application_id,
+    interview_at,
+    application_status,
+  });
+  return response.data;
+};
+
+/**
+ * Fetch and download CV PDF for a job application
+ * @param id - Application ID
+ * @returns Promise<void>
+ */
+export const  viewJobApplicationCV = async (file_id: string): Promise<string> => {
+  const response = await api.get(`/job-applications/admin/${file_id}/cv`);
+  return response.data.job_applications;
+};

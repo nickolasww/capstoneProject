@@ -8,7 +8,7 @@ export type Application = TJobApplication;
 export const editProgressSchema = z.object({
   email: z.string(),
   job_title: z.string(),
-  status: z.enum(['submitted', 'short_listed', 'accepted', 'rejected']),
+  status: z.enum(['submitted', 'short_listed', 'hired', 'rejected']),
   interview_date: z.any().optional(),
   interview_time: z.any().optional(),
 }).refine((data) => {

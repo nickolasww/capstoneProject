@@ -131,7 +131,7 @@ export default function EditProgressModal({
             style={{ marginBottom: 0 }}
           >
             <Radio.Group style={{ width: '100%' }}>
-              <Space direction="vertical" style={{ width: '100%', gap: 12 }}>
+              <Space orientation="vertical" style={{ width: '100%', gap: 12 }}>
                 <div style={{ 
                   border: '1px solid #d9d9d9',
                   borderRadius: '6px',
@@ -218,7 +218,7 @@ export default function EditProgressModal({
                   padding: '8px 12px',
                   transition: 'all 0.3s',
                 }}>
-                  <Radio value="accepted" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                  <Radio value="hired" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
                     Tahap Diterima
                   </Radio>
                 </div>

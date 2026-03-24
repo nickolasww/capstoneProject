@@ -3,6 +3,9 @@ name: bas-frontend
 
 services:
   bas-frontend:
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     env_file:
       - .env
     image: ${FRONTEND_IMAGE_NAME}:${FRONTEND_IMAGE_TAG}

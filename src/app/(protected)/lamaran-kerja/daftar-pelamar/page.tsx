@@ -61,19 +61,19 @@ export default function LamaranKerjaPage() {
   });
 
   // Update mutation
-  const updateMutation = useMutation({
-    mutationFn: ({ id, updateData }: { id: string; updateData: UpdateJobApplicationData }) => 
-      updateJobApplication({ id }, updateData),
-    onSuccess: () => {
-      // Refetch the list after successful update
-      refetch();
-      setIsModalOpen(false);
-      setSelectedRecord(null);
-    },
-    onError: (error) => {
-      console.error('Error updating application:', error);
-    },
-  });
+  // const updateMutation = useMutation({
+  //   mutationFn: ({ id, updateData }: { id: string; updateData: UpdateJobApplicationData }) => 
+  //     updateJobApplication({ id }, updateData),
+  //   onSuccess: () => {
+  //     // Refetch the list after successful update
+  //     refetch();
+  //     setIsModalOpen(false);
+  //     setSelectedRecord(null);
+  //   },
+  //   onError: (error) => {
+  //     console.error('Error updating application:', error);
+  //   },
+  // });
 
   // Extract data with safe defaults
   const applications = data?.job_applications?.list ?? [];

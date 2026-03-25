@@ -1,7 +1,6 @@
 import { api } from "@/libs/axios";
 import type { TResponseData } from "@/commons/types/response";
 import type { 
-  TApplicationDetailResponse, 
   TApplicationListResponse, 
   TApplicationRequest, 
   TFilterApplication,

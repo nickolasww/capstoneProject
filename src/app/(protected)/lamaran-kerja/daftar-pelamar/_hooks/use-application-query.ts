@@ -23,7 +23,7 @@ export const useJobApplicationsQuery = (params: TFilterApplication = {}) => {
 export const useJobApplicationDetailQuery = (id: string) => {
   return useQuery({
     queryKey: ['job-application', id],
-    queryFn: () => getDetailJobApplication({ id }),
+    queryFn: () => getDetailJobApplication(id),
     enabled: !!id,
   });
 };

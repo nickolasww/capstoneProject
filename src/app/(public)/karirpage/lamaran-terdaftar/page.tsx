@@ -30,6 +30,20 @@ const JobApplicationsHistoryPage = () => {
             />
         );
     }
+    const getStatusLabel = (status?: string) => {
+  switch (status) {
+    case "submitted":
+      return "Terkirim";
+    case "short_listed":
+      return "Tahap Interview";
+    case "hired":
+      return "Accepted";
+    case "rejected":
+      return "Rejected";
+    default:
+      return "Terkirim";
+  }
+};
 
     // Jika sudah login, tampilkan seluruh halaman
     return (
@@ -80,11 +94,10 @@ const JobApplicationsHistoryPage = () => {
                                         <div>
                                             <h3 className="text-lg font-bold text-gray-900 mb-1">{app.job_title || app.job_position_title || app.job_position?.title || '-'}</h3>
                                             <div className="text-gray-600 text-sm mb-1">{app.email}</div>
-                                            <div className="text-gray-500 text-xs">Status: {app.status || 'Terkirim'}</div>
+                                            <div className="text-gray-500 text-xs">Status: {getStatusLabel(app.status)}</div>
                                         </div>
                                         <div className="flex flex-col items-end gap-1 min-w-40">
                                             <div className="text-xs text-gray-500"><span className="font-medium">Dikirim:</span> {app.applied_at ? new Date(app.applied_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</div>
-                                            <div className="text-xs text-gray-500"><span className="font-medium">Update:</span> {app.updated_at ? new Date(app.updated_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</div>
                                             <div className="text-xs text-gray-500"><span className="font-medium">Interview:</span> {app.interview_at ? new Date(app.interview_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</div>
                                         </div>
                                     </div>

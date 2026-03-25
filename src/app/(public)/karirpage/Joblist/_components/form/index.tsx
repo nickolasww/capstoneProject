@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { InboxOutlined } from '@ant-design/icons';
 import { Upload, Input } from 'antd';
 const { TextArea } = Input;
@@ -8,6 +9,7 @@ import { jobApplicationSchema, type TJobApplicationFormData } from './schema';
 import { useJobApplicationMutation } from '../../_hooks/use-job-application-mutation';
 import { Spinner } from '@/app/loading';
 import { getAccessToken } from '@/libs/localstorage';
+import { Controller } from 'react-hook-form';
 
 interface JobApplicationFormProps {
   jobPositionId: string | number;
@@ -20,14 +22,15 @@ export const JobApplicationForm = ({
   onSubmitSuccess,
   onAuthRequired,
 }: JobApplicationFormProps) => {
+  const navigate = useNavigate();
   const [selectedFileName, setSelectedFileName] = useState<string>('');
   const [submitError, setSubmitError] = useState<string>('');
   const {
-    register,
     handleSubmit,
     formState: { errors },
     reset,
     setValue,
+    control,
   } = useForm<TJobApplicationFormData>({
     resolver: zodResolver(jobApplicationSchema),
     mode: 'onBlur',
@@ -46,7 +49,11 @@ export const JobApplicationForm = ({
       reset();
       setSelectedFileName('');
       setSubmitError('');
-      onSubmitSuccess?.();
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
+      } else {
+        navigate('/karirpage/lamaran-terdaftar');
+      }
     },
     onAuthRequired: () => {
       setSubmitError('');
@@ -83,24 +90,37 @@ export const JobApplicationForm = ({
         {/* First Name */}
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Nama Depan</label>
-          <TextArea
-            {...register('first_name')}
-            placeholder="Masukkan nama depan Anda"
-            autoSize={{ minRows: 1, maxRows: 2 }}
-            className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+          <Controller
+            name="first_name"
+            control={control}
+            render={({ field }) => (
+              <TextArea
+                {...field}
+                placeholder="Masukkan nama depan Anda"
+                autoSize={{ minRows: 1, maxRows: 2 }}
+                className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+              />
+            )}
           />
           {errors.first_name && (
             <p className="text-red-500 text-xs mt-1">{errors.first_name.message}</p>
           )}
+          
         </div>
         {/* Last Name */}
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Nama Belakang</label>
-          <TextArea
-            {...register('last_name')}
-            placeholder="Masukkan nama belakang Anda"
-            autoSize={{ minRows: 1, maxRows: 2 }}
-            className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+          <Controller
+            name="last_name"
+            control={control}
+            render={({ field }) => (
+              <TextArea
+                {...field}
+                placeholder="Masukkan nama belakang Anda"
+                autoSize={{ minRows: 1, maxRows: 2 }}
+                className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+              />
+            )}
           />
           {errors.last_name && (
             <p className="text-red-500 text-xs mt-1">{errors.last_name.message}</p>
@@ -109,11 +129,17 @@ export const JobApplicationForm = ({
         {/* Email */}
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Alamat Email</label>
-          <TextArea
-            {...register('email')}
-            placeholder="email@example.com"
-            autoSize={{ minRows: 1, maxRows: 2 }}
-            className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <TextArea
+                {...field}
+                placeholder="email@example.com"
+                autoSize={{ minRows: 1, maxRows: 2 }}
+                className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+              />
+            )}
           />
           {errors.email && (
             <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
@@ -122,11 +148,17 @@ export const JobApplicationForm = ({
         {/* Phone Number */}
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Nomor Telp</label>
-          <TextArea
-            {...register('phone_number')}
-            placeholder="08xxxxxxxx"
-            autoSize={{ minRows: 1, maxRows: 2 }}
-            className="w-full rounded-md border  border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+          <Controller
+            name="phone_number"
+            control={control}
+            render={({ field }) => (
+              <TextArea
+                {...field}
+                placeholder="08xxxxxxxx"
+                autoSize={{ minRows: 1, maxRows: 2 }}
+                className="w-full rounded-md border  border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 shadow-sm"
+              />
+            )}
           />
           {errors.phone_number && (
             <p className="text-red-500 text-xs mt-1">{errors.phone_number.message}</p>
@@ -137,11 +169,17 @@ export const JobApplicationForm = ({
       {/* Address */}
       <div className="mb-4">
         <label className="block text-xs font-medium text-gray-700 mb-1">Alamat</label>
+        <Controller
+          name="address"
+          control={control}
+          render={({ field }) => (
         <TextArea
-          {...register('address')}
+          {...field}
           placeholder="Masukkan alamat lengkap Anda"
           autoSize={{ minRows: 4, maxRows: 6 }}
           className="w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-gray-700 placeholder-gray-400 resize-none shadow-sm"
+        />
+        )}
         />
         {errors.address && (
           <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>
@@ -154,7 +192,7 @@ export const JobApplicationForm = ({
         <Upload.Dragger
           name="file"
           multiple={false}
-          accept=".pdf,.doc,.docx"
+          accept=".pdf"
           beforeUpload={file => {
             setValue('file', file, { shouldValidate: true });
             setSelectedFileName(file.name);
@@ -165,7 +203,7 @@ export const JobApplicationForm = ({
           <div className="flex flex-col items-center justify-center min-h-55">
             <p className="ant-upload-drag-icon text-4xl text-green-400"><InboxOutlined /></p>
             <p className="ant-upload-text text-base">Klik atau drag file ke area ini untuk upload</p>
-            <p className="ant-upload-hint text-xs text-gray-400">Hanya PDF, DOC, atau DOCX. Max 5MB</p>
+            <p className="ant-upload-hint text-xs text-gray-400">Hanya PDF. Max 5MB</p>
             <span className="block mt-2 text-sm text-gray-600">{selectedFileName || ''}</span>
           </div>
         </Upload.Dragger>

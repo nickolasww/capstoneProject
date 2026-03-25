@@ -229,6 +229,23 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
             </Form.Item>
 
             <Form.Item
+              label="Slug"
+              name="slug"
+              rules={[rule]}
+              className="md:col-span-2"
+              extra="Auto-generated dari judul (hanya baca)"
+              required
+            >
+              <Input
+                placeholder="senior-software-engineer"
+                readOnly
+                disabled
+                size="large"
+              />
+            </Form.Item>
+
+
+            <Form.Item
               label="Departemen"
               name="department"
               rules={[rule]}

@@ -14,6 +14,7 @@ export const JobApplicationModal = ({
   onSubmitSuccess,
 }: JobApplicationModalProps) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  
 
   return (
     <>

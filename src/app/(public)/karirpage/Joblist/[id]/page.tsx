@@ -148,7 +148,7 @@ export default function JobPositionDetailPage() {
 
 	if (isDetailError || !job) {
 		return (
-			<section className="min-h-screen bg-[#F7F7F2] px-4 py-12 sm:px-6 lg:px-8">
+			<section className="min-h-screen bg-[#F7F7F2] px-4 py-32 sm:px-6 lg:px-8">
 				<div className="mx-auto max-w-6xl rounded-[28px] border border-[#E3E7DE] bg-white p-8 text-center shadow-[0_16px_50px_rgba(32,56,24,0.08)]">
 					<h1 className="text-2xl font-semibold text-[#15210F]">Detail lowongan tidak ditemukan</h1>
 					<p className="mt-3 text-sm text-[#66725F] sm:text-base">

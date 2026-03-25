@@ -4,7 +4,8 @@ import type {
   TApplicationDetailResponse, 
   TApplicationListResponse, 
   TApplicationRequest, 
-  TFilterApplication
+  TFilterApplication,
+  TJobApplication
 } from "./type";
 
 /**
@@ -75,14 +76,9 @@ export const getJobApplications = async (
  * @param params - Object containing application id
  * @returns Promise with job application detail
  */
-export const getDetailJobApplication = async (
-  params: { id: string }
-): Promise<TApplicationDetailResponse> => {
-  const response = await api.get<TApplicationDetailResponse>(
-    `/job-applications/admin/${params.id}`
-  );
-  
-  return response.data;
+export const getDetailJobApplication = async (id: string) => {
+  const { data } = await api.get(`/job-applications/admin/${id}`);
+  return data.job_applications as TJobApplication;
 };
 
 /**

@@ -38,7 +38,7 @@ export default function JobPostingDetailPage() {
     if (!confirmed) return;
 
     try {
-      await updateJobPosting({ id }, { is_active: false, publication_status: 'closed' });
+      await updateJobPosting({ id }, { is_active: false, publication_status: 'draft' });
       // Refresh data
       const response = await getDetailJobPosting({ id });
       setJob(response.job_positions);
@@ -51,7 +51,6 @@ export default function JobPostingDetailPage() {
   const getEmploymentTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
       'full_time': 'Full Time',
-      'part_time': 'Part Time',
       'contract': 'Contract',
       'internship': 'Internship',
     };
@@ -98,14 +97,14 @@ export default function JobPostingDetailPage() {
           <p className="text-gray-600">{job.department} • {job.location}</p>
         </div>
         <span
-          className={`px-4 py-2 rounded-full text-sm font-medium ${
-            job.is_active && job.publication_status === 'active'
-              ? 'bg-green-100 text-green-700'
-              : 'bg-gray-100 text-gray-700'
-          }`}
-        >
-          {job.is_active && job.publication_status === 'active' ? 'Aktif' : 'Ditutup'}
-        </span>
+  className={`px-4 py-2 rounded-lg text-sm font-medium ${
+    job.publication_status === 'active' && job.is_active
+      ? 'bg-green-100 text-green-700'
+      : 'bg-gray-100 text-gray-700'
+  }`}
+>
+  {job.publication_status === 'active' && job.is_active ? 'Aktif' : 'Ditutup'}
+</span>
       </div>
 
       {/* Content */}
@@ -150,10 +149,6 @@ export default function JobPostingDetailPage() {
               <div>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Lokasi</h3>
                 <p className="text-base text-gray-900">{job.location}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-1">Tanggal Posting</h3>
-                <p className="text-base text-gray-900">{formatDate(job.posted_at)}</p>
               </div>
               {job.closed_at && (
                 <div>

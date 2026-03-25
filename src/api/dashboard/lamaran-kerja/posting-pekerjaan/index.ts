@@ -16,7 +16,7 @@ import type {
 export const getJobPostings = async (
   params: TFilterJobPosting = {}
 ): Promise<TJobPostingListResponse> => {
-  const { limit = 3, cursor, status = 'active', search } = params;
+  const { limit = 100, cursor, status = 'active', search } = params;
   
   const queryParams: Record<string, string> = {
     limit: limit.toString(),

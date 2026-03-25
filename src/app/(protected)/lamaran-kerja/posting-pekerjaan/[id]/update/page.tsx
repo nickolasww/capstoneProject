@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import type { TJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
 import { getDetailJobPosting, updateJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
 import Loading from '@/app/loading';
+import dayjs from 'dayjs';
 
 export default function UpdateJobPostingPage() {
     const { id } = useParams<{ id: string }>();
@@ -80,7 +81,25 @@ export default function UpdateJobPostingPage() {
         setIsSubmitting(true);
 
         try {
-            await updateJobPosting({ id }, formData);
+            let datatoSend = {...formData}; 
+
+            if(datatoSend.publication_status === "draft") {
+                datatoSend.is_active = false;
+            }if(datatoSend.publication_status === "active") {
+                datatoSend.is_active = true;
+            }
+
+            if(
+                datatoSend.publication_status === "draft" || datatoSend.is_active === false
+            ) { 
+                datatoSend.closed_at = dayjs().toISOString();
+            }
+
+            if(!datatoSend.closed_at || datatoSend.closed_at === '') {
+                datatoSend.closed_at = "";
+            }
+
+            await updateJobPosting({ id }, datatoSend);
             navigate('/lamaran-kerja/posting-pekerjaan');
         } catch (error) {
             console.error('Error updating job posting:', error);
@@ -257,22 +276,8 @@ export default function UpdateJobPostingPage() {
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             >
                                 <option value="active">Aktif</option>
-                                <option value="closed">Ditutup</option>
+                                <option value="draft">Ditutup</option>
                             </select>
-                        </div>
-
-                        <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                id="is_active"
-                                name="is_active"
-                                checked={formData.is_active || false}
-                                onChange={handleChange}
-                                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                            />
-                            <label htmlFor="is_active" className="ml-2 text-sm font-medium text-gray-700">
-                                Aktifkan Lowongan
-                            </label>
                         </div>
                     </div>
 

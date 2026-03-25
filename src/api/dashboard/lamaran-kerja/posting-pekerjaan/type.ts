@@ -1,4 +1,4 @@
-export type TJobStatus = 'active' | 'closed';
+export type TJobStatus = 'active' | 'draft';
 export type TEmploymentType = 'full_time' | 'contract' | 'part_time' | 'internship';
 
 export interface TJobPosting {
@@ -15,7 +15,6 @@ export interface TJobPosting {
   publication_status: TJobStatus;
   is_active: boolean;
   closed_at: string;
-  posted_at: string;
   applicant_count: number;
   created_at: string;
   updated_at: string;
@@ -33,7 +32,7 @@ export interface TJobPostingRequest {
   responsibilities: string;
   publication_status: TJobStatus;
   is_active: boolean;
-  closed_at: string;
+  closed_at: string | null;
 }
 
 export interface TFilterJobPosting {

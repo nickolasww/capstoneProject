@@ -99,12 +99,14 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
       const validatedData = JobPostingFormSchema.parse(values);
 
       // Konversi closed_at ke ISO string untuk API
-      let closedAtISO: string;
+      let closedAtISO: string | null = null;
+    if (validatedData.closed_at) {
       if (dayjs.isDayjs(validatedData.closed_at)) {
         closedAtISO = validatedData.closed_at.toISOString();
-      } else {
+      } else if (typeof validatedData.closed_at === 'string' && validatedData.closed_at.trim() !== '') {
         closedAtISO = new Date(validatedData.closed_at).toISOString();
       }
+    }
 
       // Prepare data untuk API
       const dataToSubmit = {
@@ -117,10 +119,15 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
         description: validatedData.description,
         requirements: validatedData.requirements,
         responsibilities: validatedData.responsibilities,
-        closed_at: closedAtISO,
+        closed_at: validatedData.closed_at ? closedAtISO : null,
         is_active: validatedData.is_active,
-        publication_status: (validatedData.is_active ? 'active' : 'closed') as 'active' | 'closed',
+        publication_status: (validatedData.is_active ? 'active' : 'draft') as 'active' | 'draft',
       };
+
+      // Perbaikan: pastikan closed_at tidak string kosong
+      if (!dataToSubmit.closed_at || dataToSubmit.closed_at === '') {
+        dataToSubmit.closed_at = null;
+      }
 
       await createJobPosting(dataToSubmit);
 
@@ -222,22 +229,6 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
             </Form.Item>
 
             <Form.Item
-              label="Slug"
-              name="slug"
-              rules={[rule]}
-              className="md:col-span-2"
-              extra="Auto-generated dari judul (hanya baca)"
-              required
-            >
-              <Input
-                placeholder="senior-software-engineer"
-                readOnly
-                disabled
-                size="large"
-              />
-            </Form.Item>
-
-            <Form.Item
               label="Departemen"
               name="department"
               rules={[rule]}
@@ -269,7 +260,6 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
             >
               <Select size="large">
                 <Option value="full_time">Full Time</Option>
-                <Option value="part_time">Part Time</Option>
                 <Option value="contract">Contract</Option>
                 <Option value="internship">Internship</Option>
               </Select>

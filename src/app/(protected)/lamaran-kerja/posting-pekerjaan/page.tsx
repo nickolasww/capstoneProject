@@ -1,28 +1,50 @@
-'use client';
+"use client";
 
-import { useState, useMemo, useDeferredValue } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { InboxOutlined , EyeOutlined, UserAddOutlined, SearchOutlined, PlusOutlined, EditOutlined, DeleteOutlined, EnvironmentOutlined, DollarOutlined, CalendarOutlined, TeamOutlined } from '@ant-design/icons';
-import Loading, { Spinner } from '@/app/loading';
-import type { TJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan/type';
-import { getJobPostings, deleteJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaan';
-import { useDebounce } from '@/app/_hooks/use-debounce';
-import { useQuery } from '@/app/_hooks/request/use-query';
-import { useMutation } from '@/app/_hooks/request/use-mutation';
+import { useState, useMemo, useDeferredValue } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  InboxOutlined,
+  EyeOutlined,
+  UserAddOutlined,
+  SearchOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  EnvironmentOutlined,
+  DollarOutlined,
+  CalendarOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
+import Loading, { Spinner } from "@/app/loading";
+import type { TJobPosting } from "@/api/dashboard/lamaran-kerja/posting-pekerjaan/type";
+import {
+  getJobPostings,
+  deleteJobPosting,
+} from "@/api/dashboard/lamaran-kerja/posting-pekerjaan";
+import { useDebounce } from "@/app/_hooks/use-debounce";
+import { useQuery } from "@/app/_hooks/request/use-query";
+import { useMutation } from "@/app/_hooks/request/use-mutation";
+import { Select } from "antd";
 
 export default function PostingPekerjaanPage() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm);
-  const [deleteModal, setDeleteModal] = useState<{ show: boolean; job: TJobPosting | null }>({
+  const [deleteModal, setDeleteModal] = useState<{
+    show: boolean;
+    job: TJobPosting | null;
+  }>({
     show: false,
     job: null,
   });
+  const [statusFilter, setStatusFilter] = useState<"active" | "draft">(
+    "active",
+  );
 
   // Fetch job postings using React Query
-  const { data, isLoading, isFetching, error, refetch } = useQuery({
-    queryKey: ['job-postings', 'active'],
-    queryFn: () => getJobPostings({ status: 'active', limit: 100 }),
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["job-postings", statusFilter],
+    queryFn: () => getJobPostings({ status: statusFilter, limit: 100 }),
     staleTime: 1 * 60 * 1000, // Data considered fresh for 1 minute
     gcTime: 5 * 60 * 1000, // Cache for 5 minutes
     refetchOnWindowFocus: true, // Refetch when user returns to tab
@@ -39,7 +61,7 @@ export default function PostingPekerjaanPage() {
       setDeleteModal({ show: false, job: null });
     },
     onError: (error) => {
-      console.error('Error deleting job posting:', error);
+      console.error("Error deleting job posting:", error);
       setDeleteModal({ show: false, job: null });
     },
   });
@@ -55,9 +77,12 @@ export default function PostingPekerjaanPage() {
 
   // Memoize filtered postings to prevent recalculation on every render
   const filteredPostings = useMemo(() => {
-    return jobPostings.filter((job) =>
-      job.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-      job.department.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+    return jobPostings.filter(
+      (job) =>
+        job.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        job.department
+          .toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase()),
     );
   }, [jobPostings, debouncedSearchTerm]);
 
@@ -80,29 +105,29 @@ export default function PostingPekerjaanPage() {
 
   const getEmploymentTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      'full_time': 'Full Time',
-      'part_time': 'Part Time',
-      'contract': 'Contract',
-      'internship': 'Internship',
+      full_time: "Full Time",
+      part_time: "Part Time",
+      contract: "Contract",
+      internship: "Internship",
     };
     return labels[type] || type;
   };
 
   const getEmploymentTypeBadgeColor = (type: string) => {
     const colors: Record<string, string> = {
-      'full_time': 'bg-blue-100 text-blue-700',
-      'part_time': 'bg-purple-100 text-purple-700',
-      'contract': 'bg-orange-100 text-orange-700',
-      'internship': 'bg-pink-100 text-pink-700',
+      full_time: "bg-blue-100 text-blue-700",
+      part_time: "bg-purple-100 text-purple-700",
+      contract: "bg-orange-100 text-orange-700",
+      internship: "bg-pink-100 text-pink-700",
     };
-    return colors[type] || 'bg-gray-100 text-gray-700';
+    return colors[type] || "bg-gray-100 text-gray-700";
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
@@ -118,10 +143,17 @@ export default function PostingPekerjaanPage() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <SearchOutlined className="text-red-600" style={{ fontSize: '32px' }} />
+              <SearchOutlined
+                className="text-red-600"
+                style={{ fontSize: "32px" }}
+              />
             </div>
-            <p className="text-lg font-medium text-gray-900 mb-2">Gagal memuat data</p>
-            <p className="text-sm text-gray-600 mb-4">Terjadi kesalahan saat mengambil data lowongan</p>
+            <p className="text-lg font-medium text-gray-900 mb-2">
+              Gagal memuat data
+            </p>
+            <p className="text-sm text-gray-600 mb-4">
+              Terjadi kesalahan saat mengambil data lowongan
+            </p>
             <button
               onClick={() => refetch()}
               className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
@@ -136,21 +168,12 @@ export default function PostingPekerjaanPage() {
 
   return (
     <div className="p-6 lg:p-8 bg-gray-50 min-h-screen">
-      {/* Background fetching indicator */}
-      {isFetching && data && (
-        <div className="fixed top-20 right-8 z-50 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
-          <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <span className="text-sm font-medium">Memperbarui data...</span>
-        </div>
-      )}
-
       {/* Header Section */}
       <div className="mb-14 text-center">
         <h1 className="text-4xl text-gray-900 mb-2">Posting Pekerjaan</h1>
-        <p className="text-gray-600">Kelola lowongan pekerjaan yang akan ditampilkan</p>
+        <p className="text-gray-600">
+          Kelola lowongan pekerjaan yang akan ditampilkan
+        </p>
       </div>
 
       {/* Statistics Cards */}
@@ -159,10 +182,12 @@ export default function PostingPekerjaanPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 mb-1">Total Lowongan</p>
-              <p className="text-3xl font-bold text-gray-900">{metadata.total_vacancy}</p>
+              <p className="text-3xl font-bold text-gray-900">
+                {metadata.total_vacancy}
+              </p>
             </div>
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <InboxOutlined style={{ fontSize: '24px', color: '#2563eb' }} />
+              <InboxOutlined style={{ fontSize: "24px", color: "#2563eb" }} />
             </div>
           </div>
         </div>
@@ -171,10 +196,12 @@ export default function PostingPekerjaanPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 mb-1">Lowongan Aktif</p>
-              <p className="text-3xl font-bold text-gray-900">{metadata.total_active}</p>
+              <p className="text-3xl font-bold text-gray-900">
+                {metadata.total_active}
+              </p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <EyeOutlined style={{ fontSize: '24px', color: '#16a34a' }} />
+              <EyeOutlined style={{ fontSize: "24px", color: "#16a34a" }} />
             </div>
           </div>
         </div>
@@ -183,10 +210,12 @@ export default function PostingPekerjaanPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 mb-1">Total Pelamar</p>
-              <p className="text-3xl font-bold text-gray-900">{metadata.total_applicant}</p>
+              <p className="text-3xl font-bold text-gray-900">
+                {metadata.total_applicant}
+              </p>
             </div>
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-              <UserAddOutlined style={{ fontSize: '24px', color: '#ea580c' }} />
+              <UserAddOutlined style={{ fontSize: "24px", color: "#ea580c" }} />
             </div>
           </div>
         </div>
@@ -203,13 +232,25 @@ export default function PostingPekerjaanPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
-            <SearchOutlined className="absolute left-3 top-3.5 text-gray-400" style={{ fontSize: '20px' }} />
+            <SearchOutlined
+              className="absolute left-3 top-3.5 text-gray-400"
+              style={{ fontSize: "20px" }}
+            />
           </div>
+          <Select
+            value={statusFilter}
+            onChange={(value) => setStatusFilter(value)}
+            style={{ width: 120 }} 
+            options={[
+              { value: "active", label: "Active" },
+              { value: "draft", label: "Draft" },
+            ]}
+          />
           <button
-            onClick={() => navigate('/lamaran-kerja/posting-pekerjaan/create')}
+            onClick={() => navigate("/lamaran-kerja/posting-pekerjaan/create")}
             className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 font-medium whitespace-nowrap"
           >
-            <PlusOutlined style={{ fontSize: '20px' }} />
+            <PlusOutlined style={{ fontSize: "20px" }} />
             Buat Lowongan Kerja Baru
           </button>
         </div>
@@ -218,52 +259,77 @@ export default function PostingPekerjaanPage() {
       {/* Job Cards */}
       <div className="grid grid-cols-1 gap-4">
         {deferredFilteredPostings.map((job) => (
-          <div key={job.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+          <div
+            key={job.id}
+            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+          >
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
               {/* Left Section - Job Info */}
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <h3 className="text-lg font-bold text-gray-900">{job.title}</h3>
-                  <span
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {job.title}
+                  </h3>
+                  {/* <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      job.publication_status === 'active'
+                      job.is_active === true
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-700'
                     }`}
                   >
-                    {job.publication_status === 'active' ? 'Aktif' : 'Ditutup'}
-                  </span>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getEmploymentTypeBadgeColor(job.employment_type)}`}>
+                    {job.is_active === true ? 'Aktif' : 'Ditutup'} 
+                  </span> */}
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getEmploymentTypeBadgeColor(job.employment_type)}`}
+                  >
                     {getEmploymentTypeLabel(job.employment_type)}
                   </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-4 mb-3 text-sm text-gray-600">
                   <div className="flex items-center gap-1.5">
-                    <InboxOutlined style={{ fontSize: '16px' }} />
+                    <InboxOutlined style={{ fontSize: "16px" }} />
                     <span>{job.department}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <EnvironmentOutlined style={{ fontSize: '16px' }} />
+                    <EnvironmentOutlined style={{ fontSize: "16px" }} />
                     <span>{job.location}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <DollarOutlined style={{ fontSize: '16px' }} />
+                    <DollarOutlined style={{ fontSize: "16px" }} />
                     <span>{job.salary}</span>
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-700 mb-3 line-clamp-2">{job.description}</p>
+                <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+                  {job.description}
+                </p>
 
                 <div className="border-t border-gray-200 pt-3 mt-3">
                   <div className="flex flex-wrap items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">
-                      <CalendarOutlined className="text-gray-500" style={{ fontSize: '16px' }} />
-                      <span className="text-gray-600">Ditutup: <span className="font-medium text-gray-900">{formatDate(job.closed_at)}</span></span>
+                      <CalendarOutlined
+                        className="text-gray-500"
+                        style={{ fontSize: "16px" }}
+                      />
+                      <span className="text-gray-600">
+                        Ditutup:{" "}
+                        <span className="font-medium text-gray-900">
+                          {formatDate(job.closed_at)}
+                        </span>
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <TeamOutlined className="text-gray-500" style={{ fontSize: '16px' }} />
-                      <span className="text-gray-600"><span className="font-medium text-gray-900">{job.applicant_count}</span> pelamar</span>
+                      <TeamOutlined
+                        className="text-gray-500"
+                        style={{ fontSize: "16px" }}
+                      />
+                      <span className="text-gray-600">
+                        <span className="font-medium text-gray-900">
+                          {job.applicant_count}
+                        </span>{" "}
+                        pelamar
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -272,25 +338,31 @@ export default function PostingPekerjaanPage() {
               {/* Right Section - Actions */}
               <div className="flex gap-2">
                 <button
-                  onClick={() => navigate(`/lamaran-kerja/posting-pekerjaan/${job.id}`)}
+                  onClick={() =>
+                    navigate(`/lamaran-kerja/posting-pekerjaan/${job.id}`)
+                  }
                   className="flex items-center justify-center w-10 h-10 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
                   title="Lihat Detail"
                 >
-                  <EyeOutlined style={{ fontSize: '20px' }} />
+                  <EyeOutlined style={{ fontSize: "20px" }} />
                 </button>
                 <button
-                  onClick={() => navigate(`/lamaran-kerja/posting-pekerjaan/${job.id}/update`)}
+                  onClick={() =>
+                    navigate(
+                      `/lamaran-kerja/posting-pekerjaan/${job.id}/update`,
+                    )
+                  }
                   className="flex items-center justify-center w-10 h-10 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
                   title="Edit"
                 >
-                  <EditOutlined style={{ fontSize: '20px' }} />
+                  <EditOutlined style={{ fontSize: "20px" }} />
                 </button>
                 <button
                   onClick={() => handleDeleteClick(job)}
                   className="flex items-center justify-center w-10 h-10 text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
                   title="Hapus"
                 >
-                  <DeleteOutlined style={{ fontSize: '20px' }} />
+                  <DeleteOutlined style={{ fontSize: "20px" }} />
                 </button>
               </div>
             </div>
@@ -301,9 +373,14 @@ export default function PostingPekerjaanPage() {
       {filteredPostings.length === 0 && !isLoading && (
         <div className="bg-white rounded-lg shadow-sm p-12">
           <div className="text-center text-gray-500">
-            <SearchOutlined className="mx-auto mb-4 text-gray-300" style={{ fontSize: '64px' }} />
+            <SearchOutlined
+              className="mx-auto mb-4 text-gray-300"
+              style={{ fontSize: "64px" }}
+            />
             <p className="text-lg font-medium">Tidak ada lowongan ditemukan</p>
-            <p className="text-sm mt-2">Coba gunakan kata kunci lain atau buat lowongan baru</p>
+            <p className="text-sm mt-2">
+              Coba gunakan kata kunci lain atau buat lowongan baru
+            </p>
           </div>
         </div>
       )}
@@ -314,11 +391,17 @@ export default function PostingPekerjaanPage() {
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
             <div className="text-center">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <DeleteOutlined className="text-red-600" style={{ fontSize: '32px' }} />
+                <DeleteOutlined
+                  className="text-red-600"
+                  style={{ fontSize: "32px" }}
+                />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Hapus Lowongan?</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                Hapus Lowongan?
+              </h3>
               <p className="text-gray-600 mb-6">
-                Apakah Anda yakin ingin menghapus lowongan "{deleteModal.job?.title}"? Tindakan ini tidak dapat dibatalkan.
+                Apakah Anda yakin ingin menghapus lowongan "
+                {deleteModal.job?.title}"? Tindakan ini tidak dapat dibatalkan.
               </p>
               <div className="flex gap-3">
                 <button
@@ -339,7 +422,7 @@ export default function PostingPekerjaanPage() {
                       <span>Menghapus...</span>
                     </>
                   ) : (
-                    'Hapus'
+                    "Hapus"
                   )}
                 </button>
               </div>

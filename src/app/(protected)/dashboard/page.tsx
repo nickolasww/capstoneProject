@@ -1,5 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useSession } from '@/app/_components/providers/session';
+import { Link, useNavigate } from "react-router-dom";
+import { useSession } from "@/app/_components/providers/session";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -7,57 +7,43 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     logout();
-    navigate('/', { replace: true });
+    navigate("/", { replace: true });
   };
 
   return (
-    <div className="p-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-xl font-semibold mb-2">Total Users</h3>
-            <p className="text-3xl font-bold text-blue-600">1,234</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-xl font-semibold mb-2">Active Sessions</h3>
-            <p className="text-3xl font-bold text-green-600">567</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-xl font-semibold mb-2">Total Revenue</h3>
-            <p className="text-3xl font-bold text-purple-600">$12,345</p>
-          </div>
-        </div>
+    <div className="p-6 lg:p-8">
+      <div className="mb-6">
+        <p className="text-sm text-gray-600">
+          Dashboard
+        </p>
+      </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Link 
-              to="/examples" 
-              className="px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-center"
-            >
-              View Examples
-            </Link>
-            <Link 
-              to="/examples/create" 
-              className="px-6 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-center"
-            >
-              Create New
-            </Link>
-            <button 
-              onClick={handleLogout}
-              className="px-6 py-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-center"
-            >
-              Logout
-            </button>
-            <Link 
-              to="/" 
-              className="px-6 py-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-center"
-            >
-              Back to Home
-            </Link>
-          </div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          dashboard
+        </h1>
+        <p className="text-gray-600">Kelola semua data</p>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm p-8">
+        <div className="text-center text-gray-500">
+          <svg
+            className="w-16 h-16 mx-auto mb-4 text-gray-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            />
+          </svg>
+          <p className="text-lg">Halaman Dashboard</p>
+          <p className="text-sm mt-2">
+            Konten akan ditambahkan sesuai kebutuhan
+          </p>
         </div>
       </div>
     </div>

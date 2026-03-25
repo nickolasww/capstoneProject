@@ -1,14 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useSession } from "@/app/_components/providers/session";
-
 export default function DashboardPage() {
-  const navigate = useNavigate();
-  const { logout } = useSession();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/", { replace: true });
-  };
 
   return (
     <div className="p-6 lg:p-8">

@@ -1,6 +1,6 @@
-import suplier from "@/assets/homepage/suplier.jpg"
-import konstruksi from "@/assets/homepage/konstruksi.png"
-import pengadaan from "@/assets/homepage/pengadaan.png"
+import suplier from "@/assets/homepage/suplier.webp"
+import konstruksi from "@/assets/homepage/konstruksi.webp"
+import pengadaan from "@/assets/homepage/pengadaan.webp"
 
 const PelayananKami = () => {
   // Mock data untuk pelayanan

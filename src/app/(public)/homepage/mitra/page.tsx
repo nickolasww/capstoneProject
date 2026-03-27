@@ -1,26 +1,26 @@
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 
-import kabbadung from "@/assets/homepage/mitra/KAB BADUNG.png";
-import kabbatang from "@/assets/homepage/mitra/KAB BATANG.png";
-import kabblitar from "@/assets/homepage/mitra/KAB BLITAR.png";
-import kabkediri from "@/assets/homepage/mitra/KAB KEDIRI.png";
-import kabmeranti from "@/assets/homepage/mitra/KAB KEPULAUAN MERANTI.png";
-import kabkotabaru from "@/assets/homepage/mitra/KAB KOTABARU.png";
-import kabkudus from "@/assets/homepage/mitra/KAB KUDUS.png";
-import kabmalang from "@/assets/homepage/mitra/KAB MALANG.png";
-import kabmojokerto from "@/assets/homepage/mitra/KAB MOJOKERTO.png";
-import kabpurbalingga from "@/assets/homepage/mitra/KAB PURBALINGGA.png";
-import kabrembang from "@/assets/homepage/mitra/KAB REMBANG.png";
-import kabtabanan from "@/assets/homepage/mitra/KAB TABANAN.png";
-import kotabanjar from "@/assets/homepage/mitra/KOTA BANJAR.png";
-import kotablitar from "@/assets/homepage/mitra/KOTA BLITAR.png";
-import kotabontang from "@/assets/homepage/mitra/KOTA BONTANG.png";
-import kotapadang from "@/assets/homepage/mitra/KOTA PADANG.png";
-import kotapekalongan from "@/assets/homepage/mitra/kota pekalongan.png"
-import kotatangerang from "@/assets/homepage/mitra/KOTA TANGERANG.png";
-import kotategal from "@/assets/homepage/mitra/KOTA TEGAL.png";
-import kotajogja from "@/assets/homepage/mitra/KOTA YOGJAKARTA.png";
+import kabbadung from "@/assets/homepage/mitra/KAB BADUNG.webp";
+import kabbatang from "@/assets/homepage/mitra/KAB BATANG.webp";
+import kabblitar from "@/assets/homepage/mitra/KAB BLITAR.webp";
+import kabkediri from "@/assets/homepage/mitra/KAB KEDIRI.webp";
+import kabmeranti from "@/assets/homepage/mitra/KAB KEPULAUAN MERANTI.webp";
+import kabkotabaru from "@/assets/homepage/mitra/KAB KOTABARU.webp";
+import kabkudus from "@/assets/homepage/mitra/KAB KUDUS.webp";
+import kabmalang from "@/assets/homepage/mitra/KAB MALANG.webp";
+import kabmojokerto from "@/assets/homepage/mitra/KAB MOJOKERTO.webp";
+import kabpurbalingga from "@/assets/homepage/mitra/KAB PURBALINGGA.webp";
+import kabrembang from "@/assets/homepage/mitra/KAB REMBANG.webp";
+import kabtabanan from "@/assets/homepage/mitra/KAB TABANAN.webp";
+import kotabanjar from "@/assets/homepage/mitra/KOTA BANJAR.webp";
+import kotablitar from "@/assets/homepage/mitra/KOTA BLITAR.webp";
+import kotabontang from "@/assets/homepage/mitra/KOTA BONTANG.webp";
+import kotapadang from "@/assets/homepage/mitra/KOTA PADANG.webp";
+import kotapekalongan from "@/assets/homepage/mitra/kota pekalongan.webp"
+import kotatangerang from "@/assets/homepage/mitra/KOTA TANGERANG.webp";
+import kotategal from "@/assets/homepage/mitra/KOTA TEGAL.webp";
+import kotajogja from "@/assets/homepage/mitra/KOTA YOGJAKARTA.webp";
 
 const KlienKami = () => {
   // Mock data untuk klien

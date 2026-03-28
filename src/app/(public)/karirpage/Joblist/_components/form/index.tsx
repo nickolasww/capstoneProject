@@ -203,7 +203,7 @@ export const JobApplicationForm = ({
           <div className="flex flex-col items-center justify-center min-h-55">
             <p className="ant-upload-drag-icon text-4xl text-green-400"><InboxOutlined /></p>
             <p className="ant-upload-text text-base">Klik atau drag file ke area ini untuk upload</p>
-            <p className="ant-upload-hint text-xs text-gray-400">Hanya PDF. Max 5MB</p>
+            <p className="ant-upload-hint text-xs text-gray-400">Hanya PDF. Max 2MB</p>
             <span className="block mt-2 text-sm text-gray-600">{selectedFileName || ''}</span>
           </div>
         </Upload.Dragger>

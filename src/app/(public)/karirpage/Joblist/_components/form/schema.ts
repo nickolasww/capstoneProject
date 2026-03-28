@@ -12,14 +12,16 @@ export const jobApplicationSchema = z.object({
   email: z
     .string()
     .min(1, 'Email tidak boleh kosong')
-    .email('Format email tidak valid'),
+    .refine((val) => z.email().safeParse(val).success, {
+    error: "Format email tidak valid",
+  }),
   phone_number: z
     .string()
     .min(1, 'Nomor telepon tidak boleh kosong')
     .regex(/^(\+62|0)[0-9]{9,12}$/, 'Format nomor telepon tidak valid')
     .refine(
-      (phone) => phone.length === 12,
-      'Nomor telepon harus 12 karakter'
+      (phone) => phone.length === 15,
+      'Nomor telepon harus 15 karakter'
     ),
   address: z
     .string()

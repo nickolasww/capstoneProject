@@ -14,11 +14,19 @@ const sanitizeString = (str: string) => {
  * Validate email format and sanitize
  */
 const emailSchema = z
-  .string()
+  .string({
+    error: (issue) => {
+      if (issue.input === undefined) {
+        return "Email tidak boleh kosong";
+      }
+    },
+  })
   .trim()
   .min(1, { message: "Email tidak boleh kosong" })
   .max(255, { message: "Email terlalu panjang" })
-  .email({ message: "Format email tidak valid" })
+  .refine((val) => z.email().safeParse(val).success, {
+    error: "Format email tidak valid",
+  })
   .regex(/^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
     message: "Email mengandung karakter yang tidak diperbolehkan",
   })
@@ -33,7 +41,13 @@ const emailSchema = z
  * Validate password with security checks
  */
 const passwordSchema = z
-  .string()
+  .string({
+    error: (issue) => {
+      if (issue.input === undefined) {
+        return "Password tidak boleh kosong";
+      }
+    },
+  })
   .min(1, { message: "Password tidak boleh kosong" })
   .max(128, { message: "Password terlalu panjang" })
   // Check for SQL injection patterns

@@ -9,12 +9,12 @@ import { usePostRegister } from "./_hooks/use-post-register";
 const rule = createZodSync(RegisterFormSchema);
 
 export default function Register() {
-  const { mutate: registerMutate, isPending, error } = usePostRegister();
+  const { mutate: registerMutate, isPending } = usePostRegister();
 
   const onFinish = (values: TRegisterFormData) => {
     registerMutate({
       username: values.username,
-      fullname: values.Fullname,
+      fullname: values.fullname,
       email: values.email,
       password: values.password
     });
@@ -77,14 +77,6 @@ export default function Register() {
               className="w-full flex flex-col gap-0"
               requiredMark={false}
             >
-              {/* Error Message */}
-              {error ? (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-                  <p className="font-['Poppins'] text-sm">
-                    {String((error as any)?.message || "Registrasi gagal. Silakan coba lagi.")}
-                  </p>
-                </div>
-              ) : null}
               
               <Form.Item
                 label={
@@ -108,7 +100,7 @@ export default function Register() {
                     Full Name
                   </span>
                 }
-                name="Fullname"
+                name="fullname"
                 rules={[rule]}
               >
                 <Input
@@ -155,7 +147,7 @@ export default function Register() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full h-12 bg-[#4d9232] rounded-lg font-['Poppins'] text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full mt-4 h-12 bg-[#4d9232] rounded-lg font-['Poppins'] text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isPending ? (
                     <>

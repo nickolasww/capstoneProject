@@ -14,7 +14,13 @@ const sanitizeString = (str: string) => {
  * Username validation with security checks
  */
 const usernameSchema = z
-  .string()
+   .string({
+    error: (issue) => {
+      if (issue.input === undefined) {
+        return "Username tidak boleh kosong";
+      }
+    },
+  })
   .trim()
   .min(1, { message: "Username tidak boleh kosong" })
   .min(3, { message: "Username minimal 3 karakter" })
@@ -33,10 +39,16 @@ const usernameSchema = z
  * Full name validation
  */
 const fullnameSchema = z
-  .string()
+  .string({
+    error: (issue) => {
+      if (issue.input === undefined) {
+        return "FullName tidak boleh kosong";
+      }
+    },
+  })
   .trim()
   .min(1, { message: "Nama lengkap tidak boleh kosong" })
-  .min(3, { message: "Nama lengkap minimal 3 karakter" })
+  .min(5, { message: "Nama lengkap minimal 5 karakter" })
   .max(100, { message: "Nama lengkap maksimal 100 karakter" })
   .regex(/^[a-zA-Z\s.'-]+$/, {
     message: "Nama hanya boleh mengandung huruf, spasi, titik, apostrof, dan dash",
@@ -52,11 +64,19 @@ const fullnameSchema = z
  * Email validation with security checks
  */
 const emailSchema = z
-  .string()
+  .string({
+    error: (issue) => {
+      if (issue.input === undefined) {
+        return "Email tidak boleh kosong";
+      }
+    },
+  })
   .trim()
   .min(1, { message: "Email tidak boleh kosong" })
   .max(255, { message: "Email terlalu panjang" })
-  .email({ message: "Format email tidak valid" })
+  .refine((val) => z.email().safeParse(val).success, {
+    error: "Format email tidak valid",
+  })
   .regex(/^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, {
     message: "Email mengandung karakter yang tidak diperbolehkan",
   })
@@ -71,7 +91,13 @@ const emailSchema = z
  * Password validation with strength requirements
  */
 const passwordSchema = z
-  .string()
+  .string({
+    error: (issue) => {
+      if (issue.input === undefined) {
+        return "Password tidak boleh kosong";
+      }
+    },
+  })
   .min(1, { message: "Password tidak boleh kosong" })
   .min(8, { message: "Password minimal 8 karakter" })
   .max(128, { message: "Password maksimal 128 karakter" })
@@ -93,7 +119,7 @@ const passwordSchema = z
 
 export const RegisterFormSchema = z.object({
   username: usernameSchema,
-  Fullname: fullnameSchema,
+  fullname: fullnameSchema,
   email: emailSchema,
   password: passwordSchema,
 });

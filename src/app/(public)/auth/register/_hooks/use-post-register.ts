@@ -18,10 +18,13 @@ export const usePostRegister = (): UseMutationResult<
     mutationFn: async (payload: TRegisterParam) => {
       return await postRegister(payload);
     },
+
     onSuccess: (response) => {
       notification.success({
         message: "Registrasi Berhasil",
-        description: response.message || "Akun Anda telah berhasil dibuat. Silakan login.",
+        description:
+          response.message ||
+          "Akun Anda telah berhasil dibuat. Silakan login.",
         placement: "topRight",
       });
 
@@ -29,12 +32,32 @@ export const usePostRegister = (): UseMutationResult<
         navigate("/auth/login");
       }, 1000);
     },
+
     onError: (error: unknown) => {
-      const err = error as { response?: { data?: { message?: string } }; message?: string };
-      const errorMsg =
-        err?.response?.data?.message ||
-        err.message ||
-        "Registrasi gagal. Silakan coba lagi.";
+      const err = error as {
+        response?: {
+          data?: {
+            message?: string | Record<string, string>;
+          };
+        };
+        message?: string;
+      };
+
+      let errorMsg = "Registrasi gagal. Silakan coba lagi.";
+
+      const backendMessage = err?.response?.data?.message;
+
+      if (typeof backendMessage === "string") {
+        errorMsg = backendMessage;
+      } else if (
+        typeof backendMessage === "object" &&
+        backendMessage !== null
+      ) {
+        // ambil semua error dari object backend
+        errorMsg = Object.values(backendMessage).join(", ");
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
 
       notification.error({
         message: "Registrasi Gagal",

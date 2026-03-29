@@ -7,7 +7,7 @@ const PelayananKami = () => {
   const services = [
     {
       id: 1,
-      title: 'Supplier Jual Beli',
+      title: 'Sewa Alat Berat',
       description:
         'Menyediakan kebutuhan alat berat untuk proyek konstruksi dan industri berkat produk berkualitas. dan telah dipercaya banyak perusahaan',
       image: suplier,
@@ -31,9 +31,9 @@ const PelayananKami = () => {
   return (
     <section className="bg-white py-16">
       <div className="container mx-auto px-4">
-        <h2 className="mb-8 text-center text-4xl font-bold text-gray-800">
+        <h1 className="mb-8 text-center text-4xl font-bold text-gray-800">
           Pelayanan Kami
-        </h2>
+        </h1>
 
         {/* Services Grid */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -54,9 +54,9 @@ const PelayananKami = () => {
 
               {/* Content */}
               <div className="flex flex-1 flex-col p-6">
-                <h3 className="mb-2 text-center text-2xl font-bold text-[#4D9232]">
+                <h2 className="mb-2 text-center text-2xl font-bold text-[#4D9232]">
                   {service.title}
-                </h3>
+                </h2>
                 <p className="mb-4 grow text-center text-[#4D9232] text-sm">
                   {service.description}
                 </p>

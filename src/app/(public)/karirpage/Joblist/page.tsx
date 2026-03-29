@@ -59,9 +59,9 @@ const JobList = () => {
 
         {/* Header Stats */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 w-full gap-4">
-          <h2 className="text-lg font-bold text-[#48892F]">
+          <h1 className="text-lg font-bold text-[#48892F]">
             ({totalJobs}) pekerjaan tersedia
-          </h2>
+          </h1>
           <div className="w-full sm:w-auto flex justify-end">
             <button
               className="text-gray-900 font-semibold border-b-2 border-gray-800 pb-1 text-base cursor-pointer hover:text-[#48892F] hover:border-[#48892F] transition-colors"
@@ -201,8 +201,6 @@ const JobList = () => {
         onClose={() => setShowLoginModal(false)}
         jobTitle={selectedJobTitle}
       />
-
-      {/* Application Modal removed: now handled by route */}
     </section>
   );
 };

@@ -18,10 +18,10 @@ export default function HeroSection() {
                     <h1 className="font-semibold text-4xl md:text-5xl lg:text-6xl leading-tight">
                         Tentang Kami
                     </h1>
-                    <p className="font-medium text-lg md:text-xl lg:text-2xl leading-relaxed">
+                    <h2 className="font-medium text-lg md:text-xl lg:text-2xl leading-relaxed">
                         PT. Bukit Aurumn Sejahtera adalah perusahaan yang bergerak di bidang
                         Contractor & Supplier yang berpengalaman dalam mengerjakan proyek nasional.
-                    </p>
+                    </h2>
                 </div>
             </div>
         </section>

@@ -63,7 +63,7 @@ export function ProjectYear() {
     return (
         <div className="min-h-screen bg-white">
             <div className="pt-24 pb-32 px-8 md:px-12 lg:px-16">
-                <div className="max-w-[1440px] mx-auto">
+                <div className="max-w-360 mx-auto">
                     {/* Back Button & Page Header */}
                     <div className="mb-8 mt-4">
                         <button
@@ -73,7 +73,7 @@ export function ProjectYear() {
                             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#3a6d26] text-white group-hover:bg-[#2e581e] transition-colors duration-300 shadow-md">
                                 {/* <ArrowLeft className="w-5 h-5" strokeWidth={2.5} /> */}
                             </div>
-                            <span className="font-['Poppins'] font-medium text-lg text-[#3a6d26] group-hover:text-[#2e581e] transition-colors duration-300">
+                            <span className="font-medium text-lg text-[#3a6d26] group-hover:text-[#2e581e] transition-colors duration-300">
                                 Kembali ke Portfolio
                             </span>
                         </button>
@@ -81,11 +81,11 @@ export function ProjectYear() {
 
                     {/* Year Title */}
                     <div className="mb-8">
-                        <h1 className="font-['Poppins'] font-bold text-4xl md:text-5xl text-[#3a6d26]">
+                        <h1 className=" font-bold text-4xl md:text-5xl text-[#3a6d26]">
                             Proyek Tahun {year}
                         </h1>
                         {currentYearInfo && (
-                            <p className="font-['Poppins'] text-lg text-[#515151] mt-2">
+                            <p className=" text-lg text-[#515151] mt-2">
                                 {currentYearInfo.description} • {currentYearInfo.totalProjects} Proyek
                             </p>
                         )}
@@ -93,7 +93,7 @@ export function ProjectYear() {
 
                     {/* Search Bar */}
                     <div className="mb-12">
-                        <div className="max-w-[608px]">
+                        <div className="max-w-152">
                             <div className="relative">
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#adadad]">
                                     {/* <Search className="w-7 h-7" strokeWidth={1.5} /> */}
@@ -103,7 +103,7 @@ export function ProjectYear() {
                                     placeholder="Cari"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full h-[56px] pl-14 pr-4 rounded-lg border border-[#3a6d26] font-['Poppins'] text-2xl text-[#adadad] placeholder:text-[#adadad] focus:outline-none focus:border-[#3a6d26] focus:ring-1 focus:ring-[#3a6d26]"
+                                    className="w-full h-14 pl-14 pr-4 rounded-lg border border-[#3a6d26] text-2xl text-[#adadad] placeholder:text-[#adadad] focus:outline-none focus:border-[#3a6d26] focus:ring-1 focus:ring-[#3a6d26]"
                                 />
                             </div>
                         </div>
@@ -113,7 +113,7 @@ export function ProjectYear() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                         {deferredFilteredProjects.length === 0 ? (
                             <div className="col-span-full text-center py-20">
-                                <p className="font-['Poppins'] text-xl text-gray-600">
+                                <p className=" text-xl text-gray-600">
                                     {searchQuery ? 'Tidak ada proyek yang ditemukan' : 'Tidak ada proyek untuk tahun ini'}
                                 </p>
                             </div>
@@ -135,9 +135,9 @@ interface ProjectCardProps {
 
 function ProjectCard({ project }: ProjectCardProps) {
     return (
-        <div className="bg-[#f7f7f7] rounded-[13px] border border-[#2e581e] shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] p-4 h-[360px] flex flex-col transition-all duration-300 hover:shadow-[0px_6px_15px_0px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
+        <div className="bg-[#f7f7f7] rounded-[13px] border border-[#2e581e] shadow-[0px_4px_10px_0px_rgba(0,0,0,0.25)] p-4 h-90 flex flex-col transition-all duration-300 hover:shadow-[0px_6px_15px_0px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
             {/* Image Container */}
-            <div className="relative h-[178px] w-full rounded-2xl overflow-hidden border-2 border-[#4d9232] mb-4 flex-shrink-0">
+            <div className="relative h-44.5 w-full rounded-2xl overflow-hidden border-2 border-[#4d9232] mb-4 shrink-0">
                 <img
                     src={project.image || imgProject}
                     alt={project.title}
@@ -148,28 +148,28 @@ function ProjectCard({ project }: ProjectCardProps) {
             {/* Content */}
             <div className="flex flex-col gap-2 flex-1">
                 {/* Title */}
-                <h3 className="font-['Poppins'] font-medium text-2xl leading-[33.6px] text-black line-clamp-1">
+                <h1 className="font-medium text-2xl leading-[33.6px] text-black line-clamp-1">
                     {project.title}
-                </h3>
+                </h1>
 
                 {/* Details */}
                 <div className="flex flex-col gap-1 text-base leading-6">
                     {/* Location */}
                     <div className="flex gap-2 items-center">
-                        <span className="font-['Poppins'] font-medium text-black">Lokasi:</span>
-                        <span className="font-['Poppins'] font-normal text-black">{project.location}</span>
+                        <span className="font-medium text-black">Lokasi:</span>
+                        <span className="font-normal text-black">{project.location}</span>
                     </div>
 
                     {/* Client */}
                     <div className="flex gap-2 items-center">
-                        <span className="font-['Poppins'] font-medium text-black">Klien:</span>
-                        <span className="font-['Poppins'] font-normal text-black line-clamp-1">{project.client}</span>
+                        <span className="font-medium text-black">Klien:</span>
+                        <span className="font-normal text-black line-clamp-1">{project.client}</span>
                     </div>
 
                     {/* Value */}
                     <div className="flex gap-2 items-center">
-                        <span className="font-['Poppins'] font-medium text-black">Nilai Proyek:</span>
-                        <span className="font-['Poppins'] font-normal text-black">{project.value}</span>
+                        <span className="font-medium text-black">Nilai Proyek:</span>
+                        <span className="font-normal text-black">{project.value}</span>
                     </div>
                 </div>
             </div>

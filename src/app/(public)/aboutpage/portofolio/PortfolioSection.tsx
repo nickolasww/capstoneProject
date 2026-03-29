@@ -31,10 +31,10 @@ export function PortfolioSection() {
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16 md:mb-20 lg:mb-24">
-                    <h2 className="font-['Poppins'] font-semibold text-4xl md:text-5xl lg:text-6xl text-[#3a6d26] mb-4 md:mb-6">
+                    <h2 className="font-semibold text-4xl md:text-5xl lg:text-6xl text-[#3a6d26] mb-4 md:mb-6">
                         Portfolio Proyek
                     </h2>
-                    <p className="font-['Poppins'] text-lg md:text-xl lg:text-2xl text-[#515151] max-w-3xl mx-auto">
+                    <p className="text-lg md:text-xl lg:text-2xl text-[#515151] max-w-3xl mx-auto">
                         Koleksi Portfolio kami dalam beberapa tahun
                     </p>
                 </div>
@@ -74,7 +74,7 @@ export function PortfolioSection() {
                             Portofolio sedang dalam proses pengumpulan sehingga belum bisa ditampilkan.
                         </p>
                         <button
-                            className="px-6 py-2 bg-[#3a6d26] text-white rounded-full font-['Poppins'] font-semibold hover:bg-[#2e5520] transition"
+                            className="px-6 py-2 bg-[#3a6d26] text-white rounded-full font-semibold hover:bg-[#2e5520] transition"
                             onClick={() => setModalOpen(false)}
                         >
                             Tutup
@@ -118,15 +118,15 @@ function ProjectCard({ year, projectCount, onClick }: ProjectCardProps) {
                 </div>
 
                 {/* Year */}
-                <h3 className="font-['Poppins'] font-bold text-5xl md:text-6xl lg:text-[64px] leading-none mb-4 group-hover:scale-105 transition-transform duration-300">
+                <h3 className="font-bold text-5xl md:text-6xl lg:text-[64px] leading-none mb-4 group-hover:scale-105 transition-transform duration-300">
                     {year}
                 </h3>
 
                 {/* Divider */}
-                <div className="w-16 h-[3px] bg-white/50 rounded-full mb-5 group-hover:w-20 group-hover:bg-white/70 transition-all duration-300" />
+                <div className="w-16 h-0.75 bg-white/50 rounded-full mb-5 group-hover:w-20 group-hover:bg-white/70 transition-all duration-300" />
 
                 {/* Project Count */}
-                <p className="font-['Poppins'] font-medium text-xl md:text-2xl text-center leading-tight">
+                <p className=" font-medium text-xl md:text-2xl text-center leading-tight">
                     {projectCount} Proyek
                 </p>
 

@@ -5,9 +5,9 @@ const BeritaTerkini = () => {
   return (
     <section className=" py-16">
       <div className="container mx-auto px-4">
-        <h2 className="mb-4 text-center text-4xl font-bold text-gray-800">
+        <h1 className="mb-4 text-center text-4xl font-bold text-gray-800">
           Berita Terkini
-        </h2>
+        </h1>
         <p className="mb-12 text-center text-gray-600">
           Update terbaru seputar proyek dan kegiatan perusahaan kami
         </p>

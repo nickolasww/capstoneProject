@@ -20,8 +20,8 @@ export const jobApplicationSchema = z.object({
     .min(1, 'Nomor telepon tidak boleh kosong')
     .regex(/^(\+62|0)[0-9]{9,12}$/, 'Format nomor telepon tidak valid')
     .refine(
-      (phone) => phone.length === 15,
-      'Nomor telepon harus 15 karakter'
+      (phone) => phone.length === 12,
+      'Nomor telepon harus 12 karakter'
     ),
   address: z
     .string()

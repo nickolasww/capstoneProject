@@ -24,7 +24,6 @@ export const JobApplicationForm = ({
 }: JobApplicationFormProps) => {
   const navigate = useNavigate();
   const [selectedFileName, setSelectedFileName] = useState<string>('');
-  const [submitError, setSubmitError] = useState<string>('');
   const {
     handleSubmit,
     formState: { errors },
@@ -48,19 +47,13 @@ export const JobApplicationForm = ({
     onSuccess: () => {
       reset();
       setSelectedFileName('');
-      setSubmitError('');
       if (onSubmitSuccess) {
         onSubmitSuccess();
-      } else {
-        navigate('/karirpage/lamaran-terdaftar');
       }
+        navigate('/karirpage/lamaran-terdaftar');
     },
     onAuthRequired: () => {
-      setSubmitError('');
       onAuthRequired?.();
-    },
-    onError: (error) => {
-      setSubmitError(error.message || 'Terjadi kesalahan saat mengirim formulir');
     },
   });
 
@@ -72,7 +65,6 @@ export const JobApplicationForm = ({
       return;
     }
     
-    setSubmitError('');
     mutate({
       ...data,
       job_position_id: jobPositionId,
@@ -211,13 +203,6 @@ export const JobApplicationForm = ({
           <p className="text-red-500 text-xs mt-1">⚠️ {errors.file.message}</p>
         )}
       </div>
-
-      {/* Error Alert */}
-      {submitError && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-4">
-          <p className="text-red-700 text-xs font-medium">⚠️ {submitError}</p>
-        </div>
-      )}
 
       {/* Submit Button Centered */}
       <div className="flex justify-center pt-2">

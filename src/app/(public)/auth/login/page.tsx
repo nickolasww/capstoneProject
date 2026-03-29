@@ -45,17 +45,17 @@ export default function Login() {
                   className="w-full object-cover"
                 />
               </div>
-              <h1 className="font-['Poppins'] font-bold text-sm text-center text-black leading-[1.4]">
+              <h1 className="font-bold text-sm text-center text-black leading-[1.4]">
                 PT. BUKIT AURUMN SEJAHTERA
               </h1>
             </div>
 
             {/* Login Header */}
             <div className="flex flex-col items-center gap-2 w-full">
-              <h2 className="font-['Poppins'] text-2xl font-semibold text-black leading-[1.4] text-center">
+              <h2 className="text-2xl font-semibold text-black leading-[1.4] text-center">
                 Log In
               </h2>
-              <p className="font-['Poppins'] text-sm text-gray-600 leading-[1.4] text-center">
+              <p className="text-sm text-gray-600 leading-[1.4] text-center">
                 Don't have an account?{" "}
                 <Link
                   to="/auth/register"
@@ -76,7 +76,7 @@ export default function Login() {
               {/* Error Message */}
               {error ? (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-                  <p className="font-['Poppins'] text-sm">
+                  <p className="text-sm">
                     {String((error as any)?.message || "Terjadi kesalahan saat login")}
                   </p>
                 </div>
@@ -85,7 +85,7 @@ export default function Login() {
               {/* Email Field */}
               <Form.Item
                 label={
-                  <span className="font-['Poppins'] text-sm font-medium text-black">
+                  <span className="font text-sm font-medium text-black">
                     Email
                   </span>
                 }
@@ -94,14 +94,14 @@ export default function Login() {
               >
                 <Input
                   placeholder="Enter your email"
-                  className="w-full h-12 bg-white border border-gray-300 rounded-lg px-4 font-['Poppins'] text-sm text-black placeholder:text-gray-400 transition-all shadow-none"
+                  className="w-full h-12 bg-white border border-gray-300 rounded-lg px-4  text-sm text-black placeholder:text-gray-400 transition-all shadow-none"
                 />
               </Form.Item>
 
               {/* Password Field */}
               <Form.Item
                 label={
-                  <span className="font-['Poppins'] text-sm font-medium text-black">
+                  <span className=" text-sm font-medium text-black">
                     Password
                   </span>
                 }
@@ -110,7 +110,7 @@ export default function Login() {
               >
                 <Input.Password
                   placeholder="Enter your password"
-                  className="w-full h-12 bg-white border border-gray-300 rounded-lg px-4 font-['Poppins'] text-sm text-black placeholder:text-gray-400 transition-all shadow-none"
+                  className="w-full h-12 bg-white border border-gray-300 rounded-lg px-4  text-sm text-black placeholder:text-gray-400 transition-all shadow-none"
                 />
               </Form.Item>
 
@@ -119,7 +119,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => navigate("/forgot-password")}
-                  className="font-['Poppins'] text-xs text-[#4d9232] leading-[1.4] hover:underline focus:outline-none"
+                  className="text-xs text-[#4d9232] leading-[1.4] hover:underline focus:outline-none"
                 >
                   Forgot your password?
                 </button>
@@ -130,7 +130,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="w-full h-12 bg-[#4d9232] rounded-lg font-['Poppins'] text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full h-12 bg-[#4d9232] rounded-lg text-base font-medium text-white leading-[1.4] hover:bg-[#3d7527] focus:outline-none focus:ring-2 focus:ring-[#4d9232] focus:ring-offset-2 transition-all active:scale-[0.98] shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isPending ? (
                     <>

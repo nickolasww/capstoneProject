@@ -53,7 +53,7 @@ const JobApplicationsHistoryPage = () => {
                 <button
                     type="button"
                     className="mb-6 flex items-center gap-2 text-gray-600 hover:text-green-700 font-medium text-base"
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate("/karirpage")}
                 >
                     <ArrowLeftOutlined className="text-lg" />
                     Kembali

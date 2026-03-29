@@ -53,9 +53,9 @@ const KritikDanSaran = () => {
     <section className="bg-white py-16">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl">
-          <h2 className="mb-4 text-center text-4xl font-bold text-gray-800">
+          <h1 className="mb-4 text-center text-4xl font-bold text-gray-800">
             Kritik dan Saran
-          </h2>
+          </h1>
           <p className="mb-12 text-center text-gray-600">
             Kami sangat menghargai masukan Anda untuk meningkatkan layanan kami
           </p>
@@ -64,9 +64,9 @@ const KritikDanSaran = () => {
             {/* Contact Info */}
             <div className="flex flex-col justify-center space-y-6">
               <div>
-                <h3 className="mb-4 text-2xl font-bold text-gray-800">
+                <h2 className="mb-4 text-2xl font-bold text-gray-800">
                   Hubungi Kami
-                </h3>
+                </h2>
                 <p className="text-gray-600">
                   Jangan ragu untuk menghubungi kami melalui formulir atau informasi kontak di bawah ini.
                 </p>

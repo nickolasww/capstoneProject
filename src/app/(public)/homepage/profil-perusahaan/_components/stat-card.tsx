@@ -6,9 +6,10 @@ interface StatCardProps {
   color: string;
   isVisible: boolean;
   delay: number;
+  suffix?: string; 
 }
 
-const StatCard = ({ label, value, color, isVisible, delay }: StatCardProps) => {
+const StatCard = ({ label, value, color, isVisible, delay, suffix }: StatCardProps) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ const StatCard = ({ label, value, color, isVisible, delay }: StatCardProps) => {
   return (
     <div className="bg-white rounded-lg p-4 text-center shadow-md hover:shadow-xl transition-shadow">
       <p className="text-gray-600 text-sm mb-2 font-medium">{label}</p>
-      <p className={`text-4xl font-bold ${color}`}>{count}</p>
+      <p className={`text-4xl font-bold ${color}`}>{count}{suffix}</p>
     </div>
   );
 };

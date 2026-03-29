@@ -142,9 +142,9 @@ const KlienKami = () => {
   return (
     <section id="mitra-kami" className="pt-24 md:pb-12 xl:pb-24">
       <div className="container mx-auto px-4">
-        <h2 className="mb-20 text-center text-4xl font-bold text-gray-800">
+        <h1 className="mb-20 text-center text-4xl font-bold text-gray-800">
           Mitra Kami
-        </h2>
+        </h1>
 
         {/* Embla Carousel Container */}
         <div className="relative">

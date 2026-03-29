@@ -18,11 +18,11 @@ const HeroSection = () => {
         <h1 className="mb-6 text-5xl font-bold md:text-6xl lg:text-7xl">
           Solusi Alat Berat & Konstruksi Terpercaya.
         </h1>
-        <p className="mb-8 max-w-3xl text-lg md:text-xl">
+        <h2 className="mb-8 max-w-3xl text-lg md:text-xl">
           PT Bukit Aurumn Sejahtera menghadirkan layanan pengadaan barang dan
           jasa terbaik dengan kontribusi maksimal untuk pertumbuhan industri
           Anda.
-        </p>
+        </h2>
       </div>
     </section>
   );

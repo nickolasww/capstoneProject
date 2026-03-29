@@ -16,16 +16,19 @@ const ProfilPerusahaan = () => {
     {
       label: 'Total Alat Berat',
       value: 14,
+       suffix: '+', 
       color: 'text-red-600',
     },
     {
       label: 'Total Truk',
       value: 15,
+       suffix: '+',
       color: 'text-red-600',
     },
     {
       label: 'Total Pengadaan',
       value: 451,
+       suffix: '+',
       color: 'text-red-600',
     },
   ];
@@ -63,6 +66,7 @@ const ProfilPerusahaan = () => {
                     key={index}
                     label={stat.label}
                     value={stat.value}
+                    suffix={stat.suffix}
                     color={stat.color}
                     isVisible={isVisible}
                     delay={index * 100}

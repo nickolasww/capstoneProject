@@ -184,10 +184,10 @@ export default function SetRole() {
       )}
 
       <div className="mb-8">
-        <h1 className="font-['Poppins'] text-[32px] font-semibold text-black mb-2">
+        <h1 className="text-[32px] font-semibold text-black mb-2">
           Update and Set Role
         </h1>
-        <p className="font-['Poppins'] text-base text-gray-600">
+        <p className="text-base text-gray-600">
           Pilih role yang sesuai per fitur admin
         </p>
       </div>
@@ -195,7 +195,7 @@ export default function SetRole() {
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 mb-6">
         <div className="grid grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block font-['Poppins'] text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Client - Email
             </label>
             <input
@@ -203,18 +203,18 @@ export default function SetRole() {
               value={selectedEmail}
               onChange={(e) => setSelectedEmail(e.target.value)}
               placeholder="Masukkan email client"
-              className="w-full h-[48px] px-4 border border-gray-300 rounded-lg font-['Poppins'] text-base text-black placeholder:text-gray-400 focus:outline-none focus:border-[#4d9232] focus:ring-2 focus:ring-[#4d9232]/20 transition-all"
+              className="w-full h-[48px] px-4 border border-gray-300 rounded-lg text-base text-black placeholder:text-gray-400 focus:outline-none focus:border-[#4d9232] focus:ring-2 focus:ring-[#4d9232]/20 transition-all"
             />
           </div>
 
           <div>
-            <label className="block font-['Poppins'] text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Role
             </label>
             <select
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
-              className="w-full h-[48px] px-4 border border-gray-300 rounded-lg font-['Poppins'] text-base text-black focus:outline-none focus:border-[#4d9232] focus:ring-2 focus:ring-[#4d9232]/20 transition-all appearance-none bg-white cursor-pointer"
+              className="w-full h-[48px] px-4 border border-gray-300 rounded-lg text-base text-black focus:outline-none focus:border-[#4d9232] focus:ring-2 focus:ring-[#4d9232]/20 transition-all appearance-none bg-white cursor-pointer"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
                 backgroundRepeat: 'no-repeat',
@@ -234,7 +234,7 @@ export default function SetRole() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="h-[48px] px-8 bg-[#4d9232] hover:bg-[#3d7527] disabled:bg-gray-400 rounded-lg font-['Poppins'] text-base font-medium text-white transition-colors shadow-sm flex items-center gap-2"
+            className="h-[48px] px-8 bg-[#4d9232] hover:bg-[#3d7527] disabled:bg-gray-400 rounded-lg text-base font-medium text-white transition-colors shadow-sm flex items-center gap-2"
           >
             {isSaving ? (
               <>
@@ -249,10 +249,10 @@ export default function SetRole() {
       </div>
 
       <div className="mb-4">
-        <h2 className="font-['Poppins'] text-xl font-semibold text-black mb-1">
+        <h2 className="text-xl font-semibold text-black mb-1">
           Permission Management
         </h2>
-        <p className="font-['Poppins'] text-sm text-gray-600">
+        <p className="text-sm text-gray-600">
           Atur hak akses untuk setiap modul sistem
         </p>
       </div>
@@ -271,10 +271,10 @@ export default function SetRole() {
       </div>
 
       <div className="mb-4">
-        <h2 className="font-['Poppins'] text-xl font-semibold text-black mb-1">
+        <h2 className="text-xl font-semibold text-black mb-1">
           User Roles yang Tersimpan
         </h2>
-        <p className="font-['Poppins'] text-sm text-gray-600">
+        <p className="text-sm text-gray-600">
           Daftar user dengan role dan permission yang sudah dikonfigurasi
         </p>
       </div>
@@ -283,17 +283,17 @@ export default function SetRole() {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-4 text-left font-['Poppins'] text-sm font-semibold text-gray-700">Email</th>
-              <th className="px-6 py-4 text-left font-['Poppins'] text-sm font-semibold text-gray-700">Role</th>
-              <th className="px-6 py-4 text-left font-['Poppins'] text-sm font-semibold text-gray-700">Permissions</th>
-              <th className="px-6 py-4 text-left font-['Poppins'] text-sm font-semibold text-gray-700">Disimpan</th>
-              <th className="px-6 py-4 text-left font-['Poppins'] text-sm font-semibold text-gray-700">Aksi</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Email</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Role</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Permissions</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Disimpan</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {savedUsers.map((user) => (
               <tr key={user.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 font-['Poppins'] text-sm text-gray-900">{user.email}</td>
+                <td className="px-6 py-4 text-sm text-gray-900">{user.email}</td>
                 <td className="px-6 py-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${user.role === 'superadmin' ? 'bg-purple-100 text-purple-700' :
                     user.role === 'admin' ? 'bg-blue-100 text-blue-700' :
@@ -303,10 +303,10 @@ export default function SetRole() {
                     {getRoleLabel(user.role)}
                   </span>
                 </td>
-                <td className="px-6 py-4 font-['Poppins'] text-sm text-gray-600">
+                <td className="px-6 py-4 text-sm text-gray-600">
                   {countPermissions(user.permissions)} izin aktif
                 </td>
-                <td className="px-6 py-4 font-['Poppins'] text-sm text-gray-600">{user.savedAt}</td>
+                <td className="px-6 py-4 text-sm text-gray-600">{user.savedAt}</td>
                 <td className="px-6 py-4">
                   <div className="flex gap-2">
                     <button
@@ -353,10 +353,10 @@ function PermissionCard({ module, permissions, onPermissionChange }: PermissionC
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
       <div className="mb-4">
-        <h3 className="font-['Poppins'] text-lg font-semibold text-black mb-1">
+        <h3 className="text-lg font-semibold text-black mb-1">
           {module.name}
         </h3>
-        <p className="font-['Poppins'] text-sm text-gray-600">
+        <p className="text-sm text-gray-600">
           {module.description}
         </p>
       </div>
@@ -445,7 +445,7 @@ function PermissionCheckbox({ label, checked, onChange, color }: PermissionCheck
           )}
         </div>
 
-        <span className={`font-['Poppins'] text-sm font-medium ${checked ? colors.text : 'text-gray-700'
+        <span className={`text-sm font-medium ${checked ? colors.text : 'text-gray-700'
           }`}>
           {label}
         </span>

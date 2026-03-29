@@ -16,20 +16,20 @@ const VisionMission = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-20">
           {/* Visi */}
           <div className="space-y-6 md:space-y-10">
-            <h2 className=" font-medium text-5xl md:text-6xl lg:text-7xl text-[#3a6d26]">
+            <h1 className=" font-medium text-5xl md:text-6xl lg:text-7xl text-[#3a6d26]">
               Visi
-            </h2>
-            <p className="font-['Poppins'] text-xl md:text-2xl text-black leading-relaxed">
+            </h1>
+            <p className=" text-xl md:text-2xl text-black leading-relaxed">
               Membangun dengan kualitas, menyempurnakan dengan dedikasi
             </p>
           </div>
 
           {/* Misi */}
           <div className="space-y-6 md:space-y-10">
-            <h2 className=" font-medium text-5xl md:text-6xl lg:text-7xl text-[#3a6d26]">
+            <h1 className=" font-medium text-5xl md:text-6xl lg:text-7xl text-[#3a6d26]">
               Misi
-            </h2>
-            <ol className="space-y-3 font-['Poppins'] text-lg md:text-2xl text-black list-decimal list-inside">
+            </h1>
+            <ol className="space-y-3 text-lg md:text-2xl text-black list-decimal list-inside">
               {missionPoints.map((point, index) => (
                 <li key={index} className="leading-relaxed pl-2">
                   <span className="ml-2">{point}</span>

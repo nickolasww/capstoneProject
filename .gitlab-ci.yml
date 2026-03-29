@@ -52,7 +52,7 @@ deploy-prod:
     - ssh $SSH_USER@$SSH_IP -p $SSH_PORT "
         docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD &&
         cd $FRONTEND_SERVER_DIR &&
-        docker compose -f docker-compose.prod.yaml pull  bas-frontend &&
+        docker compose -f docker-compose.prod.yaml --env-file .env.prod pull bas-frontend &&
         docker compose -f docker-compose.prod.yaml --env-file .env.prod up -d bas-frontend &&
         sleep 5 &&
         docker compose -f docker-compose.prod.yaml ps &&

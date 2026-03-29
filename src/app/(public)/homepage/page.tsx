@@ -10,7 +10,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
       <SEO 
-        title="Beranda | Supplier Alat Berat & Konstruksi Terpercaya"
+        title="Bukit Aurumn Sejahtera"
         description="Melayani pengadaan alat berat dan jasa konstruksi sejak 2003 dengan kualitas terbaik."
       />
       <HeroSection />

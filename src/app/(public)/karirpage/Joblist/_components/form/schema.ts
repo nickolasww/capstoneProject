@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const jobApplicationSchema = z.object({
   first_name: z
     .string()
-    .min(2, 'Nama depan minimal 2 karakter')
+    .min(5, 'Nama depan minimal 5 karakter')
     .max(100, 'Nama depan maksimal 100 karakter'),
   last_name: z
     .string()

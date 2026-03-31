@@ -1,4 +1,3 @@
-import { useIsMobileScreen } from "@/utils/responsive";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSession } from "@/app/_components/providers/session";

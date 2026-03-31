@@ -1,7 +1,7 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState, type JSX } from 'react';
-import { useSession } from '@/app/_components/providers/session';
-import imgLogo from '@/assets/logo PT BAS.png';
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, type JSX } from "react";
+import { useSession } from "@/app/_components/providers/session";
+import imgLogo from "@/assets/logo PT BAS.png";
 import {
   HomeOutlined,
   ToolOutlined,
@@ -15,7 +15,7 @@ import {
   UserOutlined,
   SolutionOutlined,
   LogoutOutlined,
-} from '@ant-design/icons';
+} from "@ant-design/icons";
 
 interface SubMenuItem {
   path: string;
@@ -31,60 +31,57 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
+  { path: "/dashboard", label: "Dashboard", icon: <HomeOutlined /> },
   {
-    path: '/dashboard',
-    label: 'Dashboard',
-    icon: <HomeOutlined className="text-lg" />,
+    path: "/sewa-alat-berat",
+    label: "Sewa Alat Berat",
+    icon: <ToolOutlined />,
   },
   {
-    path: '/sewa-alat-berat',
-    label: 'Sewa Alat Berat',
-    icon: <ToolOutlined className="text-lg" />,
+    path: "/permintaan-jasa-konstruksi",
+    label: "Jasa Konstruksi",
+    icon: <BuildOutlined />,
   },
   {
-    path: '/permintaan-jasa-konstruksi',
-    label: 'Permintaan Jasa Konstruksi',
-    icon: <BuildOutlined className="text-lg" />,
+    path: "/pembelian-barang",
+    label: "Pembelian Barang",
+    icon: <ShoppingCartOutlined />,
   },
   {
-    path: '/pembelian-barang',
-    label: 'Pembelian Barang',
-    icon: <ShoppingCartOutlined className="text-lg" />,
-  },
-  {
-    label: 'Lamaran Kerja',
-    icon: <BankOutlined className="text-lg" />,
+    label: "Lamaran Kerja",
+    icon: <BankOutlined />,
     submenu: [
-      { path: '/lamaran-kerja/daftar-pelamar', label: 'Daftar Pelamar', icon: <UserOutlined /> },
-      { path: '/lamaran-kerja/posting-pekerjaan', label: 'Posting Pekerjaan', icon: <SolutionOutlined /> },
+      {
+        path: "/lamaran-kerja/daftar-pelamar",
+        label: "Daftar Pelamar",
+        icon: <UserOutlined />,
+      },
+      {
+        path: "/lamaran-kerja/posting-pekerjaan",
+        label: "Posting Pekerjaan",
+        icon: <SolutionOutlined />,
+      },
     ],
   },
   {
-    path: '/pendaftaran-beasiswa',
-    label: 'Pendaftaran Beasiswa',
-    icon: <ReadOutlined className="text-lg" />,
+    path: "/pendaftaran-beasiswa",
+    label: "Pendaftaran Beasiswa",
+    icon: <ReadOutlined />,
   },
+  { path: "/stok-produk", label: "Stok Produk", icon: <InboxOutlined /> },
   {
-    path: '/stok-produk',
-    label: 'Stok Produk',
-    icon: <InboxOutlined className="text-lg" />,
+    path: "/tender-management",
+    label: "Tender Management",
+    icon: <FileTextOutlined />,
   },
-  {
-    path: '/tender-management',
-    label: 'Tender Management',
-    icon: <FileTextOutlined className="text-lg" />,
-  },
-  {
-    path: '/set-role',
-    label: 'Set Role',
-    icon: <TeamOutlined className="text-lg" />,
-  },
+  { path: "/set-role", label: "Set Role", icon: <TeamOutlined /> },
 ];
 
 export default function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useSession();
+
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const toggleDropdown = (label: string) => {
@@ -93,15 +90,20 @@ export default function DashboardSidebar() {
 
   const handleLogout = () => {
     logout();
-    navigate('/', { replace: true });
+    navigate("/", { replace: true });
   };
 
   return (
     <aside
-      className="bg-white border-r border-gray-200 w-64 flex flex-col fixed top-0 left-0 h-screen z-40"
+      className={`
+        bg-white border-r border-gray-200 flex flex-col fixed top-0 left-0 h-screen z-40
+        w-16 lg:w-64   // 🔥 MOBILE kecil, DESKTOP normal
+      `}
     >
-      {/* Logo Section */}
-      <div className="p-4 border-b border-gray-200">
+      {/* ========================= */}
+      {/* 🔥 LOGO */}
+      {/* ========================= */}
+      <div className="p-4 border-b border-gray-200 flex items-center justify-center lg:justify-start">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 shrink-0">
             <img
@@ -110,85 +112,95 @@ export default function DashboardSidebar() {
               className="w-full h-full object-contain"
             />
           </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="font-bold text-sm leading-tight text-gray-900 truncate">
-              PT BUKIT AURUMN
-            </h2>
-            <p className="text-xs text-gray-600 truncate">SEJAHTERA</p>
+
+          {/* ❌ Hidden di mobile */}
+          <div className="hidden lg:block">
+            <h2 className="font-bold text-sm text-gray-900">PT BUKIT AURUMN</h2>
+            <p className="text-xs text-gray-600">SEJAHTERA</p>
           </div>
         </div>
       </div>
 
-      {/* Menu Items */}
+      {/* ========================= */}
+      {/* 🔥 MENU */}
+      {/* ========================= */}
       <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1 px-3">
+        <ul className="space-y-1 px-2 lg:px-3">
           {menuItems.map((item) => {
             const hasSubmenu = item.submenu && item.submenu.length > 0;
-            const isActive = item.path ? location.pathname === item.path : false;
-            const isSubmenuActive = hasSubmenu && item.submenu?.some(sub => location.pathname === sub.path);
+            const isActive = item.path
+              ? location.pathname === item.path
+              : false;
+
+            const isSubmenuActive =
+              hasSubmenu &&
+              item.submenu?.some((sub) => location.pathname === sub.path);
+
             const isDropdownOpen = openDropdown === item.label;
 
             return (
               <li key={item.label}>
                 {hasSubmenu ? (
                   <>
-                    {/* Parent with submenu */}
+                    {/* 🔹 Parent */}
                     <button
                       onClick={() => toggleDropdown(item.label)}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                        isSubmenuActive
-                          ? 'bg-green-50 text-green-700 font-medium'
-                          : 'text-gray-700 hover:bg-gray-50'
-                      }`}
+                      className={`
+                        w-full flex items-center justify-center lg:justify-start
+                        gap-3 px-3 py-2.5 rounded-lg
+                        ${
+                          isSubmenuActive
+                            ? "bg-green-50 text-green-700"
+                            : "text-gray-700 hover:bg-gray-50"
+                        }
+                      `}
                     >
-                      <span className="shrink-0">{item.icon}</span>
-                      <span className="text-sm flex-1 truncate text-left">{item.label}</span>
-                      <svg
-                        className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      {item.icon}
+
+                      {/* ❌ Hidden di mobile */}
+                      <span className="hidden lg:block text-sm flex-1 text-left relative">
+                        {item.label}
+                      </span>
                     </button>
-                    
-                    {/* Submenu */}
+
+                    {/* 🔹 Submenu (desktop only biar ga aneh di mobile) */}
                     {isDropdownOpen && (
-                      <ul className="mt-1 ml-8 space-y-1">
-                        {item.submenu?.map((subItem) => {
-                          const isSubActive = location.pathname === subItem.path;
-                          return (
-                            <li key={subItem.path}>
-                              <Link
-                                to={subItem.path}
-                                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                                  isSubActive
-                                    ? 'bg-green-50 text-green-700 font-medium'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                }`}
-                              >
-                                <span className="shrink-0">{subItem.icon}</span>
-                                {subItem.label}
-                              </Link>
-                            </li>
-                          );
-                        })}
+                      <ul
+                        className={`absolute left-16 -translate-y-7 lg:translate-y-0 bg-white shadow-lg rounded-md p-2 z-50 space-y-1 min-w-45
+                          lg:static lg:ml-6 lg:bg-transparent lg:shadow-none lg:p-0`}
+                      >
+                        {item.submenu?.map((sub) => (
+                          <li key={sub.path}>
+                            <Link
+                              to={sub.path}
+                              className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                            >
+                              {sub.label}
+                            </Link>
+                          </li>
+                        ))}
                       </ul>
                     )}
                   </>
                 ) : (
-                  /* Regular menu item */
                   <Link
                     to={item.path!}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                      isActive
-                        ? 'bg-green-50 text-green-700 font-medium'
-                        : 'text-gray-700 hover:bg-gray-50'
-                    }`}
+                    className={`
+                      flex items-center justify-center lg:justify-start
+                      gap-3 px-3 py-2.5 rounded-lg
+                      ${
+                        isActive
+                          ? "bg-green-50 text-green-700"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }
+                    `}
                   >
-                    <span className="shrink-0">{item.icon}</span>
-                    <span className="text-sm flex-1 truncate">{item.label}</span>
+                    {item.icon}
+
+                    {/* ❌ Hidden di mobile */}
+                    <span className="hidden lg:block text-sm">
+                      {item.label}
+                    </span>
                   </Link>
                 )}
               </li>
@@ -197,14 +209,18 @@ export default function DashboardSidebar() {
         </ul>
       </nav>
 
-      {/* Logout Button */}
-      <div className=" border-t border-gray-200">
+      {/* ========================= */}
+      {/* 🔥 LOGOUT */}
+      {/* ========================= */}
+      <div className="border-t border-gray-200 ">
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 px-3 py-4 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+          className="w-full flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 rounded-lg px-3 py-4"
         >
-          <LogoutOutlined className="text-lg" />
-          <span>Logout</span>
+          <LogoutOutlined />
+
+          {/* ❌ Hidden di mobile */}
+          <span className="hidden lg:block">Logout</span>
         </button>
       </div>
     </aside>

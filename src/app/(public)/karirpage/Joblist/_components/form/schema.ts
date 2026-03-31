@@ -3,20 +3,24 @@ import { z } from 'zod';
 export const jobApplicationSchema = z.object({
   first_name: z
     .string()
+    .trim()
     .min(5, 'Nama depan minimal 5 karakter')
     .max(100, 'Nama depan maksimal 100 karakter'),
   last_name: z
     .string()
+    .trim()
     .min(5, 'Nama belakang minimal 5 karakter')
     .max(100, 'Nama belakang maksimal 100 karakter'),
   email: z
     .string()
+    .trim()
     .min(1, 'Email tidak boleh kosong')
     .refine((val) => z.email().safeParse(val).success, {
     error: "Format email tidak valid",
   }),
   phone_number: z
     .string()
+    .trim()
     .min(1, 'Nomor telepon tidak boleh kosong')
     .regex(/^(\+62|0)[0-9]{9,12}$/, 'Format nomor telepon tidak valid')
     .refine(
@@ -25,6 +29,7 @@ export const jobApplicationSchema = z.object({
     ),
   address: z
     .string()
+    .trim()
     .min(1, 'Alamat tidak boleh kosong')
     .min(5, 'Alamat minimal 5 karakter')
     .max(500, 'Alamat maksimal 500 karakter'),
@@ -35,30 +40,17 @@ export const jobApplicationSchema = z.object({
       'File tidak boleh kosong'
     )
     .refine(
-      (file) => file.size <= 5 * 1024 * 1024,
-      'Ukuran file tidak boleh lebih dari 5MB'
+      (file) => file.size <= 2 * 1024 * 1024,
+      'Ukuran file tidak boleh lebih dari 2MB'
     )
     .refine(
       (file) => {
-        const validMimeTypes = [
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'application/vnd.ms-word',
-          'application/x-msword',
-        ];
-        const validExtensions = ['.pdf', '.doc', '.docx'];
         const fileName = file.name.toLowerCase();
-        
-        // Check by MIME type
-        if (validMimeTypes.includes(file.type)) {
-          return true;
-        }
-        
-        // Fallback: check by file extension
-        return validExtensions.some((ext) => fileName.endsWith(ext));
+        const isPdfMime = file.type === "application/pdf";
+        const isPdfExtension = fileName.endsWith(".pdf");
+        return isPdfMime || isPdfExtension;
       },
-      'Format file harus PDF atau DOC/DOCX'
+      "File harus berformat PDF"
     ),
 });
 

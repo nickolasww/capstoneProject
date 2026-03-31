@@ -8,7 +8,7 @@ interface UnderConstructionProps {
 
 const UnderConstruction: React.FC<UnderConstructionProps> = ({ title }) => {
   return (
-    <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 py-20 text-center relative overflow-hidden">
+    <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 py-32 text-center relative overflow-hidden">
       {/* Background patterns */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#4D9232]/5 rounded-full blur-3xl -z-10"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#4D9232]/5 rounded-full blur-3xl -z-10"></div>

@@ -13,22 +13,28 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const location = useLocation();
-  const isMobile = useIsMobileScreen();
   const pathname = location.pathname;
-  const hasBackground = propHasBackground || pathname.startsWith('/karirpage/Joblist/');  
-  const isDarkText = hasBackground || pathname === '/karirpage' || pathname.startsWith('/servicespage') || pathname.startsWith('/aboutpage/visimisi');
+  const hasBackground =
+    propHasBackground || pathname.startsWith("/karirpage/Joblist/");
+  const isDarkText =
+    hasBackground ||
+    pathname === "/karirpage" ||
+    pathname.startsWith("/servicespage") ||
+    pathname.startsWith("/aboutpage/visimisi");
   const { user, isAuthenticated, logout } = useSession();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    navigate('/', { replace: true });
+    navigate("/", { replace: true });
   };
 
   return (
-    <nav 
+    <nav
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        hasBackground ? 'bg-white shadow-md' : 'bg-transparent'
+       hasBackground
+      ? "bg-white shadow-md"
+      : "bg-white shadow-md lg:bg-transparent"
       }`}
     >
       <div className="px-4 sm:px-6 lg:px-8">
@@ -36,20 +42,24 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
           {/* Left side - Logo */}
           <div className="flex items-center gap-5">
             {/* Mobile Menu Button */}
-            {isMobile && (
               <button
                 onClick={() => setMobileMenuVisible(!mobileMenuVisible)}
-                className={`focus:outline-none mr-4 transition-colors ${
-                  isDarkText
-                    ? 'text-gray-700 hover:text-blue-600' 
-                    : 'text-white hover:text-gray-200'
-                }`}
+                className="lg:hidden focus:outline-none text-black"
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               </button>
-            )}
 
             <Link to="/" className="flex items-center">
               <img
@@ -58,22 +68,28 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                 className="h-12 w-auto object-contain"
               />
             </Link>
-            <h1 className={`font-bold text-xl transition-colors ${
-              isDarkText ? 'text-gray-900' : 'text-white drop-shadow-lg'
-            }`}>
+            <h1
+              className={`font-bold text-xl transition-colors ${
+                 isDarkText ? 
+                 "text-black" : "text-gray-900 lg:text-white lg:drop-shadow-lg"
+              }`}
+            >
               PT.BUKIT AURUMN SEJAHTERA
             </h1>
           </div>
 
           {/* Right Side - Desktop Menu and CTA Button */}
-          {!isMobile && (
-            <div className="flex items-center space-x-10">
+            <div className="hidden lg:flex items-center space-x-10">
               <Link
                 to="/"
                 className={`transition-colors ${
-                  pathname === '/'
-                    ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
-                    : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                  pathname === "/"
+                    ? isDarkText
+                      ? "text-black font-semibold"
+                      : "text-white font-semibold"
+                    : isDarkText
+                      ? "text-black hover:text-gray-500"
+                      : "text-white hover:text-gray-200 drop-shadow-md"
                 }`}
               >
                 Home
@@ -81,9 +97,13 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               <Link
                 to="/aboutpage"
                 className={`transition-colors ${
-                  pathname === '/aboutpage'
-                    ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
-                    : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                  pathname === "/aboutpage"
+                    ? isDarkText
+                      ? "text-black font-semibold"
+                      : "text-white font-semibold"
+                    : isDarkText
+                      ? "text-black hover:text-gray-500"
+                      : "text-white hover:text-gray-200 drop-shadow-md"
                 }`}
               >
                 About
@@ -94,19 +114,28 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                 <button
                   onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
                   className={`flex items-center space-x-1 transition-colors ${
-                    pathname.startsWith('/services')
-                      ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
-                      : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                    pathname.startsWith("/services")
+                      ? isDarkText
+                        ? "text-black font-semibold"
+                        : "text-white font-semibold"
+                      : isDarkText
+                        ? "text-black hover:text-gray-500"
+                        : "text-white hover:text-gray-200 drop-shadow-md"
                   }`}
                 >
                   <span>Services</span>
                   <svg
-                    className={`w-4 h-4 transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 transition-transform ${servicesDropdownOpen ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
@@ -115,21 +144,21 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                     <Link
                       to="/servicespage/sewapage"
                       onClick={() => setServicesDropdownOpen(false)}
-                      className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                     >
                       Sewa Alat Berat
                     </Link>
                     <Link
                       to="/servicespage/konstruksipage"
                       onClick={() => setServicesDropdownOpen(false)}
-                      className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                     >
                       Konstruksi
                     </Link>
                     <Link
                       to="/servicespage/pengadaanpage"
                       onClick={() => setServicesDropdownOpen(false)}
-                      className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                     >
                       Pengadaan Barang Jasa
                     </Link>
@@ -140,18 +169,22 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               <Link
                 to="/karirpage"
                 className={`transition-colors ${
-                  pathname === '/karirpage'
-                    ? isDarkText ? 'text-black font-semibold' : 'text-white font-semibold'
-                    : isDarkText ? 'text-black hover:text-gray-500' : 'text-white hover:text-gray-200 drop-shadow-md'
+                  pathname === "/karirpage"
+                    ? isDarkText
+                      ? "text-black font-semibold"
+                      : "text-white font-semibold"
+                    : isDarkText
+                      ? "text-black hover:text-gray-500"
+                      : "text-white hover:text-gray-200 drop-shadow-md"
                 }`}
               >
                 Karir
               </Link>
-              
+
               {/* User Authentication Section */}
               {isAuthenticated && user ? (
                 <div className="flex items-center gap-3">
-                  {user.role === 'admin' && (
+                  {user.role === "admin" && (
                     <Link
                       to="/dashboard"
                       className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
@@ -180,74 +213,87 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                 </Link>
               )}
             </div>
-          )}
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {mobileMenuVisible && isMobile && (
-        <div className={`md:hidden bg-transparent`}>
-          <div className="px-2 pt-2 pb-3 space-y-1">
+      {mobileMenuVisible && (
+        <div className="lg:hidden bg-white shadow-md">
+          <div className="px-4 pt-4 pb-4 space-y-2">
+            {/* Home */}
             <Link
               to="/"
               onClick={() => setMobileMenuVisible(false)}
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/'
-                  ? 'text-white hover:font-semibold'
-                  : 'text-white hover:font-semibold'
-                }`}
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                pathname === "/"
+                  ? "text-green-600 font-semibold"
+                  : "text-gray-900 hover:text-green-600"
+              }`}
             >
               Home
             </Link>
+
+            {/* About */}
             <Link
               to="/aboutpage"
               onClick={() => setMobileMenuVisible(false)}
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/aboutpage'
-                  ? 'text-white hover:font-semibold'
-                  : 'text-white hover:font-semibold'
-                }`}
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                pathname === "/aboutpage"
+                  ? "text-green-600 font-semibold"
+                  : "text-gray-900 hover:text-green-600"
+              }`}
             >
               About
             </Link>
 
-            {/* Mobile Services Dropdown */}
+            {/* Services */}
             <div>
               <button
                 onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                className={`w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors flex items-center justify-between ${pathname.startsWith('/services')
-                    ? 'text-white hover:font-semibold'
-                    : 'text-white hover:font-semibold'
-                  }`}
+                className={`w-full text-left px-3 py-2 rounded-md text-base font-medium flex items-center justify-between transition-colors ${
+                  pathname.startsWith("/services")
+                    ? "text-green-600 font-semibold"
+                    : "text-gray-900 hover:text-green-600"
+                }`}
               >
                 <span>Services</span>
                 <svg
-                  className={`w-4 h-4 transition-transform ${mobileServicesOpen ? 'rotate-180' : ''}`}
+                  className={`w-4 h-4 transition-transform ${
+                    mobileServicesOpen ? "rotate-180" : ""
+                  }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </button>
+
               {mobileServicesOpen && (
-                <div className="ml-4 mt-1 space-y-1">
+                <div className="ml-3 mt-2 space-y-1 rounded-lg p-2">
                   <Link
                     to="/servicespage/sewapage"
                     onClick={() => setMobileMenuVisible(false)}
-                    className="block px-3 py-2 rounded-md text-sm text-white hover:font-semibold transition-colors"
+                    className="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                   >
                     Sewa Alat Berat
                   </Link>
                   <Link
                     to="/servicespage/konstruksipage"
                     onClick={() => setMobileMenuVisible(false)}
-                    className="block px-3 py-2 rounded-md text-sm text-white hover:font-semibold transition-colors"
+                    className="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                   >
                     Konstruksi
                   </Link>
                   <Link
                     to="/servicespage/pengadaanpage"
                     onClick={() => setMobileMenuVisible(false)}
-                    className="block px-3 py-2 rounded-md text-sm text-white hover:font-semibold transition-colors"
+                    className="block px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
                   >
                     Pengadaan Barang Jasa
                   </Link>
@@ -255,36 +301,52 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               )}
             </div>
 
+            {/* Karir */}
             <Link
               to="/karirpage"
               onClick={() => setMobileMenuVisible(false)}
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/karirpage'
-                  ? 'text-white hover:font-semibold'
-                  : 'text-white hover:font-semibold'
-                }`}
+              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                pathname === "/karirpage"
+                  ? "text-green-600 font-semibold"
+                  : "text-gray-900 hover:text-green-600"
+              }`}
             >
               Karir
             </Link>
-            <Link
-              to="/auth/login"
-              onClick={() => setMobileMenuVisible(false)}
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/auth/login'
-                  ? 'text-white hover:font-semibold'
-                  : 'text-white hover:font-semibold'
-                }`}
-            >
-              Login
-            </Link>
-            <Link
-              to="/auth/register"
-              onClick={() => setMobileMenuVisible(false)}
-              className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${pathname === '/auth/register'
-                  ? 'text-white hover:font-semibold'
-                  : 'text-white hover:font-semibold'
-                }`}
-            >
-              Register
-            </Link>
+
+            {/* Auth Section */}
+            <div className="pt-4 border-t border-gray-200">
+              {isAuthenticated && user ? (
+                <div className="space-y-3">
+                  {user.role === "admin" && (
+                    <Link
+                      to="/dashboard"
+                      className="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                    >
+                      Dashboard
+                    </Link>
+                  )}
+
+                  <div className="text-sm text-gray-600">
+                    {user.name} ({user.role})
+                  </div>
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/auth/login"
+                  className="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                >
+                  Get Started
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}

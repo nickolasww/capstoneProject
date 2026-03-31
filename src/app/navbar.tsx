@@ -207,7 +207,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               ) : (
                 <Link
                   to="/auth/login"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                 >
                   Get Started
                 </Link>

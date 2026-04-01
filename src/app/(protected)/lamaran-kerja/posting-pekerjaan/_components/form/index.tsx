@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Select, Button, notification, DatePicker, Switch } from 'antd';
 import { Spinner } from '@/app/loading';
@@ -8,11 +8,10 @@ import { createJobPosting } from '@/api/dashboard/lamaran-kerja/posting-pekerjaa
 import { JobPostingFormSchema } from './schema';
 import { createZodSync } from '@/utils/zod-sync';
 import dayjs from 'dayjs';
+import { queryClient } from '@/libs/react-query/react-query-clients';
 
 const { TextArea } = Input;
 const { Option } = Select;
-
-const STORAGE_KEY = 'job_posting_draft';
 
 const rule = createZodSync(JobPostingFormSchema);
 
@@ -24,59 +23,8 @@ interface CreateJobPostingFormProps {
 export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFormProps) {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [api, contextHolder] = notification.useNotification();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // useRef untuk menyimpan timer autosave
-  const autosaveTimerRef = useRef<number | null>(null);
-  const isInitialLoadRef = useRef(true);
-
-  // Load draft dari localStorage saat component mount
-  useEffect(() => {
-    if (isInitialLoadRef.current) {
-      const savedDraft = localStorage.getItem(STORAGE_KEY);
-      if (savedDraft) {
-        try {
-          const draft = JSON.parse(savedDraft);
-          // Convert closed_at string kembali ke dayjs object untuk DatePicker
-          if (draft.closed_at) {
-            draft.closed_at = dayjs(draft.closed_at);
-          }
-          form.setFieldsValue(draft);
-          
-          api.info({
-            message: 'Draft Ditemukan',
-            description: 'Data form sebelumnya telah dipulihkan',
-            placement: 'topRight',
-          });
-        } catch (error) {
-          console.error('Error loading draft:', error);
-        }
-      }
-      isInitialLoadRef.current = false;
-    }
-  }, [form, api]);
-
-  // Auto-save draft ke localStorage setiap ada perubahan
-  const handleFormChange = () => {
-    // Clear timer sebelumnya
-    if (autosaveTimerRef.current) {
-      clearTimeout(autosaveTimerRef.current);
-    }
-
-    // Set timer baru untuk autosave (debounce 1 detik)
-    autosaveTimerRef.current = setTimeout(() => {
-      const values = form.getFieldsValue();
-      // Convert dayjs object ke string untuk localStorage
-      const valuesToSave = {
-        ...values,
-        closed_at: values.closed_at && dayjs.isDayjs(values.closed_at) 
-          ? values.closed_at.toISOString() 
-          : values.closed_at || '',
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(valuesToSave));
-    }, 1000);
-  };
 
   // Auto-generate slug dari title
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,14 +79,13 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
 
       await createJobPosting(dataToSubmit);
 
-      api.success({
+      notification.success({
         message: 'Berhasil',
-        description: 'Lowongan pekerjaan berhasil dibuat!',
+        description: 'Lowongan berhasil diperbarui',
         placement: 'topRight',
       });
 
-      // Clear draft dari localStorage setelah berhasil submit
-      localStorage.removeItem(STORAGE_KEY);
+      queryClient.invalidateQueries({ queryKey: ["job-postings"] });
 
       // Redirect setelah 1 detik
       setTimeout(() => {
@@ -150,32 +97,28 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
       }, 1000);
     } catch (error: any) {
       console.error('Error creating job posting:', error);
-      
+      notification.error({
+        message: 'Gagal',
+        description: 'Gagal membuat lowongan pekerjaan',
+        placement: 'topRight',
+      });
       let errorMessage = 'Gagal membuat lowongan pekerjaan';
       if (error.errors) {
         // Zod validation errors
         errorMessage = error.errors[0]?.message || errorMessage;
       }
 
-      api.error({
+      notification.error({
         message: 'Gagal',
         description: errorMessage,
-        placement: 'topRight',
-      });
+          placement: 'topRight',
+        });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    // Tanya user apakah ingin menyimpan draft
-    if (form.isFieldsTouched()) {
-      const confirmLeave = window.confirm(
-        'Anda memiliki perubahan yang belum disimpan. Draft akan disimpan otomatis. Lanjutkan?'
-      );
-      if (!confirmLeave) return;
-    }
-
     if (onCancel) {
       onCancel();
     } else {
@@ -183,18 +126,8 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
     }
   };
 
-  // Cleanup timer saat component unmount
-  useEffect(() => {
-    return () => {
-      if (autosaveTimerRef.current) {
-        clearTimeout(autosaveTimerRef.current);
-      }
-    };
-  }, []);
-
   return (
     <>
-      {contextHolder}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Form Lowongan Pekerjaan</h2>
@@ -205,7 +138,6 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          onValuesChange={handleFormChange}
           initialValues={{
             employment_type: 'full_time',
             publication_status: 'active',

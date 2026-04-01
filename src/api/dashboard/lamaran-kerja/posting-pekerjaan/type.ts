@@ -16,7 +16,7 @@ export interface TJobPosting {
   is_active: boolean;
   closed_at: string;
   applicant_count: number;
-  created_at: string;
+  posted_at: string;
   updated_at: string;
 }
 

@@ -25,6 +25,7 @@ import { useDebounce } from "@/app/_hooks/use-debounce";
 import { useQuery } from "@/app/_hooks/request/use-query";
 import { useMutation } from "@/app/_hooks/request/use-mutation";
 import { Select } from "antd";
+import { notification } from "antd";
 
 export default function PostingPekerjaanPage() {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export default function PostingPekerjaanPage() {
     staleTime: 1 * 60 * 1000, // Data considered fresh for 1 minute
     gcTime: 5 * 60 * 1000, // Cache for 5 minutes
     refetchOnWindowFocus: true, // Refetch when user returns to tab
-    refetchOnMount: false, // Only refetch if data is stale, not on every mount
+    refetchOnMount: true, // Only refetch if data is stale, not on every mount
     retry: 3, // Retry failed requests 3 times
   });
 
@@ -59,10 +60,20 @@ export default function PostingPekerjaanPage() {
       // Refetch the list after successful deletion
       refetch();
       setDeleteModal({ show: false, job: null });
+      notification.success({
+        message: 'Berhasil',
+        description: 'Lowongan berhasil dihapus',
+        placement: 'topRight',
+      });
     },
     onError: (error) => {
       console.error("Error deleting job posting:", error);
       setDeleteModal({ show: false, job: null });
+      notification.error({
+        message: 'Gagal',
+        description: 'Gagal menghapus lowongan',
+        placement: 'topRight',
+      });
     },
   });
 
@@ -76,15 +87,19 @@ export default function PostingPekerjaanPage() {
   };
 
   // Memoize filtered postings to prevent recalculation on every render
-  const filteredPostings = useMemo(() => {
-    return jobPostings.filter(
+const filteredPostings = useMemo(() => {
+  return jobPostings
+    .filter(
       (job) =>
         job.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        job.department
-          .toLowerCase()
-          .includes(debouncedSearchTerm.toLowerCase()),
-    );
-  }, [jobPostings, debouncedSearchTerm]);
+        job.department.toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
+    )
+    .sort((a, b) => {
+      const dateA = new Date(a.updated_at).getTime();
+      const dateB = new Date(b.updated_at).getTime();
+      return dateB - dateA;
+    });
+}, [jobPostings, debouncedSearchTerm]);
 
   // Defer cards rendering to prevent UI blocking while user is typing
   const deferredFilteredPostings = useDeferredValue(filteredPostings);
@@ -270,15 +285,6 @@ export default function PostingPekerjaanPage() {
                   <h3 className="text-lg font-bold text-gray-900">
                     {job.title}
                   </h3>
-                  {/* <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      job.is_active === true
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    {job.is_active === true ? 'Aktif' : 'Ditutup'} 
-                  </span> */}
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${getEmploymentTypeBadgeColor(job.employment_type)}`}
                   >

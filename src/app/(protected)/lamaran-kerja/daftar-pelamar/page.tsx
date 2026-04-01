@@ -61,7 +61,7 @@ export default function LamaranKerjaPage() {
   const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ["job-applications", activeTab, debouncedSearchPosition],
     queryFn: () => {
-      const params: JobApplicationParams = { limit: 100 }; // Fetch more for better UX
+      const params: JobApplicationParams = { limit: 100 };
 
       if (activeTab !== "all") {
         params.status = activeTab;
@@ -73,10 +73,10 @@ export default function LamaranKerjaPage() {
 
       return getJobApplications(params);
     },
-    staleTime: 1 * 60 * 1000, // Data considered fresh for 1 minute
-    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
-    refetchOnWindowFocus: true, // Refetch when user returns to tab
-    refetchOnMount: false, // Only refetch if data is stale, not on every mount
+    staleTime:0,
+    gcTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     retry: 3,
   });
 
@@ -176,7 +176,7 @@ export default function LamaranKerjaPage() {
     }
   };
 
-  const columns: ColumnsType<TJobApplication> = [
+  const columns: ColumnsType<TJobApplication> = useMemo(() => [
     {
       title: "EMAIL",
       dataIndex: "email",
@@ -252,40 +252,35 @@ export default function LamaranKerjaPage() {
         );
       },
     },
-    ...(activeTab === "short_listed" ||
-    activeTab === "hired" ||
-    activeTab === "rejected"
-      ? [
-          {
-            title: "JADWAL INTERVIEW",
-            key: "interviewSchedule",
-            render: (_: unknown, record: TJobApplication) => {
-              if (record.interview_at) {
-                const interviewDate = new Date(record.interview_at);
-                return (
-                  <div>
-                    <div style={{ fontWeight: 500 }}>
-                      {interviewDate.toLocaleDateString("id-ID", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                      })}
-                    </div>
-                    <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                      {interviewDate.toLocaleTimeString("id-ID", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}{" "}
-                      WIB
-                    </div>
-                  </div>
-                );
-              }
-              return <Text type="secondary">—</Text>;
-            },
-          },
-        ]
-      : []),
+    {
+      title: "JADWAL INTERVIEW",
+      key: "interviewSchedule",
+      hidden: activeTab !== "short_listed",
+      render: (_: unknown, record: TJobApplication) => {
+        if (record.interview_at) {
+          const interviewDate = new Date(record.interview_at);
+          return (
+            <div>
+              <div style={{ fontWeight: 500 }}>
+                {interviewDate.toLocaleDateString("id-ID", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
+              </div>
+              <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                {interviewDate.toLocaleTimeString("id-ID", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}{" "}
+                WIB
+              </div>
+            </div>
+          );
+        }
+        return <Text type="secondary">—</Text>;
+      },
+    },
     {
       title: "ACTION",
       key: "action",
@@ -305,7 +300,7 @@ export default function LamaranKerjaPage() {
         </Button>
       ),
     },
-  ];
+  ] , [activeTab]);
 
   // Memoize filtered applications to prevent recalculation on every render
   const filteredApplications = useMemo(() => {

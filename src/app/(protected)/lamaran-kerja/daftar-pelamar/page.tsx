@@ -24,6 +24,7 @@ import { useQuery } from "@/app/_hooks/request/use-query";
 import { viewJobApplicationCV } from "@/api/dashboard/lamaran-kerja/daftar-pelamar/index";
 import { message } from "antd";
 import { api } from "@/libs/axios/api";
+import { Grid } from "antd";
 
 const { Search } = Input;
 const { Text } = Typography;
@@ -52,6 +53,9 @@ export default function LamaranKerjaPage() {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
+  const isMobileOrTablet = !screens.xl;
 
   // Fetch job applications using React Query with caching
   const { data, isLoading, isFetching, refetch } = useQuery({
@@ -144,16 +148,18 @@ export default function LamaranKerjaPage() {
     }
   };
 
-const handleShareEmail = async (type: string) => {
-  try {
-    const res = await api.get(`/job-applications/admin/email?type=${type}`, {
-    });
-    if (res.status !== 200) throw new Error("Gagal membagikan email");
-    message.success("Email berhasil dibagikan!");
-  } catch (err) {
-    message.error("Gagal membagikan email");
-  }
-};
+  const handleShareEmail = async (type: string) => {
+    try {
+      const res = await api.get(
+        `/job-applications/admin/email?type=${type}`,
+        {},
+      );
+      if (res.status !== 200) throw new Error("Gagal membagikan email");
+      message.success("Email berhasil dibagikan!");
+    } catch (err) {
+      message.error("Gagal membagikan email");
+    }
+  };
 
   const getStatusConfig = (status: TApplicationStatus) => {
     switch (status) {
@@ -345,6 +351,22 @@ const handleShareEmail = async (type: string) => {
     },
   ];
 
+  if (isMobileOrTablet) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 p-6">
+        <div className="bg-white p-6 rounded-xl shadow-md text-center max-w-sm">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+            Gunakan Laptop
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Halaman ini hanya dapat diakses melalui perangkat laptop atau
+            desktop dengan layar yang lebar untuk pengalaman yang lebih baik.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 lg:p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
@@ -417,18 +439,18 @@ const handleShareEmail = async (type: string) => {
               onChange={(e) => setSearchPosition(e.target.value)}
             />
           </div>
-            {["hired", "short_listed", "rejected"].includes(activeTab) && (
-              <Button
-                type="primary"
-                onClick={() => handleShareEmail(activeTab)}
-                style={{
-                  background: "#22c55e",
-                  borderColor: "#22c55e",
-                }}
-              >
-                Bagikan Email
-              </Button>
-            )}
+          {["hired", "short_listed", "rejected"].includes(activeTab) && (
+            <Button
+              type="primary"
+              onClick={() => handleShareEmail(activeTab)}
+              style={{
+                background: "#22c55e",
+                borderColor: "#22c55e",
+              }}
+            >
+              Bagikan Email
+            </Button>
+          )}
         </div>
       </div>
 

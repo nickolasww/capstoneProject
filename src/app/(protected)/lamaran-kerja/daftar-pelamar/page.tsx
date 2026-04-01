@@ -55,7 +55,7 @@ export default function LamaranKerjaPage() {
   const pageSize = 10;
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
-  const isMobileOrTablet = !screens.xl;
+  const isMobileOrTablet = !screens.lg;
 
   // Fetch job applications using React Query with caching
   const { data, isLoading, isFetching, refetch } = useQuery({

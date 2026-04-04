@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { Table, Input, Button, Typography, Tag } from "antd";
 import {
   SearchOutlined,
@@ -15,7 +15,7 @@ const { Search } = Input;
 const { Text } = Typography;
 
 export default function setRole() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [searchName, setSearchName] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -28,25 +28,15 @@ export default function setRole() {
       title: "EMAIL",
       dataIndex: "email",
       key: "email",
+      width: "40%",
       sorter: (a, b) => a.email.localeCompare(b.email),
       showSorterTooltip: { title: "Klik untuk mengurutkan" },
-      render: (email: string, record: TJobApplication) => (
-        <a
-          onClick={() => navigate(`/lamaran-kerja/daftar-pelamar/${record.id}`)}
-          style={{
-            color: "#1890ff",
-            textDecoration: "underline",
-            cursor: "pointer",
-          }}
-        >
-          {email}
-        </a>
-      ),
     },
     {
       title: "TANGGAL DAFTAR",
       dataIndex: "submitted_at",
       key: "submitted_at",
+      width: "20%",
       render: (date: string) =>
         new Date(date).toLocaleDateString("id-ID", {
           day: "2-digit",
@@ -58,6 +48,7 @@ export default function setRole() {
       title: "STATUS",
       dataIndex: "status",
       key: "status",
+      width: "20%",
       render: () => {
         return (
           <Tag
@@ -76,6 +67,7 @@ export default function setRole() {
     {
       title: "ACTION",
       key: "action",
+      width: "20%",
       render: () => (
         <Button
           type="default"

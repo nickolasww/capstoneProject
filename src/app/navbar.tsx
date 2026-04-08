@@ -20,7 +20,8 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
   const isDarkText =
     hasBackground ||
     pathname === "/karirpage" ||
-    pathname.startsWith("/servicespage") ||
+    pathname.startsWith("/servicespage/pengadaanpage") ||
+    pathname.startsWith("/servicespage/sewapage") ||
     pathname.startsWith("/aboutpage/visimisi");
   const { user, isAuthenticated, logout } = useSession();
   const navigate = useNavigate();

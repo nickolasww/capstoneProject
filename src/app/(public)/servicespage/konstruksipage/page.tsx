@@ -1,8 +1,15 @@
 import UnderConstruction from '@/app/UnderConstruction'
+import HeroSection from '@/app/(public)/servicespage/konstruksipage/hero-section/page'
+import LayananSection from '@/app/(public)/servicespage/konstruksipage/layanan-kami/page'
 
 const KonstruksiPage = () => {
   return (
-    <UnderConstruction title="Konstruksi" />
+    // <UnderConstruction title="Konstruksi" />
+    <>
+    <HeroSection/> 
+    <LayananSection/>
+    </>
+    
   )
 }
 

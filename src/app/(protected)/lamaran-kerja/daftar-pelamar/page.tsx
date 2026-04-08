@@ -73,7 +73,7 @@ export default function LamaranKerjaPage() {
 
       return getJobApplications(params);
     },
-    staleTime:0,
+    staleTime: 0,
     gcTime: 0,
     refetchOnWindowFocus: true,
     refetchOnMount: true,
@@ -176,131 +176,136 @@ export default function LamaranKerjaPage() {
     }
   };
 
-  const columns: ColumnsType<TJobApplication> = useMemo(() => [
-    {
-      title: "EMAIL",
-      dataIndex: "email",
-      key: "email",
-      sorter: (a, b) => a.email.localeCompare(b.email),
-      showSorterTooltip: { title: "Klik untuk mengurutkan" },
-      render: (email: string, record: TJobApplication) => (
-        <a
-          onClick={() => navigate(`/lamaran-kerja/daftar-pelamar/${record.id}`)}
-          style={{
-            color: "#1890ff",
-            textDecoration: "underline",
-            cursor: "pointer",
-          }}
-        >
-          {email}
-        </a>
-      ),
-    },
-    {
-      title: "POSISI LAMARAN",
-      dataIndex: "job_title",
-      key: "job_title",
-    },
-    {
-      title: "NO. TELP",
-      dataIndex: "phone_number",
-      key: "phone_number",
-    },
-    {
-      title: "TANGGAL DAFTAR",
-      dataIndex: "submitted_at",
-      key: "submitted_at",
-      render: (date: string) =>
-        new Date(date).toLocaleDateString("id-ID", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }),
-    },
-    {
-      title: "PDF CV",
-      key: "pdf",
-      render: (_, record) => (
-        <Button
-          type="link"
-          icon={<DownloadOutlined />}
-          onClick={() => handleViewCV(record.file_id)}
-          style={{ color: "#16a34a", padding: 0 }}
-        >
-          Lihat CV
-        </Button>
-      ),
-    },
-    {
-      title: "STATUS",
-      dataIndex: "status",
-      key: "status",
-      render: (status: TApplicationStatus) => {
-        const config = getStatusConfig(status);
-        return (
-          <Tag
-            color={config.color}
+  const columns: ColumnsType<TJobApplication> = useMemo(
+    () => [
+      {
+        title: "EMAIL",
+        dataIndex: "email",
+        key: "email",
+        sorter: (a, b) => a.email.localeCompare(b.email),
+        showSorterTooltip: { title: "Klik untuk mengurutkan" },
+        render: (email: string, record: TJobApplication) => (
+          <a
+            onClick={() =>
+              navigate(`/lamaran-kerja/daftar-pelamar/${record.id}`)
+            }
             style={{
-              padding: "4px 12px",
-              borderRadius: "6px",
-              fontSize: "13px",
-              fontWeight: 500,
+              color: "#1890ff",
+              textDecoration: "underline",
+              cursor: "pointer",
             }}
           >
-            {config.text}
-          </Tag>
-        );
+            {email}
+          </a>
+        ),
       },
-    },
-    {
-      title: "JADWAL INTERVIEW",
-      key: "interviewSchedule",
-      hidden: activeTab !== "short_listed",
-      render: (_: unknown, record: TJobApplication) => {
-        if (record.interview_at) {
-          const interviewDate = new Date(record.interview_at);
+      {
+        title: "POSISI LAMARAN",
+        dataIndex: "job_title",
+        key: "job_title",
+      },
+      {
+        title: "NO. TELP",
+        dataIndex: "phone_number",
+        key: "phone_number",
+      },
+      {
+        title: "TANGGAL DAFTAR",
+        dataIndex: "submitted_at",
+        key: "submitted_at",
+        render: (date: string) =>
+          new Date(date).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }),
+      },
+      {
+        title: "PDF CV",
+        key: "pdf",
+        render: (_, record) => (
+          <Button
+            type="link"
+            icon={<DownloadOutlined />}
+            onClick={() => handleViewCV(record.file_id)}
+            style={{ color: "#16a34a", padding: 0 }}
+          >
+            Lihat CV
+          </Button>
+        ),
+      },
+      {
+        title: "STATUS",
+        dataIndex: "status",
+        key: "status",
+        render: (status: TApplicationStatus) => {
+          const config = getStatusConfig(status);
           return (
-            <div>
-              <div style={{ fontWeight: 500 }}>
-                {interviewDate.toLocaleDateString("id-ID", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })}
-              </div>
-              <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                {interviewDate.toLocaleTimeString("id-ID", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}{" "}
-                WIB
-              </div>
-            </div>
+            <Tag
+              color={config.color}
+              style={{
+                padding: "4px 12px",
+                borderRadius: "6px",
+                fontSize: "13px",
+                fontWeight: 500,
+              }}
+            >
+              {config.text}
+            </Tag>
           );
-        }
-        return <Text type="secondary">—</Text>;
+        },
       },
-    },
-    {
-      title: "ACTION",
-      key: "action",
-      render: (_, record) => (
-        <Button
-          type="default"
-          icon={<EditOutlined />}
-          onClick={() => handleEditClick(record)}
-          style={{
-            borderRadius: "6px",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-        >
-          Edit Progres
-        </Button>
-      ),
-    },
-  ] , [activeTab]);
+      {
+        title: "JADWAL INTERVIEW",
+        key: "interviewSchedule",
+        hidden: activeTab !== "short_listed",
+        render: (_: unknown, record: TJobApplication) => {
+          if (record.interview_at) {
+            const interviewDate = new Date(record.interview_at);
+            return (
+              <div>
+                <div style={{ fontWeight: 500 }}>
+                  {interviewDate.toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}
+                </div>
+                <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                  {interviewDate.toLocaleTimeString("id-ID", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}{" "}
+                  WIB
+                </div>
+              </div>
+            );
+          }
+          return <Text type="secondary">—</Text>;
+        },
+      },
+      {
+        title: "ACTION",
+        key: "action",
+        render: (_, record) => (
+          <Button
+            type="default"
+            icon={<EditOutlined />}
+            onClick={() => handleEditClick(record)}
+            style={{
+              borderRadius: "6px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            Edit Progres
+          </Button>
+        ),
+      },
+    ],
+    [activeTab],
+  );
 
   // Memoize filtered applications to prevent recalculation on every render
   const filteredApplications = useMemo(() => {
@@ -381,6 +386,21 @@ export default function LamaranKerjaPage() {
         style={{ marginBottom: 24 }}
       />
 
+      {["hired", "short_listed", "rejected"].includes(activeTab) && (
+        <div className="flex justify-end items-end mb-2">
+          <Button
+            type="primary"
+            onClick={() => handleShareEmail(activeTab)}
+            style={{
+              background: "#22c55e",
+              borderColor: "#22c55e",
+            }}
+          >
+            Bagikan Email
+          </Button>
+        </div>
+      )}
+
       {/* Filter Section */}
       <div
         style={{
@@ -434,18 +454,6 @@ export default function LamaranKerjaPage() {
               onChange={(e) => setSearchPosition(e.target.value)}
             />
           </div>
-          {["hired", "short_listed", "rejected"].includes(activeTab) && (
-            <Button
-              type="primary"
-              onClick={() => handleShareEmail(activeTab)}
-              style={{
-                background: "#22c55e",
-                borderColor: "#22c55e",
-              }}
-            >
-              Bagikan Email
-            </Button>
-          )}
         </div>
       </div>
 

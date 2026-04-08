@@ -173,7 +173,7 @@ const JobList = () => {
         </div>
 
         {/* Load More Button */}
-        {hasNextPage && (
+        {hasNextPage && !debouncedSearch && (
           <div className="mt-8 flex justify-center">
             <button
               onClick={() => fetchNextPage()}

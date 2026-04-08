@@ -31,9 +31,15 @@ export const useJobPositionsQuery = ({ search, limit = 3 }: UseJobPositionsQuery
   });
 
   // Flatten all pages into single array
-  const jobs = useMemo(() => {
-    return data?.pages.flatMap((page) => page.job_positions.list) || [];
-  }, [data]);
+const jobs = useMemo(() => {
+  const allJobs = data?.pages.flatMap((page) => page.job_positions.list) || [];
+
+  if (!search) return allJobs;
+
+  return allJobs.filter((job) =>
+    job.title.toLowerCase().includes(search.toLowerCase())
+  );
+}, [data, search]);
 
   return {
     jobs,

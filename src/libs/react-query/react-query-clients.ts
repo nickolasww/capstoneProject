@@ -26,7 +26,7 @@ export const queryClient = new QueryClient({
       // Add retry delay to give time for token refresh (2 seconds)
       retryDelay: (attemptIndex) => Math.min(2000, 1000 * 2 ** attemptIndex),
       // Keep previous data during refetch to prevent UI flicker
-      placeholderData: (previousData: unknown) => previousData,
+      // placeholderData: (previousData: unknown) => previousData,
       refetchOnMount: true,
       refetchOnReconnect: true,
       refetchOnWindowFocus: false,

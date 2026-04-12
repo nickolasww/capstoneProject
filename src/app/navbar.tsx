@@ -22,6 +22,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
     pathname === "/karirpage" ||
     pathname.startsWith("/servicespage/pengadaanpage") ||
     pathname.startsWith("/servicespage/sewapage") ||
+    pathname.startsWith("/servicespage/konstruksipage") ||
     pathname.startsWith("/aboutpage/visimisi");
   const { user, isAuthenticated, logout } = useSession();
   const navigate = useNavigate();

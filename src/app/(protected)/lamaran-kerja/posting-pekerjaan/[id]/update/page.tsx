@@ -234,7 +234,7 @@ export default function UpdateJobPostingPage() {
               <input
                 type="text"
                 name="salary"
-                value={formData.salary}
+                value={formData.salary ?? undefined}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="Rp 5.000.000 - Rp 7.000.000"

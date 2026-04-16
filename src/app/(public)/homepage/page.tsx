@@ -2,10 +2,9 @@ import HeroSection from './herosection/page';
 import ProfilPerusahaan from './profil-perusahaan/page';
 import KlienKami from './mitra/page';
 import PelayananKami from './pelayanan/page';
-import BeritaTerkini from './berita-terkini/page';
 import SEO from '@/app/_components/seo/seo';
 import { Helmet } from 'react-helmet-async';
-// import KritikDanSaran from './kritik-saran/page';
+import KritikDanSaran from '@/app/(public)/homepage/kritik-saran/page';
 
 const HomePage = () => {
   return (
@@ -44,8 +43,7 @@ const HomePage = () => {
       <ProfilPerusahaan />
       <KlienKami />
       <PelayananKami />
-      <BeritaTerkini />
-      {/* <KritikDanSaran /> */}
+      <KritikDanSaran />
     </div>
   );
 };

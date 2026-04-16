@@ -307,10 +307,6 @@ const filteredPostings = useMemo(() => {
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-700 mb-3 line-clamp-2">
-                  {job.description}
-                </p>
-
                 <div className="border-t border-gray-200 pt-3 mt-3">
                   <div className="flex flex-wrap items-center gap-4 text-sm">
                     <div className="flex items-center gap-2">

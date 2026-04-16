@@ -23,7 +23,6 @@ export default function UpdateJobPostingPage() {
     department: "",
     salary: "",
     employment_type: "full_time",
-    description: "",
     requirements: "",
     responsibilities: "",
     publication_status: "active",
@@ -50,7 +49,6 @@ export default function UpdateJobPostingPage() {
           department: job.department || "",
           salary: job.salary || "",
           employment_type: job.employment_type || "full_time",
-          description: job.description || "",
           requirements: job.requirements || "",
           responsibilities: job.responsibilities || "",
           publication_status: job.publication_status || "active",
@@ -245,21 +243,6 @@ export default function UpdateJobPostingPage() {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Deskripsi Pekerjaan <span className="text-red-600">*</span>
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                required
-                rows={5}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                placeholder="Jelaskan detail pekerjaan..."
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Persyaratan
               </label>
               <textarea
@@ -274,7 +257,7 @@ export default function UpdateJobPostingPage() {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tanggung Jawab
+                Tanggung Jawab Pekerjaan
               </label>
               <textarea
                 name="responsibilities"

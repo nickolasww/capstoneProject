@@ -111,10 +111,6 @@ export default function JobPostingDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Deskripsi Pekerjaan</h2>
-            <p className="text-gray-700 whitespace-pre-line">{job.description}</p>
-          </div>
 
           {job.requirements && (
             <div className="bg-white rounded-lg shadow-sm p-6">

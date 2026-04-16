@@ -7,9 +7,8 @@ export interface TJobPosting {
   location: string;
   slug: string;
   department: string;
-  salary: string;
+  salary?: string | null;
   employment_type: TEmploymentType;
-  description: string;
   requirements: string;
   responsibilities: string;
   publication_status: TJobStatus;
@@ -25,9 +24,8 @@ export interface TJobPostingRequest {
   location: string;
   slug: string;
   department: string;
-  salary: string;
+  salary?: string | null;
   employment_type: TEmploymentType;
-  description: string;
   requirements: string;
   responsibilities: string;
   publication_status: TJobStatus;

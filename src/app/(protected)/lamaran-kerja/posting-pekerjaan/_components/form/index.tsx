@@ -64,7 +64,6 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
         location: validatedData.location,
         employment_type: validatedData.employment_type,
         salary: validatedData.salary,
-        description: validatedData.description,
         requirements: validatedData.requirements,
         responsibilities: validatedData.responsibilities,
         closed_at: validatedData.closed_at ? closedAtISO : null,
@@ -81,7 +80,7 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
 
       notification.success({
         message: 'Berhasil',
-        description: 'Lowongan berhasil diperbarui',
+        description: 'Berhasil Membuat Lowongan Pekerjaan',
         placement: 'topRight',
       });
 
@@ -96,12 +95,6 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
         }
       }, 1000);
     } catch (error: any) {
-      console.error('Error creating job posting:', error);
-      notification.error({
-        message: 'Gagal',
-        description: 'Gagal membuat lowongan pekerjaan',
-        placement: 'topRight',
-      });
       let errorMessage = 'Gagal membuat lowongan pekerjaan';
       if (error.errors) {
         // Zod validation errors
@@ -218,7 +211,6 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
               label="Gaji"
               name="salary"
               rules={[rule]}
-              required
             >
               <Input
                 placeholder="Contoh: Rp 10.000.000 - Rp 15.000.000"
@@ -227,22 +219,7 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
             </Form.Item>
 
             <Form.Item
-              label="Deskripsi Pekerjaan"
-              name="description"
-              rules={[rule]}
-              className="md:col-span-2"
-              required
-            >
-              <TextArea
-                rows={5}
-                placeholder="Jelaskan detail pekerjaan..."
-                showCount
-                maxLength={5000}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Requirements"
+              label="Persyaratan"
               name="requirements"
               rules={[rule]}
               className="md:col-span-2"
@@ -257,7 +234,7 @@ export function CreateJobPostingForm({ onSuccess, onCancel }: CreateJobPostingFo
             </Form.Item>
 
             <Form.Item
-              label="Responsibilities"
+              label="Tanggung Jawab Pekerjaan"
               name="responsibilities"
               rules={[rule]}
               className="md:col-span-2"

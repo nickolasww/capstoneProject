@@ -130,9 +130,9 @@ export default function JobPositionDetailPage() {
     },
   ];
 
-  const descriptionItems = useMemo(
-    () => parseTextBlocks(job?.description),
-    [job?.description],
+  const responsibilitiesItems = useMemo(
+    () => parseTextBlocks(job?.responsibilities),
+    [job?.responsibilities],
   );
   const requirementsItems = useMemo(
     () => parseTextBlocks(job?.requirements),
@@ -292,19 +292,19 @@ export default function JobPositionDetailPage() {
             </div>
 
             <DetailSection
-              title="Deskripsi Pekerjaan"
-              items={descriptionItems}
-              fallback={
-                job.description ||
-                "Informasi deskripsi pekerjaan belum tersedia."
-              }
-            />
-
-            <DetailSection
               title="Persyaratan"
               items={requirementsItems}
               fallback={
                 job.requirements || "Informasi persyaratan belum tersedia."
+              }
+            />
+
+            <DetailSection
+              title="Tanggung Jawab Pekerjaan"
+              items={responsibilitiesItems}
+              fallback={
+                job.responsibilities ||
+                "Informasi tanggung jawab pekerjaan belum tersedia."
               }
             />
           </div>

@@ -1,6 +1,6 @@
 import { useState, useMemo, useDeferredValue, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Tabs, Input, Button, Typography, Tag } from "antd";
+import { Table, Tabs, Input, Button, Typography, Tag, Select } from "antd";
 import {
   FilterOutlined,
   SearchOutlined,
@@ -33,6 +33,7 @@ type JobApplicationParams = {
   limit?: number;
   status?: TApplicationStatus;
   job_title?: string;
+  search?: string;
 };
 
 type UpdateJobApplicationData = {
@@ -43,9 +44,9 @@ type UpdateJobApplicationData = {
 export default function LamaranKerjaPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TApplicationStatus | "all">("all");
-  const [searchName, setSearchName] = useState("");
+  const [searchEmail, setSearchEmail] = useState("");
+  const debouncedSearchEmail= useDebounce(searchEmail, 700);
   const [searchPosition, setSearchPosition] = useState("");
-  const debouncedSearchName = useDebounce(searchName);
   const debouncedSearchPosition = useDebounce(searchPosition);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<TJobApplication | null>(
@@ -59,17 +60,13 @@ export default function LamaranKerjaPage() {
 
   // Fetch job applications using React Query with caching
   const { data, isLoading, isFetching, refetch } = useQuery({
-    queryKey: ["job-applications", activeTab, debouncedSearchPosition],
+    queryKey: ["job-applications", activeTab, debouncedSearchEmail, debouncedSearchPosition],
     queryFn: () => {
       const params: JobApplicationParams = { limit: 100 };
 
-      if (activeTab !== "all") {
-        params.status = activeTab;
-      }
-
-      if (debouncedSearchPosition) {
-        params.job_title = debouncedSearchPosition;
-      }
+      if (activeTab !== "all") {params.status = activeTab;}
+      if (debouncedSearchEmail) params.search = debouncedSearchEmail;
+      if (debouncedSearchPosition) params.job_title = debouncedSearchPosition;
 
       return getJobApplications(params);
     },
@@ -107,7 +104,7 @@ export default function LamaranKerjaPage() {
   // Reset to page 1 when search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchPosition]);
+  }, [debouncedSearchEmail]);
 
   const handleEditClick = (record: TJobApplication) => {
     setSelectedRecord(record);
@@ -175,6 +172,14 @@ export default function LamaranKerjaPage() {
         return { color: "#3b82f6", text: "Submitted" };
     }
   };
+
+  const positionOptions = useMemo(() => {
+    const allApplications = data?.job_applications?.list ?? [];
+    const unique = [
+      ...new Set(allApplications.map((app) => app.job_title).filter(Boolean)),
+    ];
+    return unique.map((title) => ({ label: title, value: title }));
+  }, [data]);
 
   const columns: ColumnsType<TJobApplication> = useMemo(
     () => [
@@ -308,16 +313,25 @@ export default function LamaranKerjaPage() {
   );
 
   // Memoize filtered applications to prevent recalculation on every render
-  const filteredApplications = useMemo(() => {
-    return applications.filter((app) => {
-      if (!debouncedSearchName) return true;
-      const searchLower = debouncedSearchName.toLowerCase();
-      return (
-        app.email.toLowerCase().includes(searchLower) ||
-        app.job_title.toLowerCase().includes(searchLower)
+const filteredApplications = useMemo(() => {
+  return applications.filter((app) => {
+    // filter by search email
+    if (debouncedSearchEmail) {
+      const matchEmail = (app.email?.toLowerCase() ?? "").includes(
+        debouncedSearchEmail.toLowerCase()
       );
-    });
-  }, [applications, debouncedSearchName]);
+      if (!matchEmail) return false;
+    }
+
+    if (debouncedSearchPosition) {
+      const matchPosition =
+        (app.job_title?.toLowerCase() ?? "") === debouncedSearchPosition.toLowerCase();
+      if (!matchPosition) return false;
+    }
+
+    return true;
+  });
+}, [applications, debouncedSearchEmail, debouncedSearchPosition]);
 
   // Defer table rendering to prevent UI blocking while user is typing
   const deferredFilteredApplications = useDeferredValue(filteredApplications);
@@ -430,14 +444,14 @@ export default function LamaranKerjaPage() {
             <Text
               style={{ display: "block", marginBottom: 8, fontWeight: 500 }}
             >
-              Cari Nama atau Posisi
+              Cari Email Pelamar
             </Text>
             <Search
-              placeholder="Ketik nama atau posisi..."
+              placeholder="Ketik email pelamar..."
               allowClear
               prefix={<SearchOutlined />}
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
+              value={searchEmail}
+              onChange={(e) => setSearchEmail(e.target.value)}
             />
           </div>
 
@@ -447,11 +461,18 @@ export default function LamaranKerjaPage() {
             >
               Posisi Lamaran
             </Text>
-            <Input
-              placeholder="Posisi lamaran"
+            <Select
+              placeholder="Pilih posisi lamaran"
               allowClear
-              value={searchPosition}
-              onChange={(e) => setSearchPosition(e.target.value)}
+              style={{ width: "100%" }}
+              value={searchPosition || undefined}
+              onChange={(value) => setSearchPosition(value ?? "")}
+              options={positionOptions}
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
             />
           </div>
         </div>

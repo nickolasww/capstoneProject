@@ -93,21 +93,26 @@ export type TLoginResponse = {
 // User profile type (for /me endpoint)
 export type TUserProfile = {
   id: string;
-  fullname: string;
+  username: string;
+  Fullname: string;
   email: string;
-  roles: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    permissions: TPermissionWithGroup[];
-  }>;
-  phone_number: string;
+  role: string;
+};
+
+export type TUserProfileRequest = {
+  Fullname?: string;
+  username?: string;
+  email?: string;
+};
+
+export type TUpdatePasswordRequest = {
+  password: string;
 };
 
 // User profile response
 export type TUserProfileResponse = {
   message: string;
-  data: TUserProfile;
+  users: TUserProfile;
 };
 
 // Refresh token request

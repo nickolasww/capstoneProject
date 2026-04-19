@@ -14,6 +14,8 @@ import type {
   TResetPasswordParam,
   TVerifyForgotPasswordTokenParam,
   TRefreshTokenParam,
+  TUpdatePasswordRequest,
+  TUserProfileRequest,
 } from "./type";
 import type { TDefaultResponse } from "@/commons/types/response";
 
@@ -21,7 +23,9 @@ import type { TDefaultResponse } from "@/commons/types/response";
  * Login with identifier (username or email) and password
  * POST /auth/basic
  */
-export const postLogin = async (payload: TLoginParam): Promise<TLoginResponse> => {
+export const postLogin = async (
+  payload: TLoginParam,
+): Promise<TLoginResponse> => {
   const { data } = await api({
     url: "/auth/login",
     method: "POST",
@@ -31,25 +35,35 @@ export const postLogin = async (payload: TLoginParam): Promise<TLoginResponse> =
 };
 
 /**
- * Get current user profile
- * GET /auth/me
- */
-export const getUserProfile = async (): Promise<TUserProfileResponse> => {
-  const { data } = await api({
-    url: "/auth/me",
-    method: "GET",
-  });
-  return data;
-};
-
-/**
- * Get current user session from users/me
+ * Get current user session from users/me and profile
  * GET /users/me
  */
 export const getMe = async (): Promise<TUserProfileResponse> => {
   const { data } = await api({
     url: "/users/me",
     method: "GET",
+  });
+  return data;
+};
+
+export const UpdateProfile = async (
+  payload: TUserProfileRequest,
+): Promise<TUserProfileResponse> => {
+  const { data } = await api({
+    url: "/users/me",
+    method: "PATCH",
+    data: payload,
+  });
+  return data;
+};
+
+export const UpdatePassword = async (
+  payload: TUpdatePasswordRequest,
+): Promise<TUserProfileResponse> => {
+  const { data } = await api({
+    url: "/users/me",
+    method: "PATCH",
+    data: payload,
   });
   return data;
 };
@@ -73,7 +87,9 @@ export const postRefreshToken = async (
  * Login with SSO (Auth0) access token
  * POST /auth/sso
  */
-export const postSSOLogin = async (payload: TSSOLoginParam): Promise<TSSOLoginResponse> => {
+export const postSSOLogin = async (
+  payload: TSSOLoginParam,
+): Promise<TSSOLoginResponse> => {
   const { data } = await api({
     url: "/auth/sso",
     method: "POST",
@@ -86,7 +102,9 @@ export const postSSOLogin = async (payload: TSSOLoginParam): Promise<TSSOLoginRe
  * Register with SSO (Auth0) - complete pending registration
  * POST /auth/sso/register
  */
-export const postSSORegister = async (payload: TSSORegisterParam): Promise<TDefaultResponse> => {
+export const postSSORegister = async (
+  payload: TSSORegisterParam,
+): Promise<TDefaultResponse> => {
   const { data } = await api({
     url: "/auth/sso/register",
     method: "POST",
@@ -99,9 +117,11 @@ export const postSSORegister = async (payload: TSSORegisterParam): Promise<TDefa
  * Register new user
  * POST /auth/register
  */
-export const postRegister = async (payload: TRegisterParam): Promise<TDefaultResponse> => {
+export const postRegister = async (
+  payload: TRegisterParam,
+): Promise<TDefaultResponse> => {
   const { data } = await api({
-    url: "/auth/register", 
+    url: "/auth/register",
     method: "POST",
     data: payload,
   });
@@ -112,7 +132,9 @@ export const postRegister = async (payload: TRegisterParam): Promise<TDefaultRes
  * Verify OTP
  * POST /auth/verify-otp
  */
-export const postVerifyOtp = async (payload: TVerifyOtpParam): Promise<TDefaultResponse> => {
+export const postVerifyOtp = async (
+  payload: TVerifyOtpParam,
+): Promise<TDefaultResponse> => {
   const { data } = await api({
     url: "/otp/verify",
     method: "POST",
@@ -125,7 +147,9 @@ export const postVerifyOtp = async (payload: TVerifyOtpParam): Promise<TDefaultR
  * Resend OTP
  * POST /auth/resend-otp
  */
-export const postResendOtp = async (payload: TResendOtpParam): Promise<TDefaultResponse> => {
+export const postResendOtp = async (
+  payload: TResendOtpParam,
+): Promise<TDefaultResponse> => {
   const { data } = await api({
     url: "/otp/resend",
     method: "POST",

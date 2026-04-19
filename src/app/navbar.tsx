@@ -2,8 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSession } from "@/app/_components/providers/session";
 import LogoBas from "@/assets/logo PT BAS.png";
-import { UserOutlined } from "@ant-design/icons";
-
+import { DownOutlined, LogoutOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 
 interface NavbarProps {
   hasBackground: boolean;
@@ -47,6 +46,10 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
     navigate("/", { replace: true });
   };
 
+  const handleProfileMobile = () => {
+    navigate("/profile", { replace: true });
+  };
+
   return (
     <nav
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -64,19 +67,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               onClick={() => setMobileMenuVisible(!mobileMenuVisible)}
               className="lg:hidden focus:outline-none text-black"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
+              <MenuOutlined className="text-xl"/>
             </button>
 
             <Link to="/" className="flex items-center">
@@ -143,19 +134,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                 }`}
               >
                 <span>Services</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${servicesDropdownOpen ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                <DownOutlined className="text-xs"/>
               </button>
 
               {servicesDropdownOpen && (
@@ -216,37 +195,17 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                 {/* Dropdown */}
                 {dropdownOpen && (
                   <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
-
                     {/* Menu items */}
                     <div className="py-1">
-                      {/* <Link
+                      <Link
                         to="/profile"
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      > */}
+                      >
                         {/* Icon profile */}
-                        {/* <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                        >
-                          <circle
-                            cx="8"
-                            cy="5"
-                            r="3"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                          />
-                          <path
-                            d="M2 13c0-3 2-5 6-5s6 2 6 5"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                          />
-                        </svg>
+                        <UserOutlined />
                         Profile
-                      </Link> */}
+                      </Link>
 
                       {user.role === "admin" && (
                         <Link
@@ -254,49 +213,6 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                           onClick={() => setDropdownOpen(false)}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                          >
-                            <rect
-                              x="2"
-                              y="2"
-                              width="5"
-                              height="5"
-                              rx="1"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            />
-                            <rect
-                              x="9"
-                              y="2"
-                              width="5"
-                              height="5"
-                              rx="1"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            />
-                            <rect
-                              x="2"
-                              y="9"
-                              width="5"
-                              height="5"
-                              rx="1"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            />
-                            <rect
-                              x="9"
-                              y="9"
-                              width="5"
-                              height="5"
-                              rx="1"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                            />
-                          </svg>
                           Dashboard
                         </Link>
                       )}
@@ -311,26 +227,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                         }}
                         className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                       >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                        >
-                          <path
-                            d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                          />
-                          <path
-                            d="M10 11l3-3-3-3M13 8H6"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <LogoutOutlined />
                         Logout
                       </button>
                     </div>
@@ -390,21 +287,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                 }`}
               >
                 <span>Services</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${
-                    mobileServicesOpen ? "rotate-180" : ""
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                <DownOutlined className="text-sm"/>
               </button>
 
               {mobileServicesOpen && (
@@ -460,9 +343,13 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                     </Link>
                   )}
 
-                  <div className="text-sm text-gray-600">
-                    {user.name} ({user.role})
-                  </div>
+                  <button
+                    onClick={handleProfileMobile}
+                    className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors border border-gray-500 rounded-lg flex gap-2 items-center justify-center"
+                  >
+                    <UserOutlined />
+                    Profile
+                  </button>
 
                   <button
                     onClick={handleLogout}

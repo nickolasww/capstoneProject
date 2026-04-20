@@ -45,7 +45,7 @@ export default function LamaranKerjaPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TApplicationStatus | "all">("all");
   const [searchEmail, setSearchEmail] = useState("");
-  const debouncedSearchEmail= useDebounce(searchEmail, 700);
+  const debouncedSearchEmail = useDebounce(searchEmail, 700);
   const [searchPosition, setSearchPosition] = useState("");
   const debouncedSearchPosition = useDebounce(searchPosition);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,11 +60,18 @@ export default function LamaranKerjaPage() {
 
   // Fetch job applications using React Query with caching
   const { data, isLoading, isFetching, refetch } = useQuery({
-    queryKey: ["job-applications", activeTab, debouncedSearchEmail, debouncedSearchPosition],
+    queryKey: [
+      "job-applications",
+      activeTab,
+      debouncedSearchEmail,
+      debouncedSearchPosition,
+    ],
     queryFn: () => {
       const params: JobApplicationParams = { limit: 100 };
 
-      if (activeTab !== "all") {params.status = activeTab;}
+      if (activeTab !== "all") {
+        params.status = activeTab;
+      }
       if (debouncedSearchEmail) params.search = debouncedSearchEmail;
       if (debouncedSearchPosition) params.job_title = debouncedSearchPosition;
 
@@ -180,6 +187,68 @@ export default function LamaranKerjaPage() {
     ];
     return unique.map((title) => ({ label: title, value: title }));
   }, [data]);
+
+
+  const handleDownloadCSV = () => {
+    const dataToExport = deferredFilteredApplications;
+
+    if (!dataToExport || dataToExport.length === 0) {
+      message.warning("Tidak ada data untuk diunduh");
+      return;
+    }
+
+    // Header kolom CSV
+    const headers = [
+      "Email",
+      "Posisi Lamaran",
+      "No. Telepon",
+      "Tanggal Daftar",
+      "Status",
+      "Jadwal Interview",
+    ];
+
+    // Map data ke baris CSV
+    const rows = dataToExport.map((app) => [
+      app.email ?? "",
+      app.job_title ?? "",
+      app.phone_number ? `\t${app.phone_number}` : "",
+      app.submitted_at
+        ? new Date(app.submitted_at).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        : "",
+      getStatusConfig(app.status).text,
+      app.interview_at
+        ? new Date(app.interview_at).toLocaleString("id-ID", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : "-",
+    ]);
+
+    // Gabungkan header + rows jadi string CSV
+    const csvContent = [headers, ...rows]
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+      )
+      .join("\n");
+
+    // Trigger download
+    const blob = new Blob(["\uFEFF" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `pelamar-kerja-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   const columns: ColumnsType<TJobApplication> = useMemo(
     () => [
@@ -313,25 +382,26 @@ export default function LamaranKerjaPage() {
   );
 
   // Memoize filtered applications to prevent recalculation on every render
-const filteredApplications = useMemo(() => {
-  return applications.filter((app) => {
-    // filter by search email
-    if (debouncedSearchEmail) {
-      const matchEmail = (app.email?.toLowerCase() ?? "").includes(
-        debouncedSearchEmail.toLowerCase()
-      );
-      if (!matchEmail) return false;
-    }
+  const filteredApplications = useMemo(() => {
+    return applications.filter((app) => {
+      // filter by search email
+      if (debouncedSearchEmail) {
+        const matchEmail = (app.email?.toLowerCase() ?? "").includes(
+          debouncedSearchEmail.toLowerCase(),
+        );
+        if (!matchEmail) return false;
+      }
 
-    if (debouncedSearchPosition) {
-      const matchPosition =
-        (app.job_title?.toLowerCase() ?? "") === debouncedSearchPosition.toLowerCase();
-      if (!matchPosition) return false;
-    }
+      if (debouncedSearchPosition) {
+        const matchPosition =
+          (app.job_title?.toLowerCase() ?? "") ===
+          debouncedSearchPosition.toLowerCase();
+        if (!matchPosition) return false;
+      }
 
-    return true;
-  });
-}, [applications, debouncedSearchEmail, debouncedSearchPosition]);
+      return true;
+    });
+  }, [applications, debouncedSearchEmail, debouncedSearchPosition]);
 
   // Defer table rendering to prevent UI blocking while user is typing
   const deferredFilteredApplications = useDeferredValue(filteredApplications);
@@ -400,8 +470,10 @@ const filteredApplications = useMemo(() => {
         style={{ marginBottom: 24 }}
       />
 
+
+      <div className="flex justify-end items-end mb-2 gap-2">
       {["hired", "short_listed", "rejected"].includes(activeTab) && (
-        <div className="flex justify-end items-end mb-2">
+        <div className="">
           <Button
             type="primary"
             onClick={() => handleShareEmail(activeTab)}
@@ -414,6 +486,17 @@ const filteredApplications = useMemo(() => {
           </Button>
         </div>
       )}
+
+      <div className=""> 
+      <Button
+        icon={<DownloadOutlined />}
+        onClick={handleDownloadCSV}
+        disabled={deferredFilteredApplications.length === 0}
+      >
+        Download CSV
+      </Button>
+      </div> 
+      </div> 
 
       {/* Filter Section */}
       <div

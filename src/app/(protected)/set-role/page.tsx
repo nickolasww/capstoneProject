@@ -1,22 +1,14 @@
 import { useState } from "react";
 // import { useNavigate } from "react-router-dom";
-import { Table, Input, Button, Typography, Tag } from "antd";
-import {
-  SearchOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
+import { Table, Button, Tag } from "antd";
+import {  EditOutlined } from "@ant-design/icons";
 import type { ColumnsType, TableProps } from "antd/es/table";
-import type {
-  TJobApplication,
-} from "@/api/dashboard/lamaran-kerja/daftar-pelamar/type";
+import type { TJobApplication } from "@/api/dashboard/lamaran-kerja/daftar-pelamar/type";
 import { Grid } from "antd";
 
-const { Search } = Input;
-const { Text } = Typography;
 
 export default function setRole() {
   // const navigate = useNavigate();
-  const [searchName, setSearchName] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const { useBreakpoint } = Grid;
@@ -111,37 +103,21 @@ export default function setRole() {
     <div className="p-6 lg:p-8 bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="mb-14 text-center">
-        <h1 className="text-4xl  text-gray-900 mb-2">Set Role</h1>
+        <h1 className="text-4xl  text-gray-900 mb-2">Update and Set Role</h1>
+        <h2 className="text-md  text-gray-600 mb-2">Pilih role yang sesuai per fitur admin </h2>
       </div>
 
       {/* Filter Section */}
-      <div
-        style={{
-          backgroundColor: "#fff",
-          padding: 24,
-          borderRadius: 8,
-          marginBottom: 24,
-          boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1)",
-        }}
-      >
-        <div
-          style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16 }}
+      <div className="flex justify-end items-end py-10">
+        <Button
+          type="primary"
+          style={{
+            background: "#22c55e",
+            borderColor: "#22c55e",
+          }}
         >
-          <div>
-            <Text
-              style={{ display: "block", marginBottom: 8, fontWeight: 500 }}
-            >
-              Cari Email
-            </Text>
-            <Search
-              placeholder="Ketik email..."
-              allowClear
-              prefix={<SearchOutlined />}
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
-            />
-          </div>
-        </div>
+          Tambah User baru
+        </Button>
       </div>
 
       {/* Table */}

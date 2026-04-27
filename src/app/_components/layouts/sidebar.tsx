@@ -66,6 +66,7 @@ const menuItems: MenuItem[] = [
             icon: <FileOutlined />,
           },
           {
+            path:"/lamaran-kerja/history-daftar-pelamar",
             label: "Riwayat Lamaran",
             icon: <HistoryOutlined />,
           },
@@ -81,6 +82,7 @@ const menuItems: MenuItem[] = [
             icon: <FileOutlined />,
           },
           {
+            path: "/lamaran-kerja/history-posting-pekerjaan",
             label: "Riwayat Posting Pekerjaan",
             icon: <HistoryOutlined />,
           },

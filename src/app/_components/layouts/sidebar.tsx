@@ -15,12 +15,17 @@ import {
   UserOutlined,
   SolutionOutlined,
   LogoutOutlined,
+  FileOutlined,
+  HistoryOutlined,
+  DownOutlined,
+  UpOutlined,
 } from "@ant-design/icons";
 
 interface SubMenuItem {
-  path: string;
+  path?: string;
   label: string;
   icon: JSX.Element;
+  submenu?: SubMenuItem[];
 }
 
 interface MenuItem {
@@ -52,14 +57,34 @@ const menuItems: MenuItem[] = [
     icon: <BankOutlined />,
     submenu: [
       {
-        path: "/lamaran-kerja/daftar-pelamar",
-        label: "Daftar Pelamar",
+        label: "Pelamar",
         icon: <UserOutlined />,
+        submenu: [
+          {
+            path: "/lamaran-kerja/daftar-pelamar",
+            label: "Daftar Lamaran",
+            icon: <FileOutlined />,
+          },
+          {
+            label: "Riwayat Lamaran",
+            icon: <HistoryOutlined />,
+          },
+        ],
       },
       {
-        path: "/lamaran-kerja/posting-pekerjaan",
         label: "Posting Pekerjaan",
         icon: <SolutionOutlined />,
+        submenu: [
+          {
+            path: "/lamaran-kerja/posting-pekerjaan",
+            label: "Daftar Posting Pekerjaan",
+            icon: <FileOutlined />,
+          },
+          {
+            label: "Riwayat Posting Pekerjaan",
+            icon: <HistoryOutlined />,
+          },
+        ],
       },
     ],
   },
@@ -82,22 +107,92 @@ export default function DashboardSidebar() {
   const navigate = useNavigate();
   const { logout } = useSession();
 
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  // Menyimpan label yang sedang terbuka, bisa lebih dari satu level
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
 
-  const toggleDropdown = (label: string) => {
-    setOpenDropdown(openDropdown === label ? null : label);
+  const toggleKey = (label: string) => {
+    setOpenKeys((prev) =>
+      prev.includes(label) ? prev.filter((k) => k !== label) : [...prev, label],
+    );
   };
+
+  const isKeyOpen = (label: string) => openKeys.includes(label);
 
   const handleLogout = () => {
     logout();
     navigate("/", { replace: true });
   };
 
+  // Render submenu secara rekursif
+  const renderSubMenu = (items: SubMenuItem[], depth: number = 1) => {
+    return (
+      <ul className={`space-y-1 ${depth === 1 ? "lg:ml-4" : "lg:ml-4"}`}>
+        {items.map((sub) => {
+          const hasNested = sub.submenu && sub.submenu.length > 0;
+          const isActive = sub.path ? location.pathname === sub.path : false;
+          const isChildActive =
+            hasNested &&
+            sub.submenu?.some((child) => location.pathname === child.path);
+          const isOpen = isKeyOpen(sub.label);
+
+          return (
+            <li key={sub.path ?? sub.label}>
+              {hasNested ? (
+                <>
+                  {/* Parent nested (e.g. "Pelamar") */}
+                  <button
+                    onClick={() => toggleKey(sub.label)}
+                    className={`
+                      w-full flex items-center justify-center lg:justify-between
+                      gap-2 px-3 py-2 rounded-lg text-sm
+                      ${
+                        isChildActive || isOpen
+                          ? "text-green-700 bg-green-50"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }
+                    `}
+                  >
+                    <span className="flex items-center gap-2">
+                      {sub.icon}
+                      <span className="hidden lg:block">{sub.label}</span>
+                    </span>
+                    <span className="hidden lg:block text-xs">
+                      {isOpen ? <UpOutlined /> : <DownOutlined />}
+                    </span>
+                  </button>
+
+                  {/* Nested children */}
+                  {isOpen && renderSubMenu(sub.submenu!, depth + 1)}
+                </>
+              ) : (
+                <Link
+                  to={sub.path!}
+                  className={`
+                    flex items-center justify-center lg:justify-start
+                    gap-2 px-3 py-2 rounded-lg text-sm
+                    ${
+                      isActive
+                        ? "text-green-600 bg-green-50"
+                        : "text-gray-600 hover:bg-gray-50"
+                    }
+                  `}
+                >
+                  {sub.icon}
+                  <span className="hidden lg:block">{sub.label}</span>
+                </Link>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    );
+  };
+
   return (
     <aside
       className={`
         bg-white border-r border-gray-200 flex flex-col fixed top-0 left-0 h-screen z-40
-        w-16 lg:w-64   // 🔥 MOBILE kecil, DESKTOP normal
+        w-16 lg:w-64
       `}
     >
       {/* ========================= */}
@@ -112,8 +207,6 @@ export default function DashboardSidebar() {
               className="w-full h-full object-contain"
             />
           </div>
-
-          {/* ❌ Hidden di mobile */}
           <div className="hidden lg:block">
             <h2 className="font-bold text-sm text-gray-900">PT BUKIT AURUMN</h2>
             <p className="text-xs text-gray-600">SEJAHTERA</p>
@@ -131,55 +224,55 @@ export default function DashboardSidebar() {
             const isActive = item.path
               ? location.pathname === item.path
               : false;
-
             const isSubmenuActive =
               hasSubmenu &&
-              item.submenu?.some((sub) => location.pathname === sub.path);
-
-            const isDropdownOpen = openDropdown === item.label;
+              item.submenu?.some(
+                (sub) =>
+                  location.pathname === sub.path ||
+                  sub.submenu?.some(
+                    (child) => location.pathname === child.path,
+                  ),
+              );
+            const isDropdownOpen = isKeyOpen(item.label);
 
             return (
               <li key={item.label}>
                 {hasSubmenu ? (
                   <>
-                    {/* 🔹 Parent */}
+                    {/* 🔹 Parent dengan submenu */}
                     <button
-                      onClick={() => toggleDropdown(item.label)}
+                      onClick={() => toggleKey(item.label)}
                       className={`
-                        w-full flex items-center justify-center lg:justify-start
+                        w-full flex items-center justify-center lg:justify-between
                         gap-3 px-3 py-2.5 rounded-lg
                         ${
-                          isSubmenuActive
+                          isSubmenuActive || isDropdownOpen
                             ? "bg-green-50 text-green-700"
                             : "text-gray-700 hover:bg-gray-50"
                         }
                       `}
                     >
-                      {item.icon}
-
-                      {/* ❌ Hidden di mobile */}
-                      <span className="hidden lg:block text-sm flex-1 text-left relative">
-                        {item.label}
+                      <span className="flex items-center gap-3">
+                        {item.icon}
+                        <span className="hidden lg:block text-sm">
+                          {item.label}
+                        </span>
+                      </span>
+                      <span className="hidden lg:block text-xs">
+                        {isDropdownOpen ? <UpOutlined /> : <DownOutlined />}
                       </span>
                     </button>
 
-                    {/* 🔹 Submenu (desktop only biar ga aneh di mobile) */}
+                    {/* 🔹 Submenu */}
                     {isDropdownOpen && (
-                      <ul
-                        className={`absolute left-16 -translate-y-7 lg:translate-y-0 bg-white shadow-lg rounded-md p-2 z-50 space-y-1 min-w-45
-                          lg:static lg:ml-6 lg:bg-transparent lg:shadow-none lg:p-0`}
+                      <div
+                        className={`
+                          absolute left-16 bg-white shadow-lg rounded-md p-2 z-50 min-w-48
+                          lg:static lg:ml-2 lg:bg-transparent lg:shadow-none lg:p-0 lg:mt-1
+                        `}
                       >
-                        {item.submenu?.map((sub) => (
-                          <li key={sub.path}>
-                            <Link
-                              to={sub.path}
-                              className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-                            >
-                              {sub.label}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
+                        {renderSubMenu(item.submenu!)}
+                      </div>
                     )}
                   </>
                 ) : (
@@ -196,8 +289,6 @@ export default function DashboardSidebar() {
                     `}
                   >
                     {item.icon}
-
-                    {/* ❌ Hidden di mobile */}
                     <span className="hidden lg:block text-sm">
                       {item.label}
                     </span>
@@ -212,14 +303,12 @@ export default function DashboardSidebar() {
       {/* ========================= */}
       {/* 🔥 LOGOUT */}
       {/* ========================= */}
-      <div className="border-t border-gray-200 ">
+      <div className="border-t border-gray-200">
         <button
           onClick={handleLogout}
           className="w-full flex items-center justify-center gap-2 text-red-600 hover:bg-red-50 rounded-lg px-3 py-4"
         >
           <LogoutOutlined />
-
-          {/* ❌ Hidden di mobile */}
           <span className="hidden lg:block">Logout</span>
         </button>
       </div>

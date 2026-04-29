@@ -63,7 +63,7 @@ const menuItems: MenuItem[] = [
           {
             path: "/lamaran-kerja/daftar-pelamar",
             label: "Daftar Lamaran",
-            icon: <FileOutlined />,
+            icon: <TeamOutlined />,
           },
           {
             path:"/lamaran-kerja/history-daftar-pelamar",
@@ -79,7 +79,7 @@ const menuItems: MenuItem[] = [
           {
             path: "/lamaran-kerja/posting-pekerjaan",
             label: "Daftar Posting Pekerjaan",
-            icon: <FileOutlined />,
+            icon: <TeamOutlined />
           },
           {
             path: "/lamaran-kerja/history-posting-pekerjaan",
@@ -149,7 +149,7 @@ export default function DashboardSidebar() {
                       gap-2 px-3 py-2 rounded-lg text-sm
                       ${
                         isChildActive || isOpen
-                          ? "text-green-700 bg-green-50"
+                          ? "text-green-700 "
                           : "text-gray-700 hover:bg-gray-50"
                       }
                     `}
@@ -174,7 +174,7 @@ export default function DashboardSidebar() {
                     gap-2 px-3 py-2 rounded-lg text-sm
                     ${
                       isActive
-                        ? "text-green-600 bg-green-50"
+                        ? "text-green-600"
                         : "text-gray-600 hover:bg-gray-50"
                     }
                   `}

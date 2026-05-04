@@ -162,7 +162,7 @@ export const deleteJobPosting = async (
   params: { id: string }
 ): Promise<TResponseData<null>> => {
   const response = await api.delete<TResponseData<null>>(
-    `/job-positions/admin/${params.id}`
+    `/job-positions/admin/${params.id}/soft`
   );
   
   return response.data;

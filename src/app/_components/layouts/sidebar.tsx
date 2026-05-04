@@ -78,12 +78,12 @@ const menuItems: MenuItem[] = [
         submenu: [
           {
             path: "/lamaran-kerja/posting-pekerjaan",
-            label: "Daftar Posting Pekerjaan",
+            label: "Daftar Lowongan",
             icon: <TeamOutlined />
           },
           {
             path: "/lamaran-kerja/history-posting-pekerjaan",
-            label: "Riwayat Posting Pekerjaan",
+            label: "Riwayat Lowongan",
             icon: <HistoryOutlined />,
           },
         ],

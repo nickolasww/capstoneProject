@@ -26,7 +26,7 @@ import { message } from "antd";
 import { api } from "@/libs/axios/api";
 import { Grid } from "antd";
 
-const { Search } = Input;
+
 const { Text } = Typography;
 
 type JobApplicationParams = {
@@ -529,7 +529,7 @@ export default function LamaranKerjaPage() {
             >
               Cari Email Pelamar
             </Text>
-            <Search
+            <Input
               placeholder="Ketik email pelamar..."
               allowClear
               prefix={<SearchOutlined />}

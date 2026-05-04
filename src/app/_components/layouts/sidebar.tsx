@@ -15,7 +15,6 @@ import {
   UserOutlined,
   SolutionOutlined,
   LogoutOutlined,
-  FileOutlined,
   HistoryOutlined,
   DownOutlined,
   UpOutlined,

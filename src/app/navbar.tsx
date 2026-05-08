@@ -1,28 +1,14 @@
 import { useRef, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSession } from "@/app/_components/providers/session";
-import LogoBas from "@/assets/logo PT BAS.png";
+import Logo_Epson from "@/assets/Logo_Epson.svg"
 import { DownOutlined, LogoutOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 
-interface NavbarProps {
-  hasBackground: boolean;
-}
-
-const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
+const Navbar = () => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
-  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const location = useLocation();
   const pathname = location.pathname;
-  const hasBackground =
-    propHasBackground || pathname.startsWith("/karirpage/Joblist/");
-  const isDarkText =
-    hasBackground ||
-    pathname === "/karirpage" ||
-    pathname.startsWith("/servicespage/pengadaanpage") ||
-    pathname.startsWith("/servicespage/sewapage") ||
-    pathname.startsWith("/servicespage/konstruksipage") ||
-    pathname.startsWith("/aboutpage/visimisi");
   const { user, isAuthenticated, logout } = useSession();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -51,18 +37,11 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
   };
 
   return (
-    <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        hasBackground
-          ? "bg-white shadow-md"
-          : "bg-white shadow-md lg:bg-transparent"
-      }`}
-    >
+    <nav className="w-full bg-white shadow-md">
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-22">
+        <div className="flex items-center justify-between h-22">
           {/* Left side - Logo */}
           <div className="flex items-center gap-5">
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuVisible(!mobileMenuVisible)}
               className="lg:hidden focus:outline-none text-black"
@@ -72,113 +51,56 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
 
             <Link to="/" className="flex items-center">
               <img
-                src={LogoBas}
-                alt="BAS Website"
-                className="h-12 w-auto object-contain"
+                src={Logo_Epson}
+                alt="Epson Website"
+                className="h-22 w-auto object-contain"
               />
             </Link>
-            <h1
-              className={`font-bold text-xl transition-colors ${
-                isDarkText
-                  ? "text-black"
-                  : "text-gray-900 lg:text-white lg:drop-shadow-lg"
-              }`}
-            >
-              PT.BUKIT AURUMN SEJAHTERA
-            </h1>
           </div>
 
-          {/* Right Side - Desktop Menu and CTA Button */}
-          <div className="hidden lg:flex items-center space-x-10">
+          {/* Tengah */}
+          <div className="hidden lg:flex items-center space-x-17">
             <Link
               to="/"
-              className={`transition-colors ${
-                pathname === "/"
-                  ? isDarkText
-                    ? "text-black font-semibold"
-                    : "text-white font-semibold"
-                  : isDarkText
-                    ? "text-black hover:text-gray-500"
-                    : "text-white hover:text-gray-200 drop-shadow-md"
-              }`}
+              className=" text-black"
             >
               Home
             </Link>
+
             <Link
-              to="/aboutpage"
-              className={`transition-colors ${
-                pathname === "/aboutpage"
-                  ? isDarkText
-                    ? "text-black font-semibold"
-                    : "text-white font-semibold"
-                  : isDarkText
-                    ? "text-black hover:text-gray-500"
-                    : "text-white hover:text-gray-200 drop-shadow-md"
-              }`}
+              to="/karirpage"
+             className=" text-black"
             >
               About
             </Link>
 
+            <Link
+              to="/aboutpage"
+              className=" text-black"
+            >
+              ChatBot
+            </Link>
+
             {/* Services Dropdown */}
             <div className="relative">
-              <button
-                onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
-                className={`flex items-center space-x-1 transition-colors ${
-                  pathname.startsWith("/services")
-                    ? isDarkText
-                      ? "text-black font-semibold"
-                      : "text-white font-semibold"
-                    : isDarkText
-                      ? "text-black hover:text-gray-500"
-                      : "text-white hover:text-gray-200 drop-shadow-md"
-                }`}
+              <Link
+                to="#"
+                className=" text-black"
               >
-                <span>Services</span>
-                <DownOutlined className="text-xs"/>
-              </button>
-
-              {servicesDropdownOpen && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  <Link
-                    to="/servicespage/sewapage"
-                    onClick={() => setServicesDropdownOpen(false)}
-                    className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-                  >
-                    Sewa Alat Berat
-                  </Link>
-                  <Link
-                    to="/servicespage/konstruksipage"
-                    onClick={() => setServicesDropdownOpen(false)}
-                    className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-                  >
-                    Konstruksi
-                  </Link>
-                  <Link
-                    to="/servicespage/pengadaanpage"
-                    onClick={() => setServicesDropdownOpen(false)}
-                    className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors"
-                  >
-                    Pengadaan Barang Jasa
-                  </Link>
-                </div>
-              )}
+                Check Warranty 
+              </Link>
             </div>
 
             <Link
               to="/karirpage"
-              className={`transition-colors ${
-                pathname === "/karirpage"
-                  ? isDarkText
-                    ? "text-black font-semibold"
-                    : "text-white font-semibold"
-                  : isDarkText
-                    ? "text-black hover:text-gray-500"
-                    : "text-white hover:text-gray-200 drop-shadow-md"
-              }`}
+             className=" text-black"
             >
-              Karir
+              Error Scanner
             </Link>
+            </div>
 
+            {/* Kanan */}
+            <div> 
             {/* User Authentication Section */}
             {isAuthenticated && user ? (
               <div className="relative" ref={dropdownRef}>
@@ -226,7 +148,7 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
                           setDropdownOpen(false);
                         }}
                         className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                      >
+                        >
                         <LogoutOutlined />
                         Logout
                       </button>
@@ -236,13 +158,13 @@ const Navbar = ({ hasBackground: propHasBackground }: NavbarProps) => {
               </div>
             ) : (
               <Link
-                to="/auth/login"
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+              to="/auth/login"
+              className="px-4 py-2 bg-[#0066CC] text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
               >
                 Get Started
               </Link>
             )}
-          </div>
+            </div>
         </div>
       </div>
 

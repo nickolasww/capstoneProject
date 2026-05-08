@@ -1,30 +1,27 @@
-import suplier from "@/assets/homepage/suplier.webp"
-import konstruksi from "@/assets/homepage/konstruksi.webp"
-import pengadaan from "@/assets/homepage/pengadaan.webp"
+import { ArrowRightOutlined } from "@ant-design/icons";
 
 const PelayananKami = () => {
-  // Mock data untuk pelayanan
   const services = [
     {
       id: 1,
-      title: 'Sewa Alat Berat',
+      title: 'AI ChatBot',
       description:
-        'Menyediakan kebutuhan alat berat untuk proyek konstruksi dan industri berkat produk berkualitas. dan telah dipercaya banyak perusahaan',
-      image: suplier,
+        'Tanyakan masalah printer Anda kapan saja, AI kami siap membantu memberikan solusi terbaik',
+      button: 'Mulai Chat'
     },
     {
       id: 2,
-      title: 'Jasa Konstruksi',
+      title: 'OCR Errir Scanner',
       description:
-        'Inovatif, tepat waktu, dan berkualitas, menciptakan solusi bangunan unggul untuk keberlanjutan proyek Anda.',
-      image: konstruksi,
+        'Upload foto error atau kode pada printer, AI akan membaca dan memberikan analisis solusi',
+      button:"Scan Error"
     },
     {
       id: 3,
-      title: 'Pengadaan Barang',
+      title: 'Warranty Checker',
       description:
-        'Menyediakan kebutuhan alat berat untuk proyek konstruksi dan industri berkat produk berkualitas dan telah dipercaya banyak perusahaan',
-      image: pengadaan,
+        'Masukkan serial number untuk cek garansi, estimasi biaya, dan lokasi service center terdekat',
+      button: 'Cek Sekarang'
     },
   ];
 
@@ -32,7 +29,7 @@ const PelayananKami = () => {
     <section className="bg-white py-16">
       <div className="container mx-auto px-4">
         <h1 className="mb-8 text-center text-4xl font-bold text-gray-800">
-          Pelayanan Kami
+          layanan Kami
         </h1>
 
         {/* Services Grid */}
@@ -40,29 +37,20 @@ const PelayananKami = () => {
           {services.map((service) => (
             <div
               key={service.id}
-              className="group flex h-full flex-col overflow-hidden rounded-xl bg-white shadow-lg transition hover:shadow-2xl"
+              className="group flex h-full overflow-hidden rounded-xl bg-white shadow-lg transition hover:shadow-2xl"
             >
-              {/* Image */}
-              <div className="relative h-66 shrink-0 overflow-hidden">
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
-              </div>
-
+              
               {/* Content */}
               <div className="flex flex-1 flex-col p-6">
-                <h2 className="mb-2 text-center text-2xl font-bold text-[#4D9232]">
+                <h2 className="mb-2 text-2xl font-bold">
                   {service.title}
                 </h2>
-                <p className="mb-4 grow text-center text-[#4D9232] text-sm">
+                <p className="mb-4 grow text-sm w-[70%]">
                   {service.description}
                 </p>
-                <div className="flex justify-center">
-                  <button className="rounded-2xl border border-[#4D9232] px-6 py-3 font-semibold text-[#4D9232] transition hover:bg-[#4D9232] hover:text-white">
-                    Telusuri
+                <div className="">
+                  <button className="text-[#00A3FF] cursor-pointer ">
+                    {service.button} <ArrowRightOutlined />
                   </button>
                 </div>
               </div>

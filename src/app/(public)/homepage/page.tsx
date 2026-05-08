@@ -1,17 +1,15 @@
+import CaraKerjaPage from '../carakerja/page';
 import HeroSection from './herosection/page';
-import ProfilPerusahaan from './profil-perusahaan/page';
-import KlienKami from './mitra/page';
 import PelayananKami from './pelayanan/page';
 import SEO from '@/app/_components/seo/seo';
 import { Helmet } from 'react-helmet-async';
-import KritikDanSaran from '@/app/(public)/homepage/kritik-saran/page';
 
 const HomePage = () => {
   return (
     <div className="min-h-screen bg-white">
       <SEO 
-        title="PT Bukit Aurumn Sejahtera - BAS | Kediri"
-        description="Melayani pengadaan alat berat dan jasa konstruksi sejak 2003 dengan kualitas terbaik."
+        title="Epson AI Helpdesk"
+        description="Solusi Cepat untuk Masalah Printer Anda"
       />
 
       <Helmet>
@@ -40,10 +38,8 @@ const HomePage = () => {
       </Helmet>
       
       <HeroSection />
-      <ProfilPerusahaan />
-      <KlienKami />
       <PelayananKami />
-      <KritikDanSaran />
+      <CaraKerjaPage/>
     </div>
   );
 };

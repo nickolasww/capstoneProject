@@ -1,4 +1,4 @@
-import CaraKerjaPage from '../carakerja/page';
+import CaraKerjaPage from './carakerja/page';
 import HeroSection from './herosection/page';
 import PelayananKami from './pelayanan/page';
 import SEO from '@/app/_components/seo/seo';

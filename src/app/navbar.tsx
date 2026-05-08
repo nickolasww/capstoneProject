@@ -1,8 +1,13 @@
 import { useRef, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSession } from "@/app/_components/providers/session";
-import Logo_Epson from "@/assets/Logo_Epson.svg"
-import { DownOutlined, LogoutOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
+import Logo_Epson from "@/assets/Logo_Epson.svg";
+import {
+  DownOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 
 const Navbar = () => {
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
@@ -46,7 +51,7 @@ const Navbar = () => {
               onClick={() => setMobileMenuVisible(!mobileMenuVisible)}
               className="lg:hidden focus:outline-none text-black"
             >
-              <MenuOutlined className="text-xl"/>
+              <MenuOutlined className="text-xl" />
             </button>
 
             <Link to="/" className="flex items-center">
@@ -62,45 +67,67 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center space-x-17">
             <Link
               to="/"
-              className=" text-black"
+              className={`relative pb-1 text-sm font-medium transition-colors
+      ${
+        pathname === "/"
+          ? "text-blue-600 after:absolute after:top-13 after:left-0 after:w-full after:h-[2.5px] after:bg-blue-600 after:rounded-full"
+          : "text-black"
+      }`}
             >
               Home
             </Link>
 
             <Link
-              to="/karirpage"
-             className=" text-black"
+              to="/aboutPage"
+              className={`relative pb-1 text-sm font-medium transition-colors
+      ${
+        pathname === "/aboutPage"
+          ? "text-blue-600 after:absolute after:top-13 after:left-0 after:w-full after:h-[2.5px] after:bg-blue-600 after:rounded-full"
+          : "text-black"
+      }`}
             >
               About
             </Link>
 
             <Link
-              to="/aboutpage"
-              className=" text-black"
+              to="/chatbotpage"
+              className={`relative pb-1 text-sm font-medium transition-colors
+      ${
+        pathname === "/chatbotpage"
+          ? "text-blue-600 after:absolute after:top-13 after:left-0 after:w-full after:h-[2.5px] after:bg-blue-600 after:rounded-full"
+          : "text-black"
+      }`}
             >
               ChatBot
             </Link>
 
-            {/* Services Dropdown */}
-            <div className="relative">
-              <Link
-                to="#"
-                className=" text-black"
-              >
-                Check Warranty 
-              </Link>
-            </div>
+            <Link
+              to="/check-warranty"
+              className={`relative pb-1 text-sm font-medium transition-colors
+      ${
+        pathname === "/check-warranty"
+          ? "text-blue-600 after:absolute after:top-13 after:left-0 after:w-full after:h-[2.5px] after:bg-blue-600 after:rounded-full"
+          : "text-black"
+      }`}
+            >
+              Check Warranty
+            </Link>
 
             <Link
-              to="/karirpage"
-             className=" text-black"
+              to="/error-scanner"
+              className={`relative pb-1 text-sm font-medium transition-colors
+      ${
+        pathname === "/error-scanner"
+          ? "text-blue-600 after:absolute after:top-13 after:left-0 after:w-full after:h-[2.5px] after:bg-blue-600 after:rounded-full"
+          : "text-black"
+      }`}
             >
               Error Scanner
             </Link>
-            </div>
+          </div>
 
-            {/* Kanan */}
-            <div> 
+          {/* Kanan */}
+          <div>
             {/* User Authentication Section */}
             {isAuthenticated && user ? (
               <div className="relative" ref={dropdownRef}>
@@ -148,7 +175,7 @@ const Navbar = () => {
                           setDropdownOpen(false);
                         }}
                         className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                        >
+                      >
                         <LogoutOutlined />
                         Logout
                       </button>
@@ -158,13 +185,13 @@ const Navbar = () => {
               </div>
             ) : (
               <Link
-              to="/auth/login"
-              className="px-4 py-2 bg-[#0066CC] text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                to="/auth/login"
+                className="px-4 py-2 bg-[#0066CC] text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
               >
                 Get Started
               </Link>
             )}
-            </div>
+          </div>
         </div>
       </div>
 
@@ -209,7 +236,7 @@ const Navbar = () => {
                 }`}
               >
                 <span>Services</span>
-                <DownOutlined className="text-sm"/>
+                <DownOutlined className="text-sm" />
               </button>
 
               {mobileServicesOpen && (

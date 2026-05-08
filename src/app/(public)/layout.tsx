@@ -90,7 +90,7 @@ const PublicLayout = () => {
 
   return (
     <div className=" bg-gray-50 flex flex-col">
-      {!isAuthPage && <Navbar hasBackground={hasBackground} />}
+      {!isAuthPage && <Navbar/>}
 
       <main className="">
         <Outlet />

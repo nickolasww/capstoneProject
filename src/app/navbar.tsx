@@ -78,18 +78,6 @@ const Navbar = () => {
             </Link>
 
             <Link
-              to="/aboutPage"
-              className={`relative pb-1 text-sm font-medium transition-colors
-      ${
-        pathname === "/aboutPage"
-          ? "text-blue-600 after:absolute after:top-13 after:left-0 after:w-full after:h-[2.5px] after:bg-blue-600 after:rounded-full"
-          : "text-black"
-      }`}
-            >
-              About
-            </Link>
-
-            <Link
               to="/chatbotpage"
               className={`relative pb-1 text-sm font-medium transition-colors
       ${

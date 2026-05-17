@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Input, ConfigProvider } from "antd";
-import imgLogo from "@/assets/logo PT BAS.png";
 import { Spinner } from "@/app/loading";
 import { createZodSync } from "@/utils/zod-sync";
 import { LoginFormSchema, TLoginFormData } from "./schema";
@@ -40,7 +39,6 @@ export default function Login() {
             <div className="flex flex-col items-center gap-3 mb-2">
               <div className="h-8.25 w-14 relative overflow-hidden shrink-0">
                 <img
-                  src={imgLogo}
                   alt="PT Bukit Aurumn Sejahtera Logo"
                   className="w-full object-cover"
                 />

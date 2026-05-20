@@ -52,8 +52,8 @@ deploy-prod:
     - ssh $SSH_USER@$SSH_IP -p $SSH_PORT "
         docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD &&
         cd $FRONTEND_SERVER_DIR &&
-        docker compose -f docker-compose.prod.yaml --env-file .env.prod pull bas-frontend &&
-        docker compose -f docker-compose.prod.yaml --env-file .env.prod up -d bas-frontend &&
+        docker compose -f docker-compose.prod.yaml --env-file .env.prod pull espon-frontend &&
+        docker compose -f docker-compose.prod.yaml --env-file .env.prod up -d espon-frontend &&
         sleep 5 &&
         docker compose -f docker-compose.prod.yaml ps &&
         docker image prune -f --filter \"dangling=true\"
@@ -77,8 +77,8 @@ deploy-dev:
     - ssh $SSH_USER@$SSH_IP -p $SSH_PORT "
         docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD &&
         cd $FRONTEND_SERVER_DIR &&
-        docker compose pull bas-frontend &&
-        docker compose up -d bas-frontend &&
+        docker compose pull espon-frontend &&
+        docker compose up -d espon-frontend &&
         sleep 5 &&
         docker compose ps &&
         docker image prune -f --filter \"dangling=true\"

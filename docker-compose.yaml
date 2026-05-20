@@ -1,8 +1,8 @@
 version: '3.9'
-name: bas-frontend
+name: espon-frontend
 
 services:
-  bas-frontend:
+  espon-frontend:
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -13,8 +13,8 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        API_URL: https://bas-backend.bukitaurumnsejahtera.co.id
-    container_name: bas-frontend
+        API_URL: https://espon-backend.bukitaurumnsejahtera.co.id
+      container_name: espon-frontend
     ports:
      - ${PORT}:80
     expose: 
